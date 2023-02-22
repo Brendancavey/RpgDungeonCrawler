@@ -1,8 +1,8 @@
 from Model.Item import Item
 
 class Potion(Item):
-    def __init__(self, name, type, recovery_amt):
-        super().__init__(name, type)
+    def __init__(self, name, type, price, recovery_amt):
+        super().__init__(name, type, price)
         self._recovery_amt = recovery_amt
 
     def getRecoveryAmt(self):

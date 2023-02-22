@@ -4,7 +4,7 @@ class Entity():
         self._name = name
         self._hp = hp
         self._power = power
-        self._inventory = {"Items": {}, "Weapons": {}, "Armor": {}, "Accessories": {}}
+        self._inventory = {"Gold": 0, "Items": {}, "Weapons": {}, "Armor": {}, "Accessories": {}}
         self._equips = {"Armor": None, "Weapon": None, "Accessory": None}
 
     def getName(self):
@@ -13,6 +13,10 @@ class Entity():
         return self._hp
     def getPower(self):
         return self._power
+    def getGoldValue(self):
+        return self._inventory["Gold"]
+    def modifyGold(self, value):
+        self._inventory["Gold"] += value
     def modifyHp(self, value):
         self._hp += value
     def modifyPower(self, value):
@@ -40,9 +44,7 @@ class Entity():
             corresponding_inventory.pop(item)
         self._inventory[item_inventory_type] = corresponding_inventory
     def inventoryEquip(self, item):
-        item_inventory_type = self.inventory_map[item.getItemType()]
-        corresponding_inventory = self._inventory[item_inventory_type]
-        if item not in corresponding_inventory:
+        if not self._itemInInventory(item):
             return
         else:
             if self._equips[item.getItemType()] != None: #check for equipped item
@@ -61,3 +63,20 @@ class Entity():
         return self._inventory
     def showEquipedItems(self):
         return self._equips
+    def attack(self, entity):
+        if self.getHp() > 0:
+            entity.modifyHp(-self.getPower())
+            entity._checkForDeath()
+    def _itemInInventory(self, item):
+        item_inventory_type = self.inventory_map[item.getItemType()]
+        corresponding_inventory = self._inventory[item_inventory_type]
+        if item in corresponding_inventory:
+            return True
+        return False
+    def _checkForDeath(self):
+        if self.getHp() <= 0:
+            self.setHp(0)
+            print(self.getName() + " has been defeated.")
+
+
+

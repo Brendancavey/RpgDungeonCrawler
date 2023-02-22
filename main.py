@@ -1,11 +1,21 @@
-from Model.Entity import Entity
+from Model.Entities.Player import Player
+from Model.Entities.Enemy import Enemy
+from Model.Entities.NPC import NPC
 from Model.Items.Weapon import Weapon
 from Model.Items.Potion import Potion
 
-player = Entity("Player", 10, 7)
+player = Player("Player", 10, 7)
+enemy = Enemy("Enemy", 10, 3)
+chad = NPC("Chad", 10, 2)
+
 print("power is: " + str(player.getPower()))
-player_sword = Weapon("Sharp Sword", "Weapon", 2)
-player_axe = Weapon("Sharp Axe", "Weapon", 3)
+player_sword = Weapon("Sharp Sword", "Weapon", 10, 2)
+player_axe = Weapon("Sharp Axe", "Weapon", 12, 3)
+player.modifyGold(20)
+chad.inventoryAdd(player_sword)
+print(player.showInventory())
+chad.playerPurchase(player, player_sword)
+print(player.showInventory())
 print(player_sword.getId())
 print(player_axe.getId())
 print(player.showEquipedItems())
@@ -22,7 +32,16 @@ player.inventoryEquip(player_axe)
 print("power is: " + str(player.getPower()))
 print(player.showInventory())
 print(player.showEquipedItems())
-player_potion = Potion("Small Healing Potion", "Item", 5)
+player_potion = Potion("Small Healing Potion", "Item", 5, 5)
 player.inventoryAdd(player_potion)
 print(player.showInventory())
 print(player_potion.getDescription())
+print(player.getHp())
+print(enemy.getHp())
+#player.attack(enemy)
+#print(enemy.getHp())
+enemy.attack(player)
+enemy.attack(player)
+enemy.attack(player)
+enemy.attack(player)
+print(player.getHp())
