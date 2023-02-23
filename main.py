@@ -3,11 +3,19 @@ from Model.Entities.Enemy import Enemy
 from Model.Entities.NPC import NPC
 from Model.Items.Weapon import Weapon
 from Model.Items.Potion import Potion
+from Model.BattleSystem import BattleSystem
 
 player = Player("Player", 10, 7)
-enemy = Enemy("Enemy", 10, 3)
+enemy = Enemy("Enemy", 100, 3)
+#print(enemy.getHp())
 chad = NPC("Chad", 10, 2)
-
+battle1 = BattleSystem(player, enemy)
+#battle1.playerAttacks()
+#battle1.playerAttacks()
+#print(enemy.getHp())
+battle1.commenceBattle()
+#battle1.enemyAttacks()
+""""
 print("power is: " + str(player.getPower()))
 player_sword = Weapon("Sharp Sword", "Weapon", 10, 2)
 player_axe = Weapon("Sharp Axe", "Weapon", 12, 3)
@@ -45,3 +53,4 @@ enemy.attack(player)
 enemy.attack(player)
 enemy.attack(player)
 print(player.getHp())
+"""

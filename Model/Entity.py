@@ -25,6 +25,8 @@ class Entity():
         self._hp = value
     def setPower(self, value):
         self._power = value
+    def isAlive(self):
+        return self.getHp() > 0
     def inventoryAdd(self, item):
         item_inventory_type = self.inventory_map[item.getItemType()]
         corresponding_inventory = self._inventory[item_inventory_type]
@@ -65,8 +67,12 @@ class Entity():
         return self._equips
     def attack(self, entity):
         if self.getHp() > 0:
+            print(self.getName() + " attacks " + entity.getName())
             entity.modifyHp(-self.getPower())
+            print(entity.getName() + " has " + str(entity.getHp()) + " HP left.")
             entity._checkForDeath()
+    def guard(self, entity):
+        print(self.getName() + " defends")
     def _itemInInventory(self, item):
         item_inventory_type = self.inventory_map[item.getItemType()]
         corresponding_inventory = self._inventory[item_inventory_type]
@@ -77,6 +83,7 @@ class Entity():
         if self.getHp() <= 0:
             self.setHp(0)
             print(self.getName() + " has been defeated.")
+            return
 
 
 
