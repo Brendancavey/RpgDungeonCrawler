@@ -9,15 +9,15 @@ class NPC(Entity):
         return dialogue
 
     def barter(self):
-        print(self.showInventory())
+        print(self.getInventory())
     def playerPurchase(self, player, item):
-        if self._itemInInventory(item):
+        if self._inventory.itemInInventory(item):
             if player.getGoldValue() >= item.getPrice():
                 player.modifyGold(-item.getPrice())
                 self.modifyGold(item.getPrice())
-                self.inventoryUse(item)
-                player.inventoryAdd(item)
+                self.itemRemove(item)
+                player.itemObtain(item)
             else:
-                print("Insufficient Gold")
+                print("Insufficient " + self._inventory.getNameGold())
         else:
-            print("Item not available")
+            print(str(item) + " not available")

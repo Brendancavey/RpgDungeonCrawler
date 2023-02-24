@@ -43,6 +43,7 @@ class BattleSystem():
                 break
             if self.player_ap == 0:
                 self.playerTurnEnd()
-        print("You win!")
+        if not self.entity.isAlive():
+            print("You win!")
 
 
