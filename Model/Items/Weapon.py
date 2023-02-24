@@ -1,8 +1,8 @@
 from Model.Item import Item
 
 class Weapon(Item):
-    def __init__(self, name, type, price, power_mod):
-        super().__init__(name, type, price)
+    def __init__(self, name, item_type_idx, price, power_mod):
+        super().__init__(name, item_type_idx, price)
         self._power_mod = power_mod
 
     def getPowerMod(self):

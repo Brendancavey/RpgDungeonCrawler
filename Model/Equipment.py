@@ -1,33 +1,39 @@
+import Model.ItemTypes as i_type
 class Equipment():
-    _equip_map = {"Armor" : "Armor",
-                  "Weapon" : "Weapon",
-                  "Accessory" : "Accessory"
+    _armor = i_type._item_types_map[3]
+    _weapon = i_type._item_types_map[2]
+    _accessory = i_type._item_types_map[4]
+
+    _equip_map = {_armor : "Armor",
+                  _weapon : "Weapon",
+                  _accessory : "Accessory"
                   }
+
     def __init__(self):
-        self._equips = {self._equip_map["Armor"]: None,
-                        self._equip_map["Weapon"]: None,
-                        self._equip_map["Accessory"]: None}
+        self._equips = {self._equip_map[self._armor]: None,
+                        self._equip_map[self._weapon]: None,
+                        self._equip_map[self._accessory]: None}
 
     def getEquipedItems(self):
         return self._equips
 
     def getArmor(self):
-        return self._equips[self._equip_map["Armor"]]
+        return self.equip[self._equip_map[self._armor]]
 
     def getWeapon(self):
-        return self._equips[self._equip_map["Weapon"]]
+        return self.equip[self._equip_map[self._weapon]]
 
     def getAccessory(self):
-        return self._equips[self._equip_map["Accessory"]]
+        return self.equip[self._equip_map[self._accessory]]
 
     def getNameArmor(self):
-        return self._equip_map["Armor"]
+        return self._equip_map[self._armor]
 
     def getNameWeapon(self):
-        return self._equip_map["Weapon"]
+        return self._equip_map[self._weapon]
 
     def getNameAccessory(self):
-        return self._equip_map["Accessory"]
+        return self._equip_map[self._accessory]
 
     def equip(self, item):
         self._equips[item.getItemType()] = item

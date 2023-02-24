@@ -16,8 +16,9 @@ battle1 = BattleSystem(player, enemy)
 #battle1.commenceBattle()
 #battle1.enemyAttacks()
 
-player_sword = Weapon("Sharp Sword", "Weapon", 10, 2)
-player_axe = Weapon("Sharp Axe", "Weapon", 12, 3)
+player_sword = Weapon("Sharp Sword", 2, 10, 2)
+player_axe = Weapon("Sharp Axe", 2, 12, 3)
+print(player_axe.getDescription())
 #player.modifyGold(20)
 chad.itemObtain(player_sword)
 chad.barter()
@@ -35,7 +36,7 @@ print(player.getEquippedItems())
 
 
 #player.inventory.inventoryEquip(player_axe)
-player_potion = Potion("Small Healing Potion", "Item", 5, 5)
+player_potion = Potion("Small Healing Potion", 1, 5, 5)
 player.itemObtain(player_potion)
 print(player.getInventory())
 

@@ -1,50 +1,43 @@
+import Model.InventoryMap as inv_map
 class Inventory():
-
-    _inventory_map = {"Gold" : "Money",
-                      "Item": "Supplies",
-                      "Weapon": "Weapons",
-                      "Armor": "Armor",
-                      "Accessory": "Accessories"
-                      }
-
     def __init__(self):
-        self._inventory = {self._inventory_map["Gold"]: 0,
-                           self._inventory_map["Item"]: {},
-                           self._inventory_map["Weapon"]: {},
-                           self._inventory_map["Armor"]: {},
-                           self._inventory_map["Accessory"]: {}
+        self._inventory = {inv_map._inventory_map[inv_map._gold]: 0,
+                           inv_map._inventory_map[inv_map._item]: {},
+                           inv_map._inventory_map[inv_map._weapon]: {},
+                           inv_map._inventory_map[inv_map._armor]: {},
+                           inv_map._inventory_map[inv_map._accessory]: {}
                            }
     def getInventory(self):
         return self._inventory
     def getGoldValue(self):
-        return self._inventory[self._inventory_map["Gold"]]
+        return self._inventory[inv_map._inventory_map[inv_map._gold]]
     def getItems(self):
-        return self._inventory[self._inventory_map["Item"]]
+        return self._inventory[inv_map._inventory_map[inv_map._item]]
     def getWeapons(self):
-        return self._inventory[self._inventory_map["Weapon"]]
+        return self._inventory[inv_map._inventory_map[inv_map._weapon]]
     def getArmor(self):
-        return self._inventory[self._inventory_map["Armor"]]
+        return self._inventory[inv_map._inventory_map[inv_map._armor]]
     def getAccessories(self):
-        return self._inventory[self._inventory_map["Accessory"]]
+        return self._inventory[inv_map._inventory_map[inv_map._accessory]]
     def getNameGold(self):
-        return self._inventory_map["Gold"]
+        return inv_map._inventory_map[inv_map._gold]
     def getNameItem(self):
-        return self._inventory_map["Item"]
+        return inv_map._inventory_map[inv_map._item]
     def getNameWeapon(self):
-        return self._inventory_map["Weapon"]
+        return inv_map._inventory_map[inv_map._weapon]
     def getNameArmor(self):
-        return self._inventory_map["Armor"]
+        return inv_map._inventory_map[inv_map._armor]
     def getNameAccessory(self):
-        return self._inventory_map["Accessory"]
+        return inv_map._inventory_map[inv_map._accessory]
 
     def modifyGold(self, value):
-        self._inventory[self._inventory_map["Gold"]] += value
+        self._inventory[inv_map._inventory_map[inv_map._gold]] += value
 
     def setGold(self, value):
-        self._inventory[self._inventory_map["Gold"]] = value
+        self._inventory[inv_map._inventory_map[inv_map._gold]] = value
 
     def inventoryAdd(self, item):
-        item_inventory_type = self._inventory_map[item.getItemType()]
+        item_inventory_type = inv_map._inventory_map[item.getItemType()]
         corresponding_inventory = self._inventory[item_inventory_type]
         if item not in corresponding_inventory:
             corresponding_inventory[item] = 1
@@ -57,7 +50,7 @@ class Inventory():
 
 
     def inventoryRemove(self, item):
-        item_inventory_type = self._inventory_map[item.getItemType()]
+        item_inventory_type = inv_map._inventory_map[item.getItemType()]
         corresponding_inventory = self._inventory[item_inventory_type]
         if item not in corresponding_inventory:
             return
@@ -68,7 +61,7 @@ class Inventory():
         self._inventory[item_inventory_type] = corresponding_inventory
 
     def itemInInventory(self, item):
-        item_inventory_type = self._inventory_map[item.getItemType()]
+        item_inventory_type = inv_map._inventory_map[item.getItemType()]
         corresponding_inventory = self._inventory[item_inventory_type]
         if item in corresponding_inventory:
             return True
