@@ -32,8 +32,11 @@ player.equip(player_sword)
 print(player.getPower())
 print(player.getInventory())
 print(player.getEquippedItems())
-
-
+player.modifyGold(5)
+player.itemRemove(player_axe)
+player.unequip(player_sword)
+print(player.getEquippedItems())
+print(player.getPower())
 
 #player.inventory.inventoryEquip(player_axe)
 player_potion = Potion("Small Healing Potion", 1, 5, 5)
