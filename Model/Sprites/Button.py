@@ -26,8 +26,10 @@ class Button(pygame.sprite.Sprite):
         pos = pygame.mouse.get_pos()
         if self.rect.collidepoint(pos):
             self.image.fill("aquamarine1")
+            return True
         else:
             self.image.fill(self.color)
+            return False
     def isClicked(self):
         pos = pygame.mouse.get_pos()
         if self.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1 and self.not_clicked:

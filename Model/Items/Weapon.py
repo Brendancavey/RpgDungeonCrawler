@@ -7,6 +7,7 @@ class Weapon(Item):
 
     def getPowerMod(self):
         return self._power_mod
+
     def getDescription(self):
         description = "Power: +" + str(self._power_mod)
         return super().getDescription() + "\n" + description

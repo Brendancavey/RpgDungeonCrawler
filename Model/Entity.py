@@ -1,5 +1,7 @@
 from Model.Inventory import Inventory
 from Model.Equipment import Equipment
+status_map = {"vulnerable" : 2, "critical buff" : 3}
+status_names = list(status_map.keys())
 class Entity():
     def __init__(self, name, hp, power):
         self._name = name
@@ -7,6 +9,9 @@ class Entity():
         self._power = power
         self._inventory = Inventory()
         self._equips = Equipment()
+        self.status_map = status_map
+        self.status_names = status_names
+        self.status = []
 
     def getName(self):
         return self._name
@@ -52,15 +57,15 @@ class Entity():
         self._inventory.inventoryAdd(removed_item) #add item back into inventory
         self.modifyPower(-removed_item.getPowerMod())  # modifying power to reflect removed item
 
-    def attack(self, entity):
+    def attack(self, entity, damage):
         if self.getHp() > 0:
             print(self.getName() + " attacks " + entity.getName())
-            entity.modifyHp(-self.getPower())
+            entity.modifyHp(-damage)
             if entity.isAlive():
                 print(entity.getName() + " has " + str(entity.getHp()) + " HP left.")
             else:
                 entity._checkForDeath()
-    def guard(self, entity):
+    def guard(self, entity, damage):
         print(self.getName() + " defends")
     def isAlive(self):
         return self.getHp() > 0
