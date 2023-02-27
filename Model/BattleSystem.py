@@ -1,16 +1,58 @@
+from Model.Sprites.Button import Button
+import pygame
 class BattleSystem():
-
-    def __init__(self, player, entity):
+    pygame.init()
+    blue = (50, 153, 213)
+    font = pygame.font.Font(None, 50)
+    def __init__(self, player, enemy, screen_width, screen_height):
+        # player
         self.player = player
-        self.entity = entity
         self.default_player_ap = 3
         self.player_ap = self.default_player_ap
-        self.enemy_attack_idx = 0
-        self.enemy_attack_pattern_map = {"attack": entity.attack, "guard": entity.guard}
 
+        # enemy
+        self.enemy = enemy
+        self.enemy_attack_pattern_map = {"attack": enemy.attack, "guard": enemy.guard}
+        self.enemy_attack_idx = 0
+
+        #buttons
+        self.button1 = Button(200, 50, screen_width//4, screen_height//1.5, "green")
+        self.button2 = Button(200, 50, screen_width // 1.5, screen_height // 1.5, "green")
+        self.button3 = Button(200, 50, screen_width // 4, screen_height // 2, "green")
+        self.button4 = Button(200, 50, screen_width // 1.5, screen_height // 2, "green")
+        self.buttons = [self.button1, self.button2, self.button3, self.button4]
+        self.button_group = pygame.sprite.Group()
+        for button in self.buttons:
+            self.button_group.add(button)
+
+        # screen and surface
+        self.screen = pygame.display.set_mode((screen_width, screen_height))
+        self.surface = pygame.Surface((screen_width, screen_height))
+        self.surface.fill(self.blue)
+            #text info
+        self.text_enemyHp = self.font.render(str(self.enemy.getName()) + " HP: " + str(self.enemy.getHp()), False, "black")
+        self.text_playerAp = self.font.render("AP: " + str(self.getPlayerAp()), False, "black")
+        self.text_playerHp = self.font.render(str(self.player.getName()) + " HP: " + str(self.player.getHp()), False, "black")
+
+    def update(self):
+        #update buttons
+        self.button_group.update()
+
+        #update screen
+        self.text_enemyHp = self.font.render(str(self.enemy.getName()) + " HP: " + str(self.enemy.getHp()), False, "black")
+        self.text_playerAp = self.font.render("AP: " + str(self.getPlayerAp()), False, "black")
+        self.text_playerHp = self.font.render(str(self.player.getName()) + " HP: " + str(self.player.getHp()), False,
+                                              "black")
+        self.button_group.draw(self.surface)
+        self.screen.blit(self.surface, (0, 0))
+        self.screen.blit(self.text_enemyHp, (250, 50))
+        self.screen.blit(self.text_playerAp, (500, 600))
+        self.screen.blit(self.text_playerHp, (200, 600))
+    def getPlayerAp(self):
+        return self.player_ap
     def playerAttacks(self):
-        if self.player_ap > 0:
-            self.player.attack(self.entity)
+        if self.getPlayerAp() > 0:
+            self.player.attack(self.enemy)
             self.player_ap -= 1
 
     def playerTurnEnd(self):
@@ -19,9 +61,9 @@ class BattleSystem():
         self.enemyAttacks()
 
     def enemyAttacks(self):
-        if self.enemy_attack_idx >= len(self.entity.getAttackPattern()) :
+        if self.enemy_attack_idx >= len(self.enemy.getAttackPattern()) :
             self.enemy_attack_idx = 0
-        enemy_next_move = self.enemy_attack_pattern_map[self.entity.getAttack(self.enemy_attack_idx)](self.player)
+        enemy_next_move = self.enemy_attack_pattern_map[self.enemy.getAttack(self.enemy_attack_idx)](self.player)
         enemy_next_move #perform enemy next move
         self.enemy_attack_idx += 1
         print("\n")#formatting
@@ -29,21 +71,31 @@ class BattleSystem():
     def getCurrentAP(self):
         return self.player_ap
     def commenceBattle(self):
-        player_actions = ("Attack", "Defend", "Escape")
-        while self.player.isAlive() and self.entity.isAlive() and self.player_ap > 0:
-            print("Enemy HP: " + str(self.entity.getHp()))
-            print("Current AP: " + str(self.player_ap))
-            player_action = input(player_actions)
-            if player_action == player_actions[0]:
-                self.playerAttacks()
-            elif player_action == player_actions[1]:
-                self.player.guard(self.entity)
-            elif player_action == player_actions[2]:
-                print("You ran away")
-                break
+        for button in self.button_group:
+            #player turn
+            if button.isClicked():
+                self.performAction(button)
+            #enemy turn
             if self.player_ap == 0:
                 self.playerTurnEnd()
-        if not self.entity.isAlive():
+        if not self.enemy.isAlive():
             print("You win!")
+    def performAction(self, button):
+        if button.action:
+            if button._id == 0:
+                print("perform action 0")
+                self.playerAttacks()
+            if button._id == 1:
+                print("perform action 1")
+                self.player.guard(self.enemy)
+            if button._id == 2:
+                print("perform action 2")
+                print("Do some skill")
+            if button._id == 3:
+                print("perform action 3")
+                print("Do some other skill")
+        else:
+            return
+        button.action = False
 
 

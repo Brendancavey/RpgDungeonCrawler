@@ -1,5 +1,6 @@
 import pygame
 import itertools
+
 class Button(pygame.sprite.Sprite):
     _id_iter = itertools.count()
     def __init__(self, width, height, pos_x, pos_y, color):
@@ -24,10 +25,9 @@ class Button(pygame.sprite.Sprite):
     def isHovered(self):
         pos = pygame.mouse.get_pos()
         if self.rect.collidepoint(pos):
-            # print("button " + str(self._id) + " is being touched")
-            self.image.fill("blue")
+            self.image.fill("aquamarine1")
         else:
-            self.image.fill("green")
+            self.image.fill(self.color)
     def isClicked(self):
         pos = pygame.mouse.get_pos()
         if self.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1 and self.not_clicked:
@@ -37,10 +37,5 @@ class Button(pygame.sprite.Sprite):
         if pygame.mouse.get_pressed()[0] == 0:
             self.not_clicked = True
         return self.action
-    def performAction(self, action):
-        if self.action:
-            print("perform action")
-        else:
-            return
-        self.action = False
+
 
