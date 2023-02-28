@@ -1,5 +1,6 @@
 from Model.Inventory import Inventory
 from Model.Equipment import Equipment
+from Model.Ability import Ability
 status_map = {"vulnerable" : 2, "critical buff" : 3}
 status_names = list(status_map.keys())
 class Entity():
@@ -11,18 +12,29 @@ class Entity():
         self._equips = Equipment()
         self.status_map = status_map
         self.status_names = status_names
-        self.status = []
+        self.status = set()
+        self.attk = Ability("Attack", "Normal", 1)
+        self.abilities = []
+        self.addAbility(self.attk)
 
+    def addDebuff(self, debuff):
+        self.status.add(debuff)
+    def addAbility(self, ability):
+        self.abilities.append(ability)
     def getName(self):
         return self._name
     def getHp(self):
-        return self._hp
+        return int(self._hp)
     def getPower(self):
         return self._power
+    def getAbilities(self):
+        return self.abilities
     def getGoldValue(self):
         return self._inventory.getGoldValue()
     def getInventory(self):
         return self._inventory.getInventory()
+    def getItems(self):
+        return self._inventory.getItems()
     def getEquippedItems(self):
         return self._equips.getEquipedItems()
     def modifyHp(self, value):
@@ -37,10 +49,11 @@ class Entity():
         self._power = value
     def setGold(self, value):
         self._inventory.setGold(value)
+
     def itemObtain(self, item):
         self._inventory.inventoryAdd(item)
     def itemUse(self, item):
-        pass
+        self.modifyHp(self._inventory.inventoryUse(item))
     def itemRemove(self, item):
         self._inventory.inventoryRemove(item)
     def equip(self, item):

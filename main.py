@@ -7,6 +7,7 @@ from Model.BattleSystem import BattleSystem
 
 player = Player("Player", 10, 7)
 enemy = Enemy("Enemy", 100, 3)
+
 #print(enemy.getHp())
 chad = NPC("Chad", 10, 2)
 battle1 = BattleSystem(player, enemy)

@@ -45,7 +45,10 @@ class Inventory():
             corresponding_inventory[item] += 1
         self._inventory[item_inventory_type] = corresponding_inventory
     def inventoryUse(self, item):
-        pass
+        if self.itemInInventory(item):
+            self.inventoryRemove(item)
+            return item.getRecoveryAmt()
+        return 0
         #if self.itemInInventory(item):
 
 
