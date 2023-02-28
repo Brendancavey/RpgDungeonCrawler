@@ -1,6 +1,6 @@
-from Model.Inventory import Inventory
-from Model.Equipment import Equipment
-from Model.Ability import Ability
+from Model.Inventory.Inventory import Inventory
+from Model.Inventory.Equipment import Equipment
+from Model.BattleSystem.Ability import Ability
 status_map = {"vulnerable" : 2, "critical buff" : 3}
 status_names = list(status_map.keys())
 class Entity():

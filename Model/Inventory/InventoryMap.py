@@ -1,4 +1,4 @@
-import Model.ItemTypes as i
+import Model.Inventory.ItemTypes as i
 
 _gold = i._item_types_map[0]
 _item = i._item_types_map[1]

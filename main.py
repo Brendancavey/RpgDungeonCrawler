@@ -3,7 +3,7 @@ from Model.Entities.Enemy import Enemy
 from Model.Entities.NPC import NPC
 from Model.Items.Weapon import Weapon
 from Model.Items.Potion import Potion
-from Model.BattleSystem import BattleSystem
+from Model.BattleSystem.BattleSystem import BattleSystem
 
 player = Player("Player", 10, 7)
 enemy = Enemy("Enemy", 100, 3)

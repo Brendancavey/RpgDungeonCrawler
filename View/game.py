@@ -2,11 +2,11 @@ import pygame
 from sys import exit
 from Model.Entities.Enemy import Enemy
 from Model.Entities.Player import Player
-from Model.BattleSystem import BattleSystem
+from Model.BattleSystem.BattleSystem import BattleSystem
 from Model.Items.Potion import Potion
-from Model.Ability import Ability
-from Model.Debuff import Debuff
-from Model.Sprites.Button import Button
+from Model.BattleSystem.Ability import Ability
+from Model.BattleSystem.Debuff import Debuff
+
 potion = Potion("Small Potion", 1,10, 100)
 player = Player("Player", 50, 10)
 enemy = Enemy("Sephiroth", 100, 25)

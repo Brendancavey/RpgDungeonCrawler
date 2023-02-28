@@ -1,4 +1,4 @@
-from Model.Item import Item
+from Model.Inventory.Item import Item
 
 class Weapon(Item):
     def __init__(self, name, item_type_idx, price, power_mod):

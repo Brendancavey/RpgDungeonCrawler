@@ -1,6 +1,6 @@
 import itertools
-import Model.ItemTypes as i_type
-import Model.InventoryMap as inv_map
+import Model.Inventory.ItemTypes as i_type
+import Model.Inventory.InventoryMap as inv_map
 class Item():
     _id_iter = itertools.count()
 

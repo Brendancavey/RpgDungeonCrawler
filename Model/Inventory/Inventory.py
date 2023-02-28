@@ -1,4 +1,4 @@
-import Model.InventoryMap as inv_map
+import Model.Inventory.InventoryMap as inv_map
 class Inventory():
     def __init__(self):
         self._inventory = {inv_map._inventory_map[inv_map._gold]: 0,
