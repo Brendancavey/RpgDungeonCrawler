@@ -17,10 +17,11 @@ class Ability():
     def getDescription(self, power):
         self.description = "Deal " + str(int(power)) + " damage"
         if self.debuff:
-            self.description += ". Inflict " + self.debuff
+            self.description += ". Inflict " + self.debuff.getName()
         return self.description
     def inflictDebuff(self, enemy):
         if self.debuff:
+            self.debuff.applyEffect(enemy)
             enemy.addDebuff(self.debuff)
     def useAbility(self, enemy):
         print("Used ability " + self.getName())

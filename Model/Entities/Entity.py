@@ -1,18 +1,22 @@
 from Model.Inventory.Inventory import Inventory
 from Model.Inventory.Equipment import Equipment
 from Model.BattleSystem.Ability import Ability
-status_map = {"vulnerable" : 2, "critical buff" : 3}
-status_names = list(status_map.keys())
+import Model.BattleSystem.EffectTypes as e
 class Entity():
     def __init__(self, name, hp, power):
+        #attributes
         self._name = name
         self._hp = hp
         self._power = power
+        #inventory
         self._inventory = Inventory()
         self._equips = Equipment()
-        self.status_map = status_map
-        self.status_names = status_names
+        #debuffs
         self.status = set()
+        self.dot_damage = []
+        self.weaken_attackPwr = []
+        self.take_more_damage = []
+        #abilities
         self.attk = Ability("Attack", "Normal", 1)
         self.abilities = []
         self.addAbility(self.attk)
@@ -69,11 +73,12 @@ class Entity():
         removed_item = self._equips.equipRemove(item)
         self._inventory.inventoryAdd(removed_item) #add item back into inventory
         self.modifyPower(-removed_item.getPowerMod())  # modifying power to reflect removed item
-
+    def takeDamage(self, value):
+        self.modifyHp(-value)
     def attack(self, entity, damage):
         if self.getHp() > 0:
             print(self.getName() + " attacks " + entity.getName())
-            entity.modifyHp(-damage)
+            entity.takeDamage(damage)
             if entity.isAlive():
                 print(entity.getName() + " has " + str(entity.getHp()) + " HP left.")
             else:
