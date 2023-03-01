@@ -1,7 +1,8 @@
 from Model.Inventory.Inventory import Inventory
 from Model.Inventory.Equipment import Equipment
-from Model.BattleSystem.Ability import Ability
-import Model.BattleSystem.EffectTypes as e
+from Model.BattleSystem.Ability.Ability import Ability
+
+
 class Entity():
     def __init__(self, name, hp, power):
         #attributes
@@ -75,9 +76,9 @@ class Entity():
         self.modifyPower(-removed_item.getPowerMod())  # modifying power to reflect removed item
     def takeDamage(self, value):
         self.modifyHp(-value)
-    def attack(self, entity, damage):
+    def attack(self, entity, ability, damage):
         if self.getHp() > 0:
-            print(self.getName() + " attacks " + entity.getName())
+            print(self.getName() + " uses " + str(ability) + " on " + entity.getName())
             entity.takeDamage(damage)
             if entity.isAlive():
                 print(entity.getName() + " has " + str(entity.getHp()) + " HP left.")

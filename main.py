@@ -10,7 +10,7 @@ enemy = Enemy("Enemy", 100, 3)
 
 #print(enemy.getHp())
 chad = NPC("Chad", 10, 2)
-battle1 = BattleSystem(player, enemy)
+#battle1 = BattleSystem(player, enemy)
 #battle1.playerAttacks()
 #battle1.playerAttacks()
 #print(enemy.getHp())

@@ -14,7 +14,6 @@ class BattleSystem():
 
         # enemy
         self.enemy = enemy
-        self.enemy_attack_pattern_map = {"attack": enemy.attack, "guard": enemy.guard}
         self.enemy_attack_idx = 0
 
         #buttons
@@ -36,13 +35,21 @@ class BattleSystem():
             #text info
         self.text_enemyHp = self.font.render(str(self.enemy.getName()) + " HP: " + str(self.enemy.getHp()), False, "black")
         self.text_enemy_intent = self.font.render(
-            self.enemy.getAttack(self.enemy_attack_idx) + ": " + str(self.damageToInflict(self.enemy, self.player)),
+            str(self.enemy.getAttack(self.enemy_attack_idx)) + ": " + str(self.damageToInflict(self.enemy, self.player)),
             False, "red")
         self.text_playerAp = self.font.render("AP: " + str(self.getPlayerAp()), False, "black")
         self.text_playerHp = self.font.render(str(self.player.getName()) + " HP: " + str(self.player.getHp()), False, "black")
         self.text_interface = self.font.render(str(self.damageToInflict(self.player, self.enemy)), False, "green")
 
     def update(self):
+        #update enemy info
+        if self.enemy_attack_idx >= len(self.enemy.getAttackPattern()) :
+            self.enemy_attack_idx = 0
+        self.enemy_next_move = self.enemy.getAttack(self.enemy_attack_idx)
+
+        enemy_mods = self.enemy_next_move.getModifiers()
+        enemy_damage = self.damageToInflict(self.enemy, self.player, enemy_mods[0], enemy_mods[1])
+
         #update buttons
         self.button_group.update()
 
@@ -53,10 +60,7 @@ class BattleSystem():
         self.text_button3 = self.font2.render(self.button3.action_name.getName(), False, "black")
         self.text_button4 = self.font2.render(self.button4.action_name.getName(), False, "black")
         self.text_enemyHp = self.font.render(str(self.enemy.getName()) + " HP: " + str(self.enemy.getHp()), False, "black")
-        if self.enemy_attack_idx < len(self.enemy.getAttackPattern()):
-            self.text_enemy_intent = self.font.render(self.enemy.getAttack(self.enemy_attack_idx) + ": " + str(self.damageToInflict(self.enemy, self.player)), False, "red")
-        else:
-            self.text_enemy_intent = self.font.render(self.enemy.getAttack(0) + ": " + str(self.damageToInflict(self.enemy, self.player)), False, "red")
+        self.text_enemy_intent = self.font.render(str(self.enemy_next_move) + (": " + str(enemy_damage) if enemy_damage > 0 else ""), False, "red")
         self.text_playerAp = self.font.render("AP: " + str(self.getPlayerAp()), False, "black")
         self.text_playerHp = self.font.render(str(self.player.getName()) + " HP: " + str(self.player.getHp()), False,
                                               "black")
@@ -82,11 +86,11 @@ class BattleSystem():
         self.screen.blit(self.text_enemy_intent, (250, 100))
         self.screen.blit(self.text_playerAp, (500, 600))
         self.screen.blit(self.text_playerHp, (200, 600))
-        self.screen.blit(self.text_interface, (200, 650))
-        self.screen.blit(self.text_button1, (self.width // 4 - 50, self.height // 1.5 - 15))
-        self.screen.blit(self.text_button2, (self.width // 1.5 - 50, self.height // 1.5 - 15))
-        self.screen.blit(self.text_button3, (self.width // 4 - 50, self.height // 2 - 15))
-        self.screen.blit(self.text_button4, (self.width // 1.5 - 50, self.height // 2 - 15))
+        self.screen.blit(self.text_interface, (100, 650))
+        self.screen.blit(self.text_button1, (self.width // 4 - 80, self.height // 1.5 - 15))
+        self.screen.blit(self.text_button2, (self.width // 1.5 - 80, self.height // 1.5 - 15))
+        self.screen.blit(self.text_button3, (self.width // 4 - 80, self.height // 2 - 15))
+        self.screen.blit(self.text_button4, (self.width // 1.5 - 80, self.height // 2 - 15))
 
     def damageToInflict(self, attacker, target, element = None, attack_mod = None):
         if attack_mod:
@@ -98,21 +102,24 @@ class BattleSystem():
         #if target.isWeak(element):
             #damage = damage * 2
         for mod in target.take_more_damage:
-            damage *= mod
+            damage *= mod[1]
         for mod in attacker.weaken_attackPwr:
-            damage -= round(damage * mod)
-        return damage
+            damage -= round(damage * mod[1])
+        return int(round(damage))
     def getPlayerAp(self):
         return self.player_ap
-    def playerAttacks(self, ability_mod):
+    def playerAttacks(self, ability):
         if self.getPlayerAp() > 0:
-            self.player.attack(self.enemy, self.damageToInflict(self.player, self.enemy, ability_mod[0], ability_mod[1]))
+            self.player.attack(self.enemy, ability, self.damageToInflict(self.player, self.enemy, ability.getElement(), ability.getDamageMod()))
+            if ability.hasDebuff():
+                ability.inflictDebuff(self.enemy)
             self.player_ap -= 1
 
     def playerTurnEnd(self):
         #decrement player debuffs
         for dot in self.player.dot_damage:
-            self.player.takeDamage(dot)
+            print(self.player.getName() + " suffers " + str(dot[1]) + " damage from " + str(dot[0]))
+            self.player.takeDamage(dot[1])
         for debuff in self.player.status.copy():
             debuff.counterDecrement()
             debuff.checkForEffectRemoval(self.player)
@@ -126,13 +133,18 @@ class BattleSystem():
         #enemyAttacks
         if self.enemy_attack_idx >= len(self.enemy.getAttackPattern()) :
             self.enemy_attack_idx = 0
-        enemy_next_move = self.enemy_attack_pattern_map[self.enemy.getAttack(self.enemy_attack_idx)](self.player, self.damageToInflict(self.enemy, self.player))
-        enemy_next_move #perform enemy next move
+
+        enemy_next_move = self.enemy.getAttack(self.enemy_attack_idx)
+        enemy_attack_mods = self.enemy.getAttack(self.enemy_attack_idx).getModifiers()#(self.player, self.damageToInflict(self.enemy, self.player))
+
+        self.enemy.attack(self.player, enemy_next_move, self.damageToInflict(self.enemy, self.player, enemy_attack_mods[0], enemy_attack_mods[1]))
+        enemy_next_move.inflictDebuff(self.player)
 
         #enemy turn end
         self.enemy_attack_idx += 1
         for dot in self.enemy.dot_damage:
-            self.enemy.takeDamage(dot)
+            print(self.enemy.getName() + " suffers " + str(dot[1]) + " damage from " + str(dot[0]))
+            self.enemy.takeDamage(dot[1])
         for debuff in self.enemy.status.copy():
             debuff.counterDecrement()
             debuff.checkForEffectRemoval(self.enemy)
@@ -148,26 +160,18 @@ class BattleSystem():
                 print(self.enemy.status)
                 print(self.enemy.take_more_damage)
                 print(self.enemy.weaken_attackPwr)
+                print(self.enemy.dot_damage)
             #enemy turn
             if self.player_ap == 0:
                 self.playerTurnEnd()
-        if not self.enemy.isAlive():
-            print("You win!")
+        #if not self.enemy.isAlive():
+           # print("You win!")
 
     def performAction(self, button):
         if button.action:
-            ability_mod = button.action_name.useAbility(self.enemy)
-            self.playerAttacks(ability_mod)
-            """if button._id == 0:
-                print("perform action 0 : attack")
-                self.playerAttacks(ability_mod)
-            if button._id == 1:
-                #print("perform action 1 : inflict vulnerable")
-                #self.enemy.status.add("vulnerable")
-                self.playerAttacks(ability_mod)
-            if button._id == 2:
-                #print("perform action 2: buff self critical")
-                self.playerAttacks(ability_mod)
+            ability = button.action_name
+            self.playerAttacks(ability)
+            """
             #use potion action
             if button._id == 3:
                 if self.player_items:
@@ -176,10 +180,7 @@ class BattleSystem():
                     self.player.itemUse(self.player_items[0])
                     self.player_items = list(self.player.getItems())
                 else:
-                    print("inventory empty")
-            if button._id == 4:
-                self.playerAttacks(ability_mod)"""
-            button.action_name.inflictDebuff(self.enemy)
+                    print("inventory empty")"""
 
 
         else:

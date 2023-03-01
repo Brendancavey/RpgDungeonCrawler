@@ -1,15 +1,17 @@
 import pygame
+import random
+import Model.Entities.Enemy.EnemyList as e
 from sys import exit
-from Model.Entities.Enemy import Enemy
+from Model.Entities.Enemy.Enemy import Enemy
 from Model.Entities.Player import Player
 from Model.BattleSystem.BattleSystem import BattleSystem
 from Model.Items.Potion import Potion
-from Model.BattleSystem.Ability import Ability
-from Model.BattleSystem.Debuff import Debuff
+from Model.BattleSystem.Ability.Ability import Ability
+from Model.BattleSystem.Debuff.Debuff import Debuff
 
 potion = Potion("Small Potion", 1,10, 100)
 player = Player("Player", 50, 5)
-enemy = Enemy("Sephiroth", 100, 5)
+#enemy = Enemy("Sephiroth", 100, 5)
 debuff1 = Debuff("Vulnerable", 2, 1, 2)
 debuff2 = Debuff("Weakened", 2, 2, .25)
 debuff3 = Debuff("Bleed", 2, 0, 2)
@@ -41,8 +43,7 @@ test_surface = pygame.Surface(resolution)
 test_surface.fill(blue)
 #background = pygame.image.load('graphics/background.png').convert()
 
-battle = BattleSystem(player, enemy, width, height)
-
+battle = BattleSystem(player, e.enemy_list[random.randint(0,2)], width, height)
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -51,6 +52,10 @@ while True:
 
     battle.commenceBattle()
     battle.update()
+    if not battle.enemy.isAlive():
+        print("you win!")
+        pygame.quit()
+        exit()
     pygame.display.update()
     #screen.blit(background, (0,0))
 

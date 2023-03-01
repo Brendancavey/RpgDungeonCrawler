@@ -14,6 +14,8 @@ class Ability():
         return self.element
     def getDamageMod(self):
         return self.damage_mod
+    def getModifiers(self):
+        return [self.getElement(), self.getDamageMod()]
     def getDescription(self, power):
         self.description = "Deal " + str(int(power)) + " damage"
         if self.debuff:
@@ -23,7 +25,6 @@ class Ability():
         if self.debuff:
             self.debuff.applyEffect(enemy)
             enemy.addDebuff(self.debuff)
-    def useAbility(self, enemy):
-        print("Used ability " + self.getName())
-        #self.inflictDebuff(self.debuff, enemy)
-        return [self.getElement(), self.getDamageMod()]
+    def hasDebuff(self):
+        return self.debuff != None
+
