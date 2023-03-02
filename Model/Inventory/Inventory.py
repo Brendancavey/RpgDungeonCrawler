@@ -1,4 +1,4 @@
-import Model.InventoryMap as inv_map
+import Model.Inventory.InventoryMap as inv_map
 class Inventory():
     def __init__(self):
         self._inventory = {inv_map._inventory_map[inv_map._gold]: 0,
@@ -45,7 +45,10 @@ class Inventory():
             corresponding_inventory[item] += 1
         self._inventory[item_inventory_type] = corresponding_inventory
     def inventoryUse(self, item):
-        pass
+        if self.itemInInventory(item):
+            self.inventoryRemove(item)
+            return item.getRecoveryAmt()
+        return 0
         #if self.itemInInventory(item):
 
 

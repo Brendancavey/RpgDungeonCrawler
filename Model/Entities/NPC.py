@@ -1,4 +1,4 @@
-from Model.Entity import Entity
+from Model.Entities.Entity import Entity
 
 class NPC(Entity):
     def __init__(self, name, hp, power):

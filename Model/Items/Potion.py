@@ -1,4 +1,4 @@
-from Model.Item import Item
+from Model.Inventory.Item import Item
 
 class Potion(Item):
     def __init__(self, name, type, price, recovery_amt):

@@ -1,4 +1,4 @@
-import Model.ItemTypes as i_type
+import Model.Inventory.ItemTypes as i_type
 class Equipment():
     _armor = i_type._item_types_map[3]
     _weapon = i_type._item_types_map[2]
