@@ -11,6 +11,8 @@ class Item():
         self._id = next(self._id_iter)
     def __repr__(self):
         return self._name
+    def getName(self):
+        return self._name
     def getItemType(self):
         return self._type
     def getId(self):

@@ -8,8 +8,10 @@ from Model.BattleSystem.BattleSystem import BattleSystem
 from Model.Items.Potion import Potion
 from Model.BattleSystem.Ability.Ability import Ability
 from Model.BattleSystem.Debuff.Debuff import Debuff
+from Controller.setting import *
 
-potion = Potion("Small Potion", 1,10, 100)
+potion = Potion("Large Potion", 1,10, 100)
+potion2 = Potion("Small Potion", 1, 2, 25)
 player = Player("Player", 50, 5)
 #enemy = Enemy("Sephiroth", 100, 5)
 debuff1 = Debuff("Vulnerable", 2, 1, 2)
@@ -22,10 +24,12 @@ player.addAbility(ability1)
 player.addAbility(ability2)
 player.addAbility(ability3)
 player.itemObtain(potion)
+player.itemObtain(potion2)
+player.itemObtain(potion2)
 print(player.getItems())
 print(player.getAbilities())
 pygame.init()
-resolution = (720, 720)
+resolution = (screen_width, screen_height)
 
 clock = pygame.time.Clock()
 framerate = 60
@@ -43,7 +47,7 @@ test_surface = pygame.Surface(resolution)
 test_surface.fill(blue)
 #background = pygame.image.load('graphics/background.png').convert()
 
-battle = BattleSystem(player, e.enemy_list[random.randint(0,2)], width, height)
+battle = BattleSystem(player, e.enemy_list[random.randint(0,len(e.enemy_list)-1)], width, height)
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

@@ -10,7 +10,8 @@ class BattleSystem():
         self.player = player
         self.default_player_ap = 3
         self.player_ap = self.default_player_ap
-        self.player_items = list(self.player.getItems())
+        self.player_items_list = list(self.player.getItems())
+        self.player_items_map = self.player.getItems()
 
         # enemy
         self.enemy = enemy
@@ -21,7 +22,8 @@ class BattleSystem():
         self.button2 = Button(200, 50, screen_width // 1.5, screen_height // 1.5, "green", self.player.abilities[1])
         self.button3 = Button(200, 50, screen_width // 4, screen_height // 2, "green", self.player.abilities[2])
         self.button4 = Button(200, 50, screen_width // 1.5, screen_height // 2, "green", self.player.abilities[3])
-        self.buttons = [self.button1, self.button2, self.button3, self.button4]
+        self.button5 = Button(200, 50, screen_width // 1.1, screen_height // 1.1, "green", self.player.abilities[3])
+        self.buttons = [self.button1, self.button2, self.button3, self.button4, self.button5]
         self.button_group = pygame.sprite.Group()
         for button in self.buttons:
             self.button_group.add(button)
@@ -46,9 +48,11 @@ class BattleSystem():
         if self.enemy_attack_idx >= len(self.enemy.getAttackPattern()) :
             self.enemy_attack_idx = 0
         self.enemy_next_move = self.enemy.getAttack(self.enemy_attack_idx)
-
         enemy_mods = self.enemy_next_move.getModifiers()
         enemy_damage = self.damageToInflict(self.enemy, self.player, enemy_mods[0], enemy_mods[1])
+
+        #update player info
+        self.player_items_text = ", ".join((item.getName() + ": " + str(self.player_items_map[item]) for item in self.player_items_map))
 
         #update buttons
         self.button_group.update()
@@ -59,6 +63,7 @@ class BattleSystem():
         self.text_button2 = self.font2.render(self.button2.action_name.getName(), False, "black")
         self.text_button3 = self.font2.render(self.button3.action_name.getName(), False, "black")
         self.text_button4 = self.font2.render(self.button4.action_name.getName(), False, "black")
+        self.text_button5 = self.font2.render("Items", False, "black")
         self.text_enemyHp = self.font.render(str(self.enemy.getName()) + " HP: " + str(self.enemy.getHp()), False, "black")
         self.text_enemy_intent = self.font.render(str(self.enemy_next_move) + (": " + str(enemy_damage) if enemy_damage > 0 else ""), False, "red")
         self.text_playerAp = self.font.render("AP: " + str(self.getPlayerAp()), False, "black")
@@ -75,6 +80,8 @@ class BattleSystem():
             self.text_interface = self.font.render(self.button3.action_name.getDescription(self.damageToInflict(self.player, self.enemy, self.button3.action_name.getElement(), self.button3.action_name.getDamageMod())), False, "green")
         elif self.button4.isHovered():
             self.text_interface = self.font.render(self.button4.action_name.getDescription(self.damageToInflict(self.player, self.enemy, self.button4.action_name.getElement(), self.button4.action_name.getDamageMod())), False, "green")
+        elif self.button5.isHovered():
+            self.text_interface = self.font.render((self.player_items_text) if self.player_items_list else "Inventory is empty", False, "green")
         else:
             self.text_interface = self.font.render(str(self.damageToInflict(self.player, self.enemy)), False,
                                                    self.blue)
@@ -91,6 +98,7 @@ class BattleSystem():
         self.screen.blit(self.text_button2, (self.width // 1.5 - 80, self.height // 1.5 - 15))
         self.screen.blit(self.text_button3, (self.width // 4 - 80, self.height // 2 - 15))
         self.screen.blit(self.text_button4, (self.width // 1.5 - 80, self.height // 2 - 15))
+        self.screen.blit(self.text_button5, (self.width // 1.1 -80, self.height // 1.1 - 15))
 
     def damageToInflict(self, attacker, target, element = None, attack_mod = None):
         if attack_mod:
@@ -169,18 +177,19 @@ class BattleSystem():
 
     def performAction(self, button):
         if button.action:
-            ability = button.action_name
-            self.playerAttacks(ability)
-            """
-            #use potion action
-            if button._id == 3:
-                if self.player_items:
-                    print("perform action 3 : recover")
-                    print(self.player_items)
-                    self.player.itemUse(self.player_items[0])
-                    self.player_items = list(self.player.getItems())
+            # use potion action
+            if button._id == 4:
+                if self.player_items_list:
+                    print(self.player_items_list)
+                    self.player.itemUse(self.player_items_list[0])
+                    self.player_items_list = list(self.player.getItems())
                 else:
-                    print("inventory empty")"""
+                    print("inventory empty")
+            else:
+                ability = button.action_name
+                self.playerAttacks(ability)
+
+
 
 
         else:
