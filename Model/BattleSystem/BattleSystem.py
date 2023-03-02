@@ -64,10 +64,10 @@ class BattleSystem():
         self.text_button3 = self.font2.render(self.button3.action_name.getName(), False, "black")
         self.text_button4 = self.font2.render(self.button4.action_name.getName(), False, "black")
         self.text_button5 = self.font2.render("Items", False, "black")
-        self.text_enemyHp = self.font.render(str(self.enemy.getName()) + " HP: " + str(self.enemy.getHp()), False, "black")
+        self.text_enemyHp = self.font.render(str(self.enemy.getName()) + " HP: " + str(self.enemy.getHp()) + "/" + str(self.enemy.getMaxHp()), False, "black")
         self.text_enemy_intent = self.font.render(str(self.enemy_next_move) + (": " + str(enemy_damage) if enemy_damage > 0 else ""), False, "red")
         self.text_playerAp = self.font.render("AP: " + str(self.getPlayerAp()), False, "black")
-        self.text_playerHp = self.font.render(str(self.player.getName()) + " HP: " + str(self.player.getHp()), False,
+        self.text_playerHp = self.font.render(str(self.player.getName()) + " HP: " + str(self.player.getHp()) + "/" + str(self.player.getMaxHp()), False,
                                               "black")
 
             #text interface
@@ -180,9 +180,12 @@ class BattleSystem():
             # use potion action
             if button._id == 4:
                 if self.player_items_list:
-                    print(self.player_items_list)
-                    self.player.itemUse(self.player_items_list[0])
-                    self.player_items_list = list(self.player.getItems())
+                    if self.player.isFullHp():
+                        print(self.player.getName() + " is already at full HP!")
+                    else:
+                        print(self.player_items_list)
+                        self.player.itemUse(self.player_items_list[0])
+                        self.player_items_list = list(self.player.getItems())
                 else:
                     print("inventory empty")
             else:

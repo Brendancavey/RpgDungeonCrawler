@@ -7,6 +7,7 @@ class Entity():
     def __init__(self, name, hp, power):
         #attributes
         self._name = name
+        self._maxHp = hp
         self._hp = hp
         self._power = power
         #inventory
@@ -30,6 +31,8 @@ class Entity():
         return self._name
     def getHp(self):
         return int(self._hp)
+    def getMaxHp(self):
+        return int(self._maxHp)
     def getPower(self):
         return self._power
     def getAbilities(self):
@@ -44,6 +47,8 @@ class Entity():
         return self._equips.getEquipedItems()
     def modifyHp(self, value):
         self._hp += value
+        if self._hp > self._maxHp:
+            self.setHp(self._maxHp)
     def modifyPower(self, value):
         self._power += value
     def modifyGold(self, value):
@@ -88,6 +93,8 @@ class Entity():
         print(self.getName() + " defends")
     def isAlive(self):
         return self.getHp() > 0
+    def isFullHp(self):
+        return self._hp == self._maxHp
     def _checkForDeath(self):
         if self.getHp() <= 0:
             self.setHp(0)
