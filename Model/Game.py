@@ -1,7 +1,7 @@
 from Model.Overworld.Overworld import Overworld
 class Game():
     def __init__(self, screen):
-        self.max_location = 2
+        self.max_location = 5
         self.screen = screen
         self.overworld = Overworld(0, self.max_location, self.screen)
 

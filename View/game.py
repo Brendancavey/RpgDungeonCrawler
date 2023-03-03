@@ -32,6 +32,8 @@ pygame.init()
 resolution = (screen_width, screen_height)
 
 clock = pygame.time.Clock()
+
+
 framerate = 60
 green = (0, 255, 0)
 blue = (50, 153, 213)
@@ -54,6 +56,8 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
+    current_time = pygame.time.get_ticks()
+
     game.run()
     #battle.commenceBattle()
     #battle.update()
