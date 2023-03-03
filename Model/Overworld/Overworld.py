@@ -1,5 +1,6 @@
 import pygame
 from Controller.GameData import locations
+from Controller.Setting import screen_height, screen_width
 
 class Node(pygame.sprite.Sprite):
     def __init__(self, pos, status):
@@ -18,12 +19,20 @@ class PlayerIcon(pygame.sprite.Sprite):
         self.image.fill('blue')
         self.rect = self.image.get_rect(center = pos)
 class Overworld():
-    def __init__(self, start_location, max_location, surface):
+    def __init__(self, start_location, max_location, display_surface, create_location):
         #setup
-        self.display_surface = surface
+        self.display_surface = display_surface
         self.max_location = max_location
         self.current_location = start_location
         self.key_press_time = 0
+        self.create_location = create_location
+
+            # screen and surface
+        self.width = screen_width
+        self.height = screen_height
+        self.screen = pygame.display.set_mode((screen_width, screen_height))
+        self.surface = pygame.Surface((screen_width, screen_height))
+        self.surface.fill("black")
 
         #sprites
         self.setupNodes()
@@ -42,9 +51,9 @@ class Overworld():
     def drawPaths(self):
         points = [node['node_pos'] for idx, node in enumerate(locations.values()) if idx <= self.max_location]
         pygame.draw.lines(self.display_surface, 'white', False, points, 6 )
-        alt_point0 = locations[0]['node_pos']
-        alt_point2 = locations[2]['node_pos']
-        pygame.draw.lines(self.display_surface, 'white', False, (alt_point0, alt_point2), 6)
+        #alt_point0 = locations[0]['node_pos']
+        #alt_point2 = locations[2]['node_pos']
+        #pygame.draw.lines(self.display_surface, 'white', False, (alt_point0, alt_point2), 6)
 
     def timer(self):
         for event in pygame.event.get():
@@ -53,7 +62,9 @@ class Overworld():
         self.current_time = pygame.time.get_ticks()
     def input(self):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_RIGHT] and self.current_location < self.max_location and self.current_time - self.key_press_time > 175:
+        if keys[pygame.K_SPACE]:
+            self.create_location(self.current_location)
+        elif keys[pygame.K_RIGHT] and self.current_location < self.max_location and self.current_time - self.key_press_time > 175:
             self.key_press_time = self.current_time
             print('move right')
             self.current_location += 1
@@ -61,9 +72,11 @@ class Overworld():
             self.key_press_time = self.current_time
             print('move left')
             self.current_location -= 1
+
     def updatePlayerIconPos(self):
         self.player_icon.sprite.rect.center = self.nodes.sprites()[self.current_location].rect.center
     def run(self):
+        self.screen.blit(self.surface, (0, 0))
         self.timer()
         self.input()
         self.updatePlayerIconPos()

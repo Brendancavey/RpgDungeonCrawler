@@ -56,15 +56,10 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
-    current_time = pygame.time.get_ticks()
-
     game.run()
     #battle.commenceBattle()
     #battle.update()
-    if not battle.enemy.isAlive():
-        print("you win!")
-        pygame.quit()
-        exit()
+
     pygame.display.update()
     #screen.blit(background, (0,0))
 
