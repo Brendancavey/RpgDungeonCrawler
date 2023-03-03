@@ -8,8 +8,8 @@ from Model.BattleSystem.BattleSystem import BattleSystem
 from Model.Items.Potion import Potion
 from Model.BattleSystem.Ability.Ability import Ability
 from Model.BattleSystem.Debuff.Debuff import Debuff
-from Controller.setting import *
-
+from Controller.Setting import *
+from Model.Game import Game
 potion = Potion("Large Potion", 1,10, 100)
 potion2 = Potion("Small Potion", 1, 2, 25)
 player = Player("Player", 50, 5)
@@ -42,6 +42,7 @@ screen = pygame.display.set_mode(resolution)
 pygame.display.set_caption("Simple RPG")
 width = screen.get_width()
 height = screen.get_height()
+game = Game(screen)
 
 test_surface = pygame.Surface(resolution)
 test_surface.fill(blue)
@@ -53,9 +54,9 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
-
-    battle.commenceBattle()
-    battle.update()
+    game.run()
+    #battle.commenceBattle()
+    #battle.update()
     if not battle.enemy.isAlive():
         print("you win!")
         pygame.quit()
