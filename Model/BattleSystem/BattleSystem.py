@@ -172,9 +172,9 @@ class BattleSystem():
             #enemy turn
             if self.player_ap == 0:
                 self.playerTurnEnd()
-        #if not self.enemy.isAlive():
-           # print("You win!")
-
+    def interact(self):
+        self.commenceBattle()
+        self.update()
     def performAction(self, button):
         if button.action:
             # use potion action
@@ -191,10 +191,6 @@ class BattleSystem():
             else:
                 ability = button.action_name
                 self.playerAttacks(ability)
-
-
-
-
         else:
             return
         button.action = False
