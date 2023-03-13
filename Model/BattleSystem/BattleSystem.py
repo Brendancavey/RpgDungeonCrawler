@@ -18,11 +18,11 @@ class BattleSystem():
         self.enemy_attack_idx = 0
 
         #buttons
-        self.button1 = Button(200, 50, screen_width//4, screen_height//1.5, "green", self.player.abilities[0])
-        self.button2 = Button(200, 50, screen_width // 1.5, screen_height // 1.5, "green", self.player.abilities[1])
-        self.button3 = Button(200, 50, screen_width // 4, screen_height // 2, "green", self.player.abilities[2])
-        self.button4 = Button(200, 50, screen_width // 1.5, screen_height // 2, "green", self.player.abilities[3])
-        self.button5 = Button(200, 50, screen_width // 1.1, screen_height // 1.1, "green", self.player.abilities[3])
+        self.button1 = Button(200, 50, screen_width//4, screen_height//1.5, "green", self.player.abilities[0], 0)
+        self.button2 = Button(200, 50, screen_width // 1.5, screen_height // 1.5, "green", self.player.abilities[1], 1)
+        self.button3 = Button(200, 50, screen_width // 4, screen_height // 2, "green", self.player.abilities[2], 2)
+        self.button4 = Button(200, 50, screen_width // 1.5, screen_height // 2, "green", self.player.abilities[3], 3)
+        self.button5 = Button(200, 50, screen_width // 1.1, screen_height // 1.1, "green", self.player.abilities[3], 4)
         self.buttons = [self.button1, self.button2, self.button3, self.button4, self.button5]
         self.button_group = pygame.sprite.Group()
         for button in self.buttons:

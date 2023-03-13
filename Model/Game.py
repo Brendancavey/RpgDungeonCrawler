@@ -5,24 +5,26 @@ import pygame
 
 class Game():
     def __init__(self, screen):
-        self.max_location = 6
+        self.max_location = 2
+        self.visited_locations = []
         self.screen = screen
         self.enemies = pygame.sprite.Group()
         self.enemy_locations = enemy_locations
-        self.overworld = Overworld(0, self.max_location, self.screen, self.createLocation, self.enemies, self.enemy_locations)
+        self.overworld = Overworld(0, self.max_location, self.screen, self.createLocation, self.enemies, self.enemy_locations, self.visited_locations)
         self.screen_status = 'overworld'
         self.enemies = pygame.sprite.Group()
     def createLocation(self, current_location, remaining_enemies, enemy_locations):
         self.enemy_locations = enemy_locations
-        self.location = Location(current_location, self.screen, self.createOverworld, remaining_enemies, self.enemy_locations)
+        self.location = Location(current_location, self.screen, self.createOverworld, remaining_enemies, self.enemy_locations, self.visited_locations)
         self.screen_status = 'level'
 
-    def createOverworld(self, current_location, new_max_location, remaining_enemies, enemy_locations):
+    def createOverworld(self, current_location, new_max_location, remaining_enemies, enemy_locations, visited_locations):
         self.enemy_locations = enemy_locations
         self.enemies = remaining_enemies
-        if new_max_location > self.max_location:
-            self.max_location = new_max_location
-        self.overworld = Overworld(current_location, self.max_location, self.screen, self.createLocation, self.enemies, self.enemy_locations)
+        self.visited_locations = visited_locations
+        #if new_max_location > self.max_location:
+        #    self.max_location = new_max_location
+        self.overworld = Overworld(current_location, self.max_location, self.screen, self.createLocation, self.enemies, self.enemy_locations, self.visited_locations)
         self.screen_status = 'overworld'
 
     def run(self):

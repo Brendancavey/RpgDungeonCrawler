@@ -25,13 +25,13 @@ cur_height = start_height
 gap_width = 190
 gap_height = 200
 
-location_0 = {'node_pos' : (0,0), 'content' : None, 'unlock' : 1}
-location_1 = {'node_pos' : (0,0), 'content' : battle1, 'unlock' : 2}
-location_2 = {'node_pos' : (0,0), 'content' : None, 'unlock' : 3}
-location_3 = {'node_pos' : (0,0), 'content' : None, 'unlock' : 4}
-location_4 = {'node_pos' : (0,0), 'content' : battle2, 'unlock' : 5}
-location_5 = {'node_pos' : (0,0), 'content' : None, 'unlock' : 6}
-location_6 = {'node_pos' : (0,0), 'content' : battle4, 'unlock' : 6}
+location_0 = {'node_pos' : (110,400), 'content' : None, 'unlock' : [0, 1, 2]}
+location_1 = {'node_pos' : (110,200), 'content' : battle1, 'unlock' : [0, 1, 3]}
+location_2 = {'node_pos' : (300,400), 'content' : None, 'unlock' : [0, 2, 3, 4]}
+location_3 = {'node_pos' : (300,200), 'content' : None, 'unlock' : [1, 2, 3]}
+location_4 = {'node_pos' : (490,400), 'content' : battle2, 'unlock' : [2, 4, 5, 6]}
+location_5 = {'node_pos' : (490,200), 'content' : None, 'unlock' : [4, 5]}
+location_6 = {'node_pos' : (680,400), 'content' : battle4, 'unlock' : [4, 6]}
 
 locations = {
     0 : location_0,
@@ -42,14 +42,7 @@ locations = {
     5: location_5,
     6: location_6
 }
-#setup overworld node locations
-for x in range(0, len(locations)):
-    if x % 2 == 0:
-        locations[x]['node_pos'] = (cur_width, start_height)
-        cur_width += gap_width
-    else:
-        locations[x]['node_pos'] = (cur_width, start_height - gap_height)
 
 #enemy locations
-enemy_locations = [1, 4, 6]
+enemy_locations = [1, 4]
 
