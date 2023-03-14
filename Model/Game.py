@@ -6,13 +6,13 @@ import pygame
 
 class Game():
     def __init__(self, screen):
-        self.max_location = [0, 1, 2]
+        self.available_locations = [0, 1, 2]
         self.visited_locations = []
         self.screen = screen
         self.enemies = pygame.sprite.Group()
         self.enemy_locations = enemy_locations
         self.treasure_locations = treasure_locations
-        self.overworld = Overworld(0, self.max_location, self.screen, self.createLocation, self.enemies, self.enemy_locations,
+        self.overworld = Overworld(0, self.available_locations, self.screen, self.createLocation, self.enemies, self.enemy_locations,
                                    self.visited_locations, self.treasure_locations)
         self.screen_status = 'overworld'
         self.enemies = pygame.sprite.Group()
@@ -23,15 +23,15 @@ class Game():
                                  self.visited_locations, self.treasure_locations)
         self.screen_status = 'level'
 
-    def createOverworld(self, current_location, new_max_location, remaining_enemies, enemy_locations, visited_locations,
+    def createOverworld(self, current_location, new_available_locations, remaining_enemies, enemy_locations, visited_locations,
                         treasure_locations):
         self.enemy_locations = enemy_locations
         self.enemies = remaining_enemies
         self.visited_locations = visited_locations
         self.treasure_locations = treasure_locations
-        #if new_max_location > self.max_location:
-        #    self.max_location = new_max_location
-        self.overworld = Overworld(current_location, self.max_location, self.screen, self.createLocation, self.enemies,
+        #if new_available_locations > self.available_locations:
+        #    self.available_locations = new_available_locations
+        self.overworld = Overworld(current_location, self.available_locations, self.screen, self.createLocation, self.enemies,
                                    self.enemy_locations, self.visited_locations, self.treasure_locations)
         self.screen_status = 'overworld'
 

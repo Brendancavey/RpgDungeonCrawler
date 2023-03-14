@@ -27,11 +27,11 @@ class Icon(pygame.sprite.Sprite):
     def update(self):
         self.rect.center = self.pos
 class Overworld():
-    def __init__(self, start_location, max_location, display_surface, create_location, enemies, enemy_locations, visited,
-                treasure_locations):
+    def __init__(self, start_location, available_locations, display_surface, create_location, enemies, enemy_locations, visited,
+                 treasure_locations):
         #setup
         self.display_surface = display_surface
-        self.max_location = max_location
+        self.available_locations = available_locations
         self.current_location = start_location
         self.key_press_time = 0
         self.create_location = create_location
@@ -135,8 +135,7 @@ class Overworld():
     def input(self):
         keys = pygame.key.get_pressed()
         location_data = locations[self.current_location]
-        new_max_location = location_data['unlock']
-
+        new_available_locations = location_data['unlock']
 
 
         #collide with enemy
@@ -152,21 +151,21 @@ class Overworld():
 
         #player_icon movement
         if not self.moving:
-            if keys[pygame.K_UP] and self.getNextNode('up') in self.max_location:
+            if keys[pygame.K_UP] and self.getNextNode('up') in self.available_locations:
                 self.visited.append(self.current_location)
                 self.move_direction = self.getMovementData(self.getNextNode('up'))
-            elif keys[pygame.K_DOWN] and self.getNextNode('down') in self.max_location:
+            elif keys[pygame.K_DOWN] and self.getNextNode('down') in self.available_locations:
                 self.visited.append(self.current_location)
                 self.move_direction = self.getMovementData(self.getNextNode('down'))
-            elif keys[pygame.K_RIGHT] and self.getNextNode('right') in self.max_location:
+            elif keys[pygame.K_RIGHT] and self.getNextNode('right') in self.available_locations:
                 self.visited.append(self.current_location)
                 self.move_direction = self.getMovementData(self.getNextNode('right'))
-            elif(keys[pygame.K_LEFT]) and self.getNextNode('left') in self.max_location:
+            elif(keys[pygame.K_LEFT]) and self.getNextNode('left') in self.available_locations:
                 self.visited.append(self.current_location)
                 self.move_direction = self.getMovementData(self.getNextNode('left'))
 
         #update for new location
-        self.max_location = new_max_location
+        self.available_locations = new_available_locations
         self.setupEnemyIcons()
         self.setupTreasureIcons()
 
