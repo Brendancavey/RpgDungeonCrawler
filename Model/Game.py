@@ -6,7 +6,7 @@ import pygame
 
 class Game():
     def __init__(self, screen):
-        self.max_location = 2
+        self.max_location = [0, 1, 2]
         self.visited_locations = []
         self.screen = screen
         self.enemies = pygame.sprite.Group()

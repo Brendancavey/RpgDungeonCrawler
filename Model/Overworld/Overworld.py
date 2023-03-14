@@ -152,24 +152,18 @@ class Overworld():
 
         #player_icon movement
         if not self.moving:
-            if keys[pygame.K_UP] and self.current_location % 2 == 0 and self.current_location in self.max_location:
+            if keys[pygame.K_UP] and self.getNextNode('up') in self.max_location:
                 self.visited.append(self.current_location)
                 self.move_direction = self.getMovementData(self.getNextNode('up'))
-            elif keys[pygame.K_DOWN] and self.current_location != 0:
+            elif keys[pygame.K_DOWN] and self.getNextNode('down') in self.max_location:
                 self.visited.append(self.current_location)
-                if self.getNextNode('down') >= 0:
-                    self.move_direction = self.getMovementData(self.getNextNode('down'))
-                elif self.visited:
-                    self.move_direction = self.getMovementData(self.getPrevNode())
-            elif keys[pygame.K_RIGHT] and self.current_location in self.max_location:
+                self.move_direction = self.getMovementData(self.getNextNode('down'))
+            elif keys[pygame.K_RIGHT] and self.getNextNode('right') in self.max_location:
                 self.visited.append(self.current_location)
                 self.move_direction = self.getMovementData(self.getNextNode('right'))
-            elif(keys[pygame.K_LEFT]) and self.current_location > 0:
+            elif(keys[pygame.K_LEFT]) and self.getNextNode('left') in self.max_location:
                 self.visited.append(self.current_location)
-                if self.getNextNode('left') >= 0:
-                    self.move_direction = self.getMovementData(self.getNextNode('left'))
-                elif self.visited:
-                    self.move_direction = self.getMovementData(self.getPrevNode())
+                self.move_direction = self.getMovementData(self.getNextNode('left'))
 
         #update for new location
         self.max_location = new_max_location
