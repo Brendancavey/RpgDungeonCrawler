@@ -8,7 +8,7 @@ class Node(pygame.sprite.Sprite):
         self.image = pygame.Surface(node_size)
         self.status = status
         if self.status == 'available':
-            self.image.fill('green')
+            self.image.fill('grey')
         else:
             self.image.fill('black')
         self.rect = self.image.get_rect(center = pos)
@@ -27,15 +27,21 @@ class Icon(pygame.sprite.Sprite):
     def update(self):
         self.rect.center = self.pos
 class Overworld():
-    def __init__(self, start_location, max_location, display_surface, create_location, enemies, enemy_locations, visited):
+    def __init__(self, start_location, max_location, display_surface, create_location, enemies, enemy_locations, visited,
+                treasure_locations):
         #setup
         self.display_surface = display_surface
         self.max_location = max_location
         self.current_location = start_location
         self.key_press_time = 0
         self.create_location = create_location
+
+        #enemies
         self.enemy_icons = enemies
         self.enemy_locations = enemy_locations
+
+        #treasure
+        self.treasure_locations = treasure_locations
 
         #movement logic
         self.moving = False
@@ -45,7 +51,7 @@ class Overworld():
         #overworld map stack data structure
         self.visited = visited
 
-            # screen and surface
+        #screen and surface
         self.width = screen_width
         self.height = screen_height
         self.screen = pygame.display.set_mode((screen_width, screen_height))
@@ -56,6 +62,7 @@ class Overworld():
         self.setupNodes()
         self.setupPlayerIcon()
         self.setupEnemyIcons()
+        self.setupTreasureIcons()
     def getPrevNode(self):
         return self.visited.pop(-1)
     def getNextNode(self, direction):
@@ -93,6 +100,20 @@ class Overworld():
 
         #destroy sprite on collision
         pygame.sprite.spritecollide(self.player_icon.sprite, self.enemy_icons, True)
+    def setupTreasureIcons(self):
+        icon_sprites = []
+        self.treasure_icons = pygame.sprite.Group()
+        for location in self.treasure_locations:
+            if location in self.cur_adjaceny_list:
+                idx = self.cur_adjaceny_list.index(location)
+                icon = Icon(self.nodes.sprites()[idx].rect.center, 'yellow')
+                icon_sprites.append(icon)
+        for icon in icon_sprites:
+            self.treasure_icons.add(icon)
+
+        #destroy sprite on collision
+        pygame.sprite.spritecollide(self.player_icon.sprite, self.treasure_icons, True)
+
     def setupNodes(self):
         self.nodes = pygame.sprite.Group()
         for idx, node in enumerate(locations.values()):
@@ -121,8 +142,13 @@ class Overworld():
         #collide with enemy
         if pygame.sprite.spritecollide(self.player_icon.sprite, self.enemy_icons, True):
             self.enemy_locations.remove(self.current_location)
-            print(self.enemy_locations)
-            self.create_location(self.current_location, self.enemy_icons, self.enemy_locations)
+            self.create_location(self.current_location, self.enemy_icons, self.enemy_locations, self.treasure_locations)
+
+        #collide with treasure
+        if pygame.sprite.spritecollide(self.player_icon.sprite, self.treasure_icons, True):
+            self.treasure_locations.remove(self.current_location)
+            print("You received a treasure!")
+            self.create_location(self.current_location, self.enemy_icons, self.enemy_locations, self.treasure_locations)
 
         #player_icon movement
         if not self.moving:
@@ -144,9 +170,11 @@ class Overworld():
                     self.move_direction = self.getMovementData(self.getNextNode('left'))
                 elif self.visited:
                     self.move_direction = self.getMovementData(self.getPrevNode())
+
+        #update for new location
         self.max_location = new_max_location
         self.setupEnemyIcons()
-
+        self.setupTreasureIcons()
 
 
     def getMovementData(self, end_location):
@@ -188,3 +216,4 @@ class Overworld():
         self.nodes.draw(self.display_surface)
         self.enemy_icons.draw(self.display_surface)
         self.player_icon.draw(self.display_surface)
+        self.treasure_icons.draw(self.display_surface)

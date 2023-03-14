@@ -1,7 +1,9 @@
-from Controller.GameData import locations
-
+from Controller.GameData import locations, player
+import Model.BattleSystem.BattleSystem
+import Model.Inventory.Item
 class Location:
-    def __init__(self, current_location, surface, create_overworld, remaining_enemies, enemy_locations, visited_locations):
+    def __init__(self, current_location, surface, create_overworld, remaining_enemies, enemy_locations, visited_locations,
+                 treasure_locations):
         #location setup
         self.display_surface = surface
         self.current_location = current_location
@@ -19,14 +21,22 @@ class Location:
         #player overworld data
         self.visited_locations = visited_locations
 
+        #treasure overworld data
+        self.treasure_locations = treasure_locations
+
     def run(self):
-        if self.location_content:
+        if not self.location_content:
+            return
+        if isinstance(self.location_content, Model.BattleSystem.BattleSystem.BattleSystem):
             self.location_content.interact()
-        if not self.location_content.enemy.isAlive():
-            print("you win!")
-            self.create_overworld(self.current_location, self.new_max_location, self.remaining_enemies, self.enemy_locations, self.visited_locations)
-
-
-
-
-
+            if not self.location_content.enemy.isAlive():
+                print("you win!")
+                self.create_overworld(self.current_location, self.new_max_location, self.remaining_enemies,
+                                      self.enemy_locations,
+                                      self.visited_locations, self.treasure_locations)
+        else:
+            player.interact(self.location_content)
+            print(player.getInventory())
+            self.create_overworld(self.current_location, self.new_max_location, self.remaining_enemies,
+                                  self.enemy_locations,
+                                  self.visited_locations, self.treasure_locations)

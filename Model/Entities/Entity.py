@@ -1,3 +1,4 @@
+import Model.Inventory.Item
 from Model.Inventory.Inventory import Inventory
 from Model.Inventory.Equipment import Equipment
 from Model.BattleSystem.Ability.Ability import Ability
@@ -59,7 +60,13 @@ class Entity():
         self._power = value
     def setGold(self, value):
         self._inventory.setGold(value)
-
+    def interact(self, interactable):
+        if isinstance(interactable, Model.Inventory.Item.Item):
+            self.itemObtain(interactable)
+            print("received " + str(interactable))
+        elif isinstance(interactable, int):
+            self.modifyGold(interactable)
+            print("received " + str(interactable) + " gold!")
     def itemObtain(self, item):
         self._inventory.inventoryAdd(item)
     def itemUse(self, item):

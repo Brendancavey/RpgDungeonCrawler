@@ -52,6 +52,8 @@ class BattleSystem():
         enemy_damage = self.damageToInflict(self.enemy, self.player, enemy_mods[0], enemy_mods[1])
 
         #update player info
+        self.player_items_list = list(self.player.getItems())
+        self.player_items_map = self.player.getItems()
         self.player_items_text = ", ".join((item.getName() + ": " + str(self.player_items_map[item]) for item in self.player_items_map))
 
         #update buttons
