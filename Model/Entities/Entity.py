@@ -60,13 +60,16 @@ class Entity():
         self._power = value
     def setGold(self, value):
         self._inventory.setGold(value)
-    def interact(self, interactable):
+    def interact(self, interactable, display_surface = None):
         if isinstance(interactable, Model.Inventory.Item.Item):
             self.itemObtain(interactable)
             print("received " + str(interactable))
+            print(self.getInventory())
         elif isinstance(interactable, int):
             self.modifyGold(interactable)
             print("received " + str(interactable) + " gold!")
+        elif isinstance(interactable, Model.Entities.NPC.NPC):
+            interactable.chat(display_surface)
     def itemObtain(self, item):
         self._inventory.inventoryAdd(item)
     def itemUse(self, item):

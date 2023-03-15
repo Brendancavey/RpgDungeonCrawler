@@ -14,26 +14,30 @@ class Node(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center = pos)
         self.detection_zone = pygame.Rect(self.rect.centerx-(icon_speed/2),self.rect.centery-(icon_speed/2),icon_speed,icon_speed)
         self.pos = pos
+
     def getPos(self):
         return self.pos
 class Icon(pygame.sprite.Sprite):
-    def __init__(self, pos, color):
+    def __init__(self, pos, color, image = None):
         size = (20, 20)
         super().__init__()
         self.pos = pos
-        self.image = pygame.Surface(size)
-        self.image.fill(color)
+        if image == None:
+            self.image = pygame.Surface(size)
+            self.image.fill(color)
+        else:
+            self.image = image
         self.rect = self.image.get_rect(center = pos)
     def update(self):
         self.rect.center = self.pos
 class Overworld():
+    collide_with_npc = False
     def __init__(self, start_location, available_locations, display_surface, create_location, enemies, enemy_locations, visited,
-                 treasure_locations):
+                 treasure_locations, npc_locations):
         #setup
         self.display_surface = display_surface
         self.available_locations = available_locations
         self.current_location = start_location
-        self.key_press_time = 0
         self.create_location = create_location
 
         #enemies
@@ -42,6 +46,9 @@ class Overworld():
 
         #treasure
         self.treasure_locations = treasure_locations
+
+        #npc
+        self.npc_locations = npc_locations
 
         #movement logic
         self.moving = False
@@ -63,6 +70,7 @@ class Overworld():
         self.setupPlayerIcon()
         self.setupEnemyIcons()
         self.setupTreasureIcons()
+        self.setupNPCIcons()
     def getPrevNode(self):
         return self.visited.pop(-1)
     def getNextNode(self, direction):
@@ -85,7 +93,7 @@ class Overworld():
             if self.current_location == location:
                 idx_of_nodes = idx
         current_node = self.nodes.sprites()[idx_of_nodes]
-        icon_sprite = Icon(current_node.rect.center, 'blue')
+        icon_sprite = Icon(current_node.rect.center, 'blue', pygame.image.load('../View/Graphics/player.png').convert_alpha())
         self.player_icon.add(icon_sprite)
     def setupEnemyIcons(self):
         icon_sprites = []
@@ -93,7 +101,7 @@ class Overworld():
         for location in self.enemy_locations:
             if location in self.cur_adjaceny_list:
                 idx = self.cur_adjaceny_list.index(location)
-                icon = Icon(self.nodes.sprites()[idx].rect.center, 'red')
+                icon = Icon(self.nodes.sprites()[idx].rect.center, 'red', pygame.image.load('../View/Graphics/goblin.png').convert_alpha())
                 icon_sprites.append(icon)
         for icon in icon_sprites:
             self.enemy_icons.add(icon)
@@ -106,19 +114,33 @@ class Overworld():
         for location in self.treasure_locations:
             if location in self.cur_adjaceny_list:
                 idx = self.cur_adjaceny_list.index(location)
-                icon = Icon(self.nodes.sprites()[idx].rect.center, 'yellow')
+                icon = Icon(self.nodes.sprites()[idx].rect.center, 'yellow', pygame.image.load('../View/Graphics/chest.png').convert_alpha())
                 icon_sprites.append(icon)
         for icon in icon_sprites:
             self.treasure_icons.add(icon)
 
         #destroy sprite on collision
         pygame.sprite.spritecollide(self.player_icon.sprite, self.treasure_icons, True)
+    def setupNPCIcons(self):
+        icon_sprites = []
+        self.npc_icons = pygame.sprite.Group()
+        for location in self.npc_locations:
+            if location in self.cur_adjaceny_list:
+                idx = self.cur_adjaceny_list.index(location)
+                icon = Icon(self.nodes.sprites()[idx].rect.center, 'green', pygame.image.load('../View/Graphics/NPC1.png').convert_alpha())
+                icon_sprites.append(icon)
+        for icon in icon_sprites:
+            self.npc_icons.add(icon)
+
+        #destroy sprite on collision to prevent continuous loop of sprite collision.
+        #npc is redrawn upon reentering overworld
+        pygame.sprite.spritecollide(self.player_icon.sprite, self.npc_icons, True)
 
     def setupNodes(self):
         self.nodes = pygame.sprite.Group()
-        for idx, node in enumerate(locations.values()):
-            if self.current_location == idx:
-                adjacency_list = node['unlock']
+        for key in locations:
+            if self.current_location == key:
+                adjacency_list = locations[key]['unlock']
                 self.cur_adjaceny_list = adjacency_list
         for node in adjacency_list:
             node_sprite = Node(locations[node]['node_pos'], 'available', self.speed)
@@ -141,13 +163,20 @@ class Overworld():
         #collide with enemy
         if pygame.sprite.spritecollide(self.player_icon.sprite, self.enemy_icons, True):
             self.enemy_locations.remove(self.current_location)
-            self.create_location(self.current_location, self.enemy_icons, self.enemy_locations, self.treasure_locations)
+            self.create_location(self.current_location, self.enemy_icons, self.enemy_locations, self.treasure_locations,
+                                 self.npc_locations)
 
         #collide with treasure
         if pygame.sprite.spritecollide(self.player_icon.sprite, self.treasure_icons, True):
             self.treasure_locations.remove(self.current_location)
             print("You received a treasure!")
-            self.create_location(self.current_location, self.enemy_icons, self.enemy_locations, self.treasure_locations)
+            self.create_location(self.current_location, self.enemy_icons, self.enemy_locations, self.treasure_locations,
+                                 self.npc_locations)
+
+        #collide with npc
+        if pygame.sprite.spritecollide(self.player_icon.sprite, self.npc_icons, True):
+            self.create_location(self.current_location, self.enemy_icons, self.enemy_locations, self.treasure_locations,
+                                 self.npc_locations)
 
         #player_icon movement
         if not self.moving:
@@ -168,6 +197,7 @@ class Overworld():
         self.available_locations = new_available_locations
         self.setupEnemyIcons()
         self.setupTreasureIcons()
+        self.setupNPCIcons()
 
 
     def getMovementData(self, end_location):
@@ -210,3 +240,4 @@ class Overworld():
         self.enemy_icons.draw(self.display_surface)
         self.player_icon.draw(self.display_surface)
         self.treasure_icons.draw(self.display_surface)
+        self.npc_icons.draw(self.display_surface)

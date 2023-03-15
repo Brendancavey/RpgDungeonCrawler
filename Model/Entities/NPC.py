@@ -1,12 +1,38 @@
 from Model.Entities.Entity import Entity
-
+import pygame
 class NPC(Entity):
+    font = pygame.font.Font(None, 35)
     def __init__(self, name, hp, power):
         super().__init__(name, hp, power)
+        #self._done_chatting = False
 
-    def chat(self):
-        dialogue = "Be careful of trolls!"
-        return dialogue
+    def chat(self, display_surface, dialogue = "Be careful of goblins!"):
+        #setup
+        self._done_chatting = False
+        keys = pygame.key.get_pressed()
+
+        #user input
+        if keys[pygame.K_SPACE]:
+            self._done_chatting = True
+
+        #screen and textbox
+        self.screen = display_surface
+        self.textbox = pygame.Surface((1280, 200))
+        self.textbox.fill((50, 153, 213))
+
+        #text info
+        self.dialogue = dialogue
+
+        # update screen
+            #text info
+        self.text_dialogue = self.font.render(self.dialogue, False, "green")
+
+        # blit to screen
+        self.screen.blit(self.textbox, (0, 550))
+        self.screen.blit(self.text_dialogue, (550, 650))
+
+    def doneChatting(self):
+        return self._done_chatting
 
     def barter(self):
         print(self.getInventory())
