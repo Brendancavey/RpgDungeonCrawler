@@ -8,5 +8,5 @@ class Potion(Item):
     def getRecoveryAmt(self):
         return self._recovery_amt
     def getDescription(self):
-        description = "Heals for " + str(self.getRecoveryAmt()) + " HP"
+        description = self._name + ": Heals for " + str(self.getRecoveryAmt()) + " HP"
         return description

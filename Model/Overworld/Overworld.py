@@ -1,5 +1,7 @@
 import pygame
-from Controller.GameData import locations
+
+import Model.Inventory.Item
+from Controller.GameData import locations, inventory_slots, player
 from Controller.Setting import screen_height, screen_width
 class Node(pygame.sprite.Sprite):
     def __init__(self, pos, status, icon_speed):
@@ -18,11 +20,14 @@ class Node(pygame.sprite.Sprite):
     def getPos(self):
         return self.pos
 class Icon(pygame.sprite.Sprite):
-    def __init__(self, pos, color, image = None):
+    def __init__(self, pos, color = None, image = None):
         size = (20, 20)
         super().__init__()
         self.pos = pos
-        if image == None:
+        if image == None and color == None:
+            self.image = pygame.Surface(size)
+            self.image.fill('pink')
+        elif image == None:
             self.image = pygame.Surface(size)
             self.image.fill(color)
         else:
@@ -31,7 +36,7 @@ class Icon(pygame.sprite.Sprite):
     def update(self):
         self.rect.center = self.pos
 class Overworld():
-    collide_with_npc = False
+    font = pygame.font.Font(None, 35)
     def __init__(self, start_location, available_locations, display_surface, create_location, enemies, enemy_locations, visited,
                  treasure_locations, npc_locations):
         #setup
@@ -39,6 +44,9 @@ class Overworld():
         self.available_locations = available_locations
         self.current_location = start_location
         self.create_location = create_location
+
+        #inventory
+        self.inventory_idx = 0
 
         #enemies
         self.enemy_icons = enemies
@@ -71,6 +79,8 @@ class Overworld():
         self.setupEnemyIcons()
         self.setupTreasureIcons()
         self.setupNPCIcons()
+        self.setupInventory()
+        self.updateInventory()
     def getPrevNode(self):
         return self.visited.pop(-1)
     def getNextNode(self, direction):
@@ -87,6 +97,50 @@ class Overworld():
             return current_location + 1
         elif direction == 'right':
             return current_location + 2
+    def setupInventory(self):
+        self.ui_inventory = pygame.sprite.GroupSingle()
+        self.ui_items = pygame.sprite.Group()
+
+        #reset values to account for player using items in battle
+        #update values via updateInventory()
+        for slots in inventory_slots.values():
+            slots['content'] = None
+
+        sprite = Icon((1400,350), 'green', pygame.image.load('../View/Graphics/inventory.png').convert_alpha())
+        self.ui_inventory.add(sprite)
+
+    def updateInventory(self):
+        #find empty slot
+        for item in player.getItems():
+            for slot in inventory_slots.values():
+                if slot['content']:
+                    if item.getId() == slot['content'].getId():
+                        break
+                else:
+                    slot['content'] = item
+                    break
+
+        #update slot with graphic
+        for idx, slot in enumerate(inventory_slots.values()):
+            if idx == self.inventory_idx:
+                if isinstance(slot['content'], Model.Items.Potion.Potion):
+                    sprite = Icon(slot['slot_pos'], 'pink',
+                                  pygame.image.load('../View/Graphics/potionRed.png').convert_alpha())
+                    self.ui_items.add(sprite)
+                    #Overworld.inventory_idx += 1
+                    self.inventory_idx += 1
+                else:
+                    # print("nothing")
+                    pass
+    def hover(self):
+        pos = pygame.mouse.get_pos()
+        if self.ui_items:
+            for sprite in self.ui_items.sprites():
+                if sprite.rect.collidepoint(pos):
+                    idx = self.ui_items.sprites().index(sprite)
+                    self.ui_text = self.font.render(list(player.getItems())[idx].getDescription(), False, "Green")
+                    self.screen.blit(self.ui_text, (900, 600))
+                    break
     def setupPlayerIcon(self):
         self.player_icon = pygame.sprite.GroupSingle()
         for idx, location in enumerate(self.cur_adjaceny_list):
@@ -134,7 +188,7 @@ class Overworld():
 
         #destroy sprite on collision to prevent continuous loop of sprite collision.
         #npc is redrawn upon reentering overworld
-        pygame.sprite.spritecollide(self.player_icon.sprite, self.npc_icons, True)
+        #pygame.sprite.spritecollide(self.player_icon.sprite, self.npc_icons, True)
 
     def setupNodes(self):
         self.nodes = pygame.sprite.Group()
@@ -170,13 +224,18 @@ class Overworld():
         if pygame.sprite.spritecollide(self.player_icon.sprite, self.treasure_icons, True):
             self.treasure_locations.remove(self.current_location)
             print("You received a treasure!")
-            self.create_location(self.current_location, self.enemy_icons, self.enemy_locations, self.treasure_locations,
-                                 self.npc_locations)
+            location_content = location_data['content']
+            player.interact(location_content)
+            self.updateInventory()
+            """self.create_location(self.current_location, self.enemy_icons, self.enemy_locations, self.treasure_locations,
+                                 self.npc_locations)"""
 
         #collide with npc
-        if pygame.sprite.spritecollide(self.player_icon.sprite, self.npc_icons, True):
-            self.create_location(self.current_location, self.enemy_icons, self.enemy_locations, self.treasure_locations,
-                                 self.npc_locations)
+        if pygame.sprite.spritecollide(self.player_icon.sprite, self.npc_icons, False):
+            location_content = location_data['content']
+            player.interact(location_content, self.display_surface)
+            """self.create_location(self.current_location, self.enemy_icons, self.enemy_locations, self.treasure_locations,
+                                 self.npc_locations)"""
 
         #player_icon movement
         if not self.moving:
@@ -231,13 +290,22 @@ class Overworld():
                 self.move_direction = pygame.math.Vector2(0,0)
     def run(self):
         self.screen.blit(self.surface, (0, 0))
-        self.input()
         self.updatePlayerIconPos()
         self.setupNodes()
         self.drawPaths()
         self.player_icon.update()
         self.nodes.draw(self.display_surface)
         self.enemy_icons.draw(self.display_surface)
-        self.player_icon.draw(self.display_surface)
         self.treasure_icons.draw(self.display_surface)
         self.npc_icons.draw(self.display_surface)
+        self.player_icon.draw(self.display_surface)
+        self.input()
+
+
+
+        #testing
+        self.ui_inventory.draw(self.display_surface)
+        #self.inventory_text = self.font.render(str(player.getInventory()), False, 'green')
+        #self.screen.blit(self.inventory_text, (500, 350))
+        self.ui_items.draw(self.display_surface)
+        self.hover()

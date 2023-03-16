@@ -37,7 +37,7 @@ class Location:
                 self.create_overworld(self.current_location, self.new_available_locations, self.remaining_enemies,
                                       self.enemy_locations,
                                       self.visited_locations, self.treasure_locations, self.npc_locations)
-        elif isinstance(self.location_content, Model.Entities.NPC.NPC):
+        """elif isinstance(self.location_content, Model.Entities.NPC.NPC):
             player.interact(self.location_content, self.display_surface)
             if self.location_content.doneChatting():
                 self.create_overworld(self.current_location, self.new_available_locations, self.remaining_enemies,
@@ -47,4 +47,4 @@ class Location:
             player.interact(self.location_content)
             self.create_overworld(self.current_location, self.new_available_locations, self.remaining_enemies,
                                   self.enemy_locations,
-                                  self.visited_locations, self.treasure_locations, self.npc_locations)
+                                  self.visited_locations, self.treasure_locations, self.npc_locations)"""
