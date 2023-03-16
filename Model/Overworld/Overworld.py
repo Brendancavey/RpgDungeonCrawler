@@ -20,8 +20,7 @@ class Node(pygame.sprite.Sprite):
     def getPos(self):
         return self.pos
 class Icon(pygame.sprite.Sprite):
-    def __init__(self, pos, color = None, image = None):
-        size = (20, 20)
+    def __init__(self, pos, color = None, image = None, size = (20,20), inventory_slot = 0):
         super().__init__()
         self.pos = pos
         if image == None and color == None:
@@ -33,6 +32,7 @@ class Icon(pygame.sprite.Sprite):
         else:
             self.image = image
         self.rect = self.image.get_rect(center = pos)
+        self.inventory_slot = inventory_slot
     def update(self):
         self.rect.center = self.pos
 class Overworld():
@@ -100,47 +100,91 @@ class Overworld():
     def setupInventory(self):
         self.ui_inventory = pygame.sprite.GroupSingle()
         self.ui_items = pygame.sprite.Group()
-
+        self.ui_weapons = pygame.sprite.Group()
         #reset values to account for player using items in battle
         #update values via updateInventory()
         for slots in inventory_slots.values():
             slots['content'] = None
 
-        sprite = Icon((1400,350), 'green', pygame.image.load('../View/Graphics/inventory.png').convert_alpha())
+        sprite = Icon((1150,350), color = 'cornsilk4', size = (275, 400))
         self.ui_inventory.add(sprite)
 
     def updateInventory(self):
         #find empty slot
-        for item in player.getItems():
-            for slot in inventory_slots.values():
-                if slot['content']:
-                    if item.getId() == slot['content'].getId():
-                        break
-                else:
-                    slot['content'] = item
-                    break
+        for inventory in player.getInventory():
+            if isinstance(player.getInventory()[inventory], dict):
+                for item in player.getInventory()[inventory]:
+                    for slot in inventory_slots.values():
+                        if slot['content']:
+                            if item.getId() == slot['content'].getId():
+                                break
+                        else:
+                            slot['content'] = item
+                            break
 
         #update slot with graphic
         for idx, slot in enumerate(inventory_slots.values()):
             if idx == self.inventory_idx:
                 if isinstance(slot['content'], Model.Items.Potion.Potion):
-                    sprite = Icon(slot['slot_pos'], 'pink',
-                                  pygame.image.load('../View/Graphics/potionRed.png').convert_alpha())
+                    sprite = Icon(slot['slot_pos'], image = pygame.image.load('../View/Graphics/potionRed.png').convert_alpha(), inventory_slot = idx)
                     self.ui_items.add(sprite)
-                    #Overworld.inventory_idx += 1
                     self.inventory_idx += 1
-                else:
-                    # print("nothing")
-                    pass
-    def hover(self):
+                elif isinstance(slot['content'], Model.Items.Weapon.Weapon):
+                    sprite = Icon(slot['slot_pos'], image = pygame.image.load('../View/Graphics/sword.png').convert_alpha(), inventory_slot = idx)
+                    self.ui_weapons.add(sprite)
+                    self.inventory_idx += 1
+
+    def updateHudPlayer(self):
+        self.hud_text_playerHp = self.font.render("HP: " + str(player.getHp()) + "/" + str(player.getMaxHp()), False, 'red')
+        self.hud_text_playerPwr = self.font.render("Attack: " + str(player.getPower()), False, "white")
+        self.screen.blit(self.hud_text_playerHp,(1100,50))
+        self.screen.blit(self.hud_text_playerPwr,(1100,100))
+    def interactWithInventory(self):
         pos = pygame.mouse.get_pos()
+        # hover over items
         if self.ui_items:
             for sprite in self.ui_items.sprites():
                 if sprite.rect.collidepoint(pos):
                     idx = self.ui_items.sprites().index(sprite)
-                    self.ui_text = self.font.render(list(player.getItems())[idx].getDescription(), False, "Green")
-                    self.screen.blit(self.ui_text, (900, 600))
-                    break
+                    if isinstance(inventory_slots[sprite.inventory_slot]['content'], Model.Items.Potion.Potion):
+                        self.ui_text = self.font.render(list(player.getItems())[idx].getDescription(), False, "Green")
+                        self.screen.blit(self.ui_text, (900, 600))
+                        break
+        if self.ui_weapons:
+            for sprite in self.ui_weapons.sprites():
+                if sprite.rect.collidepoint(pos):
+                    idx = self.ui_weapons.sprites().index(sprite)
+                    if isinstance(inventory_slots[sprite.inventory_slot]['content'], Model.Items.Weapon.Weapon):
+                        self.ui_text = self.font.render(list(player.getInventory()['Weapons'])[idx].getDescription(), False, "Green")
+                        self.screen.blit(self.ui_text, (900, 600))
+                        break
+
+        #click on items
+        if self.ui_weapons:
+            for sprite in self.ui_weapons.sprites():
+                if sprite.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1:
+                    if isinstance(inventory_slots[sprite.inventory_slot]['content'], Model.Items.Weapon.Weapon):
+                        player.equip(inventory_slots[sprite.inventory_slot]['content'])
+                        inventory_slots[sprite.inventory_slot]['content'] = None
+                        self.ui_weapons.sprites().remove(sprite)
+                        #reinitialize self to reset inventory icons
+                        self.__init__(self.current_location, self.available_locations, self.display_surface, self.create_location,
+                                      self.enemy_icons, self.enemy_locations, self.visited, self.treasure_locations, self.npc_locations)
+                        break
+        if self.ui_items:
+            for sprite in self.ui_items.sprites():
+                if sprite.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1:
+                    if isinstance(inventory_slots[sprite.inventory_slot]['content'], Model.Items.Potion.Potion):
+                        if player.getHp() >= player.getMaxHp():
+                            print("Player at max hp!")
+                        else:
+                            player.itemUse(inventory_slots[sprite.inventory_slot]['content'])
+                            inventory_slots[sprite.inventory_slot]['content'] = None
+                            self.ui_items.sprites().remove(sprite)
+                            #reinitialize self to reset inventory icons
+                            self.__init__(self.current_location, self.available_locations, self.display_surface, self.create_location,
+                                          self.enemy_icons, self.enemy_locations, self.visited, self.treasure_locations, self.npc_locations)
+                            break
     def setupPlayerIcon(self):
         self.player_icon = pygame.sprite.GroupSingle()
         for idx, location in enumerate(self.cur_adjaceny_list):
@@ -219,6 +263,8 @@ class Overworld():
             self.enemy_locations.remove(self.current_location)
             self.create_location(self.current_location, self.enemy_icons, self.enemy_locations, self.treasure_locations,
                                  self.npc_locations)
+            location_data['content'] = None
+
 
         #collide with treasure
         if pygame.sprite.spritecollide(self.player_icon.sprite, self.treasure_icons, True):
@@ -227,6 +273,8 @@ class Overworld():
             location_content = location_data['content']
             player.interact(location_content)
             self.updateInventory()
+            location_data['content'] = None
+
             """self.create_location(self.current_location, self.enemy_icons, self.enemy_locations, self.treasure_locations,
                                  self.npc_locations)"""
 
@@ -300,6 +348,7 @@ class Overworld():
         self.npc_icons.draw(self.display_surface)
         self.player_icon.draw(self.display_surface)
         self.input()
+        self.updateHudPlayer()
 
 
 
@@ -308,4 +357,5 @@ class Overworld():
         #self.inventory_text = self.font.render(str(player.getInventory()), False, 'green')
         #self.screen.blit(self.inventory_text, (500, 350))
         self.ui_items.draw(self.display_surface)
-        self.hover()
+        self.ui_weapons.draw(self.display_surface)
+        self.interactWithInventory()

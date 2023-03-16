@@ -29,7 +29,9 @@ class Location:
 
     def run(self):
         if not self.location_content:
-            return
+            self.create_overworld(self.current_location, self.new_available_locations, self.remaining_enemies,
+                                  self.enemy_locations,
+                                  self.visited_locations, self.treasure_locations, self.npc_locations)
         if isinstance(self.location_content, Model.BattleSystem.BattleSystem.BattleSystem):
             self.location_content.interact()
             if not self.location_content.enemy.isAlive():
