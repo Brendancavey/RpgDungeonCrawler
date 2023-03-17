@@ -18,6 +18,7 @@ potion = Potion("Large Potion", 1,10, 100)
 potion2 = Potion("Small Potion", 1,5, 5)
 potion3 = Potion("Potion", 1,10, 7)
 weapon1 = Weapon("Sharp Sword", 2, 10, 5)
+weapon2 = Weapon("Pointy Sword", 2, 10, 3)
 chad = NPC("Chad", 15, 5)
 battle1 = BattleSystem(player, enemy, screen_width, screen_height)
 battle2 = BattleSystem(player, enemy1, screen_width, screen_height)
@@ -43,8 +44,8 @@ location_3 = {'node_pos' : (300,200), 'content' : weapon1, 'unlock' : [1, 2, 3]}
 location_4 = {'node_pos' : (490,400), 'content' : battle2, 'unlock' : [2, 4, 5, 6]}
 location_5 = {'node_pos' : (490,200), 'content' : potion3, 'unlock' : [4, 5]}
 location_6 = {'node_pos' : (680,400), 'content' : battle4, 'unlock' : [4, 6, 7]}
-location_7 = {'node_pos' : (680,200), 'content' : None, 'unlock' : [6, 7, 9]}
-location_8 = {'node_pos' : (870,400), 'content' : None, 'unlock' : [8, 9, 10]}
+location_7 = {'node_pos' : (680,200), 'content' : potion2, 'unlock' : [6, 7, 9]}
+location_8 = {'node_pos' : (870,400), 'content' : weapon2, 'unlock' : [8, 9, 10]}
 location_9 = {'node_pos' : (870,200), 'content' : None, 'unlock' : [7, 8, 9]}
 location_10 = {'node_pos' : (1100,400), 'content' : None, 'unlock' : [8, 10]}
 
@@ -65,20 +66,28 @@ locations = {
 
 #locations
 enemy_locations = [1, 4, 6]
-treasure_locations = [2, 3, 5]
+treasure_locations = [2, 3, 5, 7, 8]
 npc_locations = [-1]
 
 #inventory grid
-slot_0 = {'slot_pos' : (1075,220), 'content' : None}
-slot_1 = {'slot_pos' : (1150,220), 'content' : None}
-slot_2 = {'slot_pos' : (1225,220), 'content' : None}
-slot_3 = {'slot_pos' : (1075,320), 'content' : None}
+slot_0 = {'slot_pos' : (995,220), 'content' : None}
+slot_1 = {'slot_pos' : (1070,220), 'content' : None}
+slot_2 = {'slot_pos' : (1145,220), 'content' : None}
+slot_3 = {'slot_pos' : (1215,220), 'content' : None}
+slot_4 = {'slot_pos' : (995,300), 'content' : None}
+slot_5 = {'slot_pos' : (1070,300), 'content' : None}
+slot_6 = {'slot_pos' : (1145,300), 'content' : None}
+slot_7 = {'slot_pos' : (1215,300), 'content' : None}
 
 inventory_slots = {
     0: slot_0,
     1: slot_1,
     2: slot_2,
-    3: slot_3
+    3: slot_3,
+    4: slot_4,
+    5: slot_5,
+    6: slot_6,
+    7: slot_7
 }
 
 
