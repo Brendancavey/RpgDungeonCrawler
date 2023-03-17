@@ -37,6 +37,7 @@ class Icon(pygame.sprite.Sprite):
         self.rect.center = self.pos
 class Overworld():
     font = pygame.font.Font(None, 35)
+    largeFont = pygame.font.Font(None, 65)
     def __init__(self, start_location, available_locations, display_surface, create_location, enemies, enemy_locations, visited,
                  treasure_locations, npc_locations):
         #setup
@@ -44,6 +45,7 @@ class Overworld():
         self.available_locations = available_locations
         self.current_location = start_location
         self.create_location = create_location
+        self.win_game = False
 
         #inventory
         self.inventory_idx = 0
@@ -84,6 +86,7 @@ class Overworld():
     def getPrevNode(self):
         return self.visited.pop(-1)
     def getNextNode(self, direction):
+        print("was at " + str(self.current_location))
         if direction == 'up':
             return self.current_location + 1
         elif direction == 'right':
@@ -92,6 +95,16 @@ class Overworld():
             return self.current_location - 1
         elif direction == 'left':
             return self.current_location - 2
+    def checkForNextStage(self):
+        if self.current_location == 10:
+            self.win_game = True
+            """self.__init__(0, [-1, 0, 1, 2], self.display_surface, self.create_location,
+                          self.enemy_icons, self.enemy_locations, self.visited, self.treasure_locations,
+                          self.npc_locations)"""
+    def displayWinMessage(self):
+        if self.win_game == True:
+            win_text = self.largeFont.render("thank you for playtesting!", False, "green")
+            self.screen.blit(win_text, (300, 100))
     def findNextNode(self, current_location, direction):
         if direction == 'up':
             return current_location + 1
@@ -336,6 +349,8 @@ class Overworld():
             if target_node.detection_zone.collidepoint(self.player_icon.sprite.pos):
                 self.moving = False
                 self.move_direction = pygame.math.Vector2(0,0)
+                self.checkForNextStage()
+
     def run(self):
         self.screen.blit(self.surface, (0, 0))
         self.updatePlayerIconPos()
@@ -354,8 +369,9 @@ class Overworld():
 
         #testing
         self.ui_inventory.draw(self.display_surface)
-        #self.inventory_text = self.font.render(str(player.getInventory()), False, 'green')
-        #self.screen.blit(self.inventory_text, (500, 350))
         self.ui_items.draw(self.display_surface)
         self.ui_weapons.draw(self.display_surface)
         self.interactWithInventory()
+        self.displayWinMessage()
+
+

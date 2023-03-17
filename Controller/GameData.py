@@ -32,6 +32,8 @@ cur_height = start_height
 gap_width = 190
 gap_height = 200
 
+#even locations are on the horizontal plane.
+#odd locations are on the vertical plane.
 #location content
 location_00 = {'node_pos' : (110,400), 'content' : chad, 'unlock' : [-1, 0]}
 location_0 = {'node_pos' : (110,250), 'content' : None, 'unlock' : [-1, 0, 1, 2]}
@@ -40,7 +42,11 @@ location_2 = {'node_pos' : (300,400), 'content' : potion, 'unlock' : [0, 2, 3, 4
 location_3 = {'node_pos' : (300,200), 'content' : weapon1, 'unlock' : [1, 2, 3]}
 location_4 = {'node_pos' : (490,400), 'content' : battle2, 'unlock' : [2, 4, 5, 6]}
 location_5 = {'node_pos' : (490,200), 'content' : potion3, 'unlock' : [4, 5]}
-location_6 = {'node_pos' : (680,400), 'content' : battle4, 'unlock' : [4, 6]}
+location_6 = {'node_pos' : (680,400), 'content' : battle4, 'unlock' : [4, 6, 7]}
+location_7 = {'node_pos' : (680,200), 'content' : None, 'unlock' : [6, 7, 9]}
+location_8 = {'node_pos' : (870,400), 'content' : None, 'unlock' : [8, 9, 10]}
+location_9 = {'node_pos' : (870,200), 'content' : None, 'unlock' : [7, 8, 9]}
+location_10 = {'node_pos' : (1100,400), 'content' : None, 'unlock' : [8, 10]}
 
 locations = {
     -1: location_00,
@@ -50,7 +56,11 @@ locations = {
     3: location_3,
     4: location_4,
     5: location_5,
-    6: location_6
+    6: location_6,
+    7: location_7,
+    8: location_8,
+    9: location_9,
+    10: location_10
 }
 
 #locations
