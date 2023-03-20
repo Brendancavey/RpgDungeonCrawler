@@ -76,8 +76,7 @@ class Overworld():
         self.width = screen_width
         self.height = screen_height
         self.screen = pygame.display.set_mode((screen_width, screen_height))
-        self.surface = pygame.Surface((screen_width, screen_height))
-        self.surface.fill("black")
+        self.background = pygame.image.load('../View/Graphics/dungeon.png').convert_alpha()
 
         #sprites
         self.setupNodes()
@@ -121,8 +120,12 @@ class Overworld():
         update current items via updateInventory()"""
         self.resetInventorySlots()
 
-        #load inventory images
+        #load inventory text
+        self.ui_inventory_title_surface = pygame.Surface ((150, 25))
+        self.ui_inventory_title_surface.fill('bisque4')
         self.ui_inventory_title_text = self.font.render("Inventory", False, 'cornsilk3')
+
+        #load inventory images
         inventory_layout = Icon((1110,275), image = pygame.image.load('../View/Graphics/inventory.png').convert_alpha())
         inventory_bar = Icon((1085, 422), image = pygame.image.load('../View/Graphics/inventory_bar.png').convert_alpha())
         inventory_icon = Icon((965, 419), image = pygame.image.load('../View/Graphics/backpack.png').convert_alpha())
@@ -168,11 +171,8 @@ class Overworld():
     def updateHud(self):
         self.hud_text_playerHp = self.font.render("HP: " + str(player.getHp()) + "/" + str(player.getMaxHp()), False, 'red')
         self.hud_text_playerPwr = self.font.render("Attack: " + str(player.getPower()), False, "white")
-        #self.hud_textbox = pygame.Surface ((1280, 200))
-        #self.hud_textbox.fill('bisque')
         self.screen.blit(self.hud_text_playerHp,(1100,50))
         self.screen.blit(self.hud_text_playerPwr,(1100,100))
-        #self.screen.blit(self.hud_textbox, (0, 550))
     def interactWithInventory(self):
         pos = pygame.mouse.get_pos()
         ui_text_pos = (900, 470)
@@ -441,7 +441,7 @@ class Overworld():
                 self.checkForNextStage()
 
     def run(self):
-        self.screen.blit(self.surface, (0, 0))
+        self.screen.blit(self.background, (0, 0))
         self.timer()
         self.updatePlayerIconPos()
         self.setupNodes()
@@ -456,6 +456,7 @@ class Overworld():
         self.updateHud()
         self.ui_inventory.draw(self.display_surface)
         self.ui_equipment.draw(self.display_surface)
+        self.screen.blit(self.ui_inventory_title_surface, (940, 145))
         self.screen.blit(self.ui_inventory_title_text,(940, 145))
         self.ui_items.draw(self.display_surface)
         self.ui_weapons.draw(self.display_surface)
