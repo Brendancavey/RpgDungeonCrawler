@@ -99,33 +99,27 @@ class Overworld():
     def checkForNextStage(self):
         if self.current_location == 10:
             self.win_game = True
-            """self.__init__(0, [-1, 0, 1, 2], self.display_surface, self.create_location,
-                          self.enemy_icons, self.enemy_locations, self.visited, self.treasure_locations,
-                          self.npc_locations)"""
     def displayWinMessage(self):
         if self.win_game == True:
-            win_text = self.largeFont.render("thank you for playtesting!", False, "green")
+            win_text = self.largeFont.render("Thank you for play testing!", False, "green")
             self.screen.blit(win_text, (300, 100))
     def findNextNode(self, current_location, direction):
         if direction == 'up':
             return current_location + 1
         elif direction == 'right':
             return current_location + 2
+    def resetInventorySlots(self):
+        for slots in inventory_slots.values():
+            slots['content'] = None
     def setupInventory(self):
         #inventory & equipment hud
         self.ui_inventory = pygame.sprite.Group()
         self.ui_equipment = pygame.sprite.Group()
 
-        #inventory items
-        """to be used in updateInventory()"""
-        self.ui_items = pygame.sprite.Group()
-        self.ui_weapons = pygame.sprite.Group()
-
         #update inventory slots
         """reset values to account for player using items in battle
         update current items via updateInventory()"""
-        for slots in inventory_slots.values():
-            slots['content'] = None
+        self.resetInventorySlots()
 
         #load inventory images
         self.ui_inventory_title_text = self.font.render("Inventory", False, 'cornsilk3')
@@ -139,6 +133,15 @@ class Overworld():
         self.ui_inventory.add(equipment_icon)
 
     def updateInventory(self):
+        """reset values to account for player equipping or using items not in the
+        order of inventory slots"""
+        self.resetInventorySlots()
+        self.inventory_idx = 0
+
+        #inventory items/weapons
+        self.ui_items = pygame.sprite.Group()
+        self.ui_weapons = pygame.sprite.Group()
+
         #find empty slot
         for inventory in player.getInventory():
             if isinstance(player.getInventory()[inventory], dict):
@@ -230,7 +233,6 @@ class Overworld():
                 if sprite.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
                     if isinstance(inventory_slots[sprite.inventory_slot]['content'], Model.Items.Weapon.Weapon):
                         self.clicked = True
-                        print("equiping: " + str(inventory_slots[sprite.inventory_slot]['content']))
                         player.equip(inventory_slots[sprite.inventory_slot]['content'])
                         inventory_slots[sprite.inventory_slot]['content'] = None
                         self.ui_weapons.sprites().remove(sprite)
@@ -240,8 +242,9 @@ class Overworld():
                         break
         if self.ui_items:
             for sprite in self.ui_items.sprites():
-                if sprite.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1:
+                if sprite.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
                     if isinstance(inventory_slots[sprite.inventory_slot]['content'], Model.Items.Potion.Potion):
+                        self.clicked = True
                         if player.getHp() < player.getMaxHp():
                             player.itemUse(inventory_slots[sprite.inventory_slot]['content'])
                             inventory_slots[sprite.inventory_slot]['content'] = None
@@ -256,14 +259,11 @@ class Overworld():
             elif self.ui_inventory.sprites()[3].rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1:
                 self.showEquipment()
     def timer(self):
-        if pygame.mouse.get_pressed()[0] == 1 and self.current_time > self.mouse_click_time + 175:
+        delay_time = 175
+        if pygame.mouse.get_pressed()[0] == 1 and self.current_time > self.mouse_click_time + delay_time:
             self.mouse_click_time = pygame.time.get_ticks()
             self.clicked = False
-            print("mouse: " + str(self.mouse_click_time))
-            print("cur" + str(self.current_time))
-
         self.current_time = pygame.time.get_ticks()
-
     def showInventory(self):
         #reset equipment sprites
         self.ui_equipment = pygame.sprite.Group()
@@ -271,15 +271,16 @@ class Overworld():
         self.ui_inventory_title_text = self.ui_inventory_title_text = self.font.render("Inventory", None, 'cornsilk3')
         self.updateInventory()
     def showEquipment(self):
-        print(player.getEquippedItems())
         wep_icon_pos = (1000, 220)
         armor_icon_pos = (1100, 220)
         acc_icon_pos = (1200, 220)
         #reset inventory sprites
+        """prevent inventory items to appear in equipment panel"""
         self.ui_weapons = pygame.sprite.Group()
         self.ui_items = pygame.sprite.Group()
 
         #reset inventory slot idx
+        """have items appear in correct order when going back to inventory"""
         self.inventory_idx = 0
         self.ui_inventory_title_text = self.font.render("Equipment", None, 'cornsilk3')
 
