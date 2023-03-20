@@ -26,10 +26,10 @@ class BattleSystem():
 
         #buttons
         self.button1 = Button(200, 50, 200, 600, "green", self.player.abilities[0], 0)
-        self.button2 = Button(200, 50, screen_width // 1.5, 50, "green", self.player.abilities[1], 1)
-        self.button3 = Button(200, 50, screen_width // 4, 50, "green", self.player.abilities[2], 2)
-        self.button4 = Button(200, 50, screen_width // 1.5, 50, "green", self.player.abilities[3], 3)
-        self.button5 = Button(200, 50, screen_width // 1.1, screen_height // 4, "green", self.player.abilities[3], 4)
+        self.button2 = Button(200, 50, 500, 600, "green", self.player.abilities[1], 1)
+        self.button3 = Button(200, 50, 800, 600, "green", self.player.abilities[2], 2)
+        self.button4 = Button(200, 50, 1100, 600, "green", self.player.abilities[3], 3)
+        self.button5 = Button(200, 50, 1150, 75, "green", self.player.abilities[3], 4)
         self.buttons = [self.button1, self.button2, self.button3, self.button4, self.button5]
         self.button_group = pygame.sprite.Group()
         for button in self.buttons:
@@ -79,7 +79,7 @@ class BattleSystem():
         self.text_button4 = self.mediumFont.render(self.button4.action_name.getName(), False, "black")
         self.text_button5 = self.mediumFont.render("Items", False, "black")
         self.text_enemyHp = self.smallFont.render("HP: " + str(self.enemy.getHp()) + "/" + str(self.enemy.getMaxHp()), False, self.text_color)
-        self.text_enemy_intent = self.bigFont.render(str(self.enemy_next_move) + (": " + str(enemy_damage) if enemy_damage > 0 else ""), False, "red")
+        self.text_enemy_intent = self.mediumFont.render(str(self.enemy_next_move) + (": " + str(enemy_damage) if enemy_damage > 0 else ""), False, "red")
         self.text_playerAp = self.bigFont.render("AP: " + str(self.getPlayerAp()), False, self.text_color)
         self.text_playerHp = self.smallFont.render("HP: " + str(self.player.getHp()) + "/" + str(self.player.getMaxHp()), False,
                                                  self.text_color)
@@ -108,17 +108,17 @@ class BattleSystem():
         self.screen.blit(self.enemy_hp_bar_surface, (self.width/4 + 300, self.height/2 + 50))
         self.screen.blit(self.enemy_hp_bar, (self.width/4 + 300, self.height/2 + 50))
         self.screen.blit(self.text_enemyHp, (self.width/4 + 300, self.height/2 + 55))
-        self.screen.blit(self.text_enemy_intent, (250, 100))
-        self.screen.blit(self.text_playerAp, (500, 600))
+        self.screen.blit(self.text_enemy_intent, (self.width/4 + 300, self.height/2 - 50))
+        self.screen.blit(self.text_playerAp, (1150, 650))
         self.screen.blit(self.player_hp_bar_surface, (self.width/4, self.height/2 + 50))
         self.screen.blit(self.player_hp_bar, (self.width/4, self.height/2 + 50))
         self.screen.blit(self.text_playerHp, (self.width/4, self.height/2 + 55))
         self.screen.blit(self.text_interface, (100, 650))
-        self.screen.blit(self.text_button1, (self.width // 4 - 80, self.height // 1.5 - 15))
-        self.screen.blit(self.text_button2, (self.width // 1.5 - 80, self.height // 1.5 - 15))
-        self.screen.blit(self.text_button3, (self.width // 4 - 80, self.height // 2 - 15))
-        self.screen.blit(self.text_button4, (self.width // 1.5 - 80, self.height // 2 - 15))
-        self.screen.blit(self.text_button5, (self.width // 1.1 -80, self.height // 1.1 - 15))
+        self.screen.blit(self.text_button1, (120, 585))
+        self.screen.blit(self.text_button2, (420, 585))
+        self.screen.blit(self.text_button3, (720, 585))
+        self.screen.blit(self.text_button4, (1020, 585))
+        self.screen.blit(self.text_button5, (1120, 65))
 
     def damageToInflict(self, attacker, target, element = None, attack_mod = None):
         if attack_mod:
