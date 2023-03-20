@@ -12,6 +12,7 @@ class BattleSystem():
         self.player_ap = self.default_player_ap
         self.player_items_list = list(self.player.getItems())
         self.player_items_map = self.player.getItems()
+        self.player.resetDebuffs()
 
         # enemy
         self.enemy = enemy
@@ -174,7 +175,7 @@ class BattleSystem():
             #enemy turn
             if self.player_ap == 0:
                 self.playerTurnEnd()
-    def interact(self):
+    def start(self):
         self.commenceBattle()
         self.update()
     def performAction(self, button):

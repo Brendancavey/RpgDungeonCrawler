@@ -1,8 +1,8 @@
 import pygame
-
 import Model.Inventory.Item
 from Controller.GameData import locations, inventory_slots, player
 from Controller.Setting import screen_height, screen_width
+import Model.Entities.Enemy.Enemy
 class Node(pygame.sprite.Sprite):
     def __init__(self, pos, status, icon_speed):
         node_size = (100,80)
@@ -165,17 +165,28 @@ class Overworld():
                     self.ui_weapons.add(sprite)
                     self.inventory_idx += 1
 
-    def updateHudPlayer(self):
+    def updateHud(self):
         self.hud_text_playerHp = self.font.render("HP: " + str(player.getHp()) + "/" + str(player.getMaxHp()), False, 'red')
         self.hud_text_playerPwr = self.font.render("Attack: " + str(player.getPower()), False, "white")
+        #self.hud_textbox = pygame.Surface ((1280, 200))
+        #self.hud_textbox.fill('bisque')
         self.screen.blit(self.hud_text_playerHp,(1100,50))
         self.screen.blit(self.hud_text_playerPwr,(1100,100))
+        #self.screen.blit(self.hud_textbox, (0, 550))
     def interactWithInventory(self):
         pos = pygame.mouse.get_pos()
+        ui_text_pos = (900, 470)
+        ui_text_pos2 = (1050, 520)
+        ui_text_surface_pos = (900, 470)
+        ui_text_surface = pygame.Surface((375,75))
+        ui_text_surface.fill('bisque4')
+        self.screen.blit(ui_text_surface, ui_text_surface_pos)
+
         # hover over items
         if self.ui_items:
             for sprite in self.ui_items.sprites():
                 if sprite.rect.collidepoint(pos):
+                    self.screen.blit(ui_text_surface, ui_text_surface_pos)
                     idx = self.ui_items.sprites().index(sprite)
                     if isinstance(inventory_slots[sprite.inventory_slot]['content'], Model.Items.Potion.Potion):
                         if player.getHp() >= player.getMaxHp():
@@ -183,49 +194,55 @@ class Overworld():
                         else:
                             self.ui_text2 = self.smallFont.render("Click to use", False, 'grey')
                         self.ui_text = self.font.render(list(player.getItems())[idx].getDescription(), False, "Green")
-                        self.screen.blit(self.ui_text, (900, 600))
-                        self.screen.blit(self.ui_text2, (1050, 650))
+                        self.screen.blit(self.ui_text, ui_text_pos)
+                        self.screen.blit(self.ui_text2, ui_text_pos2)
                         break
         if self.ui_weapons:
             for sprite in self.ui_weapons.sprites():
                 if sprite.rect.collidepoint(pos):
+                    self.screen.blit(ui_text_surface, ui_text_surface_pos)
                     idx = self.ui_weapons.sprites().index(sprite)
                     if isinstance(inventory_slots[sprite.inventory_slot]['content'], Model.Items.Weapon.Weapon):
                         self.ui_text = self.font.render(list(player.getInventory()['Weapons'])[idx].getDescription(), False, "Green")
                         self.ui_text2 = self.smallFont.render("Click to equip", False, 'grey')
-                        self.screen.blit(self.ui_text, (900, 600))
-                        self.screen.blit(self.ui_text2, (1050, 650))
+                        self.screen.blit(self.ui_text, ui_text_pos)
+                        self.screen.blit(self.ui_text2, ui_text_pos2)
                         break
         if self.ui_inventory:
             if self.ui_inventory.sprites()[2].rect.collidepoint(pos):
+                self.screen.blit(ui_text_surface, ui_text_surface_pos)
                 self.ui_text = self.font.render("Inventory", False, "Green")
                 self.ui_text2 = self.smallFont.render("Click to view", False, 'grey')
-                self.screen.blit(self.ui_text, (900, 600))
-                self.screen.blit(self.ui_text2, (1050, 650))
+                self.screen.blit(self.ui_text, ui_text_pos)
+                self.screen.blit(self.ui_text2, ui_text_pos2)
             elif self.ui_inventory.sprites()[3].rect.collidepoint(pos):
+                self.screen.blit(ui_text_surface, ui_text_surface_pos)
                 self.ui_text = self.font.render("Equipment", False, "Green")
                 self.ui_text2 = self.smallFont.render("Click to view", False, 'grey')
-                self.screen.blit(self.ui_text, (900, 600))
-                self.screen.blit(self.ui_text2, (1050, 650))
+                self.screen.blit(self.ui_text, ui_text_pos)
+                self.screen.blit(self.ui_text2, ui_text_pos2)
         if self.ui_equipment:
             eqp_weapon_text = "Weapon: None"
             eqp_armor_text = "Armor: None"
             eqp_accessory_text = "Accessory: None"
             if self.ui_equipment.sprites()[0].rect.collidepoint(pos):
+                self.screen.blit(ui_text_surface, ui_text_surface_pos)
                 if player.getEquippedItems()['Weapon']:
                     eqp_weapon_text = "Weapon: " + player.getEquippedItems()['Weapon'].getDescription()
                 self.ui_text = self.smallFont.render(eqp_weapon_text,False, "Green")
-                self.screen.blit(self.ui_text, (900, 600))
+                self.screen.blit(self.ui_text, ui_text_pos)
             elif self.ui_equipment.sprites()[1].rect.collidepoint(pos):
+                self.screen.blit(ui_text_surface, ui_text_surface_pos)
                 if player.getEquippedItems()['Armor']:
                     eqp_armor_text = "Armor: " + player.getEquippedItems()['Armor'].getDescription()
                 self.ui_text = self.smallFont.render(eqp_armor_text,False, "Green")
-                self.screen.blit(self.ui_text, (900, 600))
+                self.screen.blit(self.ui_text, ui_text_pos)
             elif self.ui_equipment.sprites()[2].rect.collidepoint(pos):
+                self.screen.blit(ui_text_surface, ui_text_surface_pos)
                 if player.getEquippedItems()['Accessory']:
                     eqp_accessory_text = "Accessory: " + player.getEquippedItems()['Accessory'].getDescription()
                 self.ui_text = self.smallFont.render(eqp_accessory_text,False, "Green")
-                self.screen.blit(self.ui_text, (900, 600))
+                self.screen.blit(self.ui_text, ui_text_pos)
 
         #click on items
         if self.ui_weapons:
@@ -310,7 +327,7 @@ class Overworld():
 
         #load graphic
         for idx, location in enumerate(self.cur_adjacency_list):
-            if isinstance(locations[location]['content'], Model.BattleSystem.BattleSystem.BattleSystem):
+            if isinstance(locations[location]['content'], Model.Entities.Enemy.Enemy.Enemy):
                 icon = Icon(self.nodes.sprites()[idx].rect.center,
                             image = pygame.image.load('../View/Graphics/goblin.png').convert_alpha(),
                             icon_type = 'enemy')
@@ -436,7 +453,7 @@ class Overworld():
         self.npc_icons.draw(self.display_surface)
         self.player_icon.draw(self.display_surface)
         self.input()
-        self.updateHudPlayer()
+        self.updateHud()
         self.ui_inventory.draw(self.display_surface)
         self.ui_equipment.draw(self.display_surface)
         self.screen.blit(self.ui_inventory_title_text,(940, 145))

@@ -26,6 +26,11 @@ class Entity():
 
     def addDebuff(self, debuff):
         self.status.add(debuff)
+    def resetDebuffs(self):
+        self.status = set()
+        self.dot_damage = []
+        self.weaken_attackPwr = []
+        self.take_more_damage = []
     def addAbility(self, ability):
         self.abilities.append(ability)
     def getName(self):

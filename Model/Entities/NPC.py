@@ -18,18 +18,20 @@ class NPC(Entity):
         #screen and textbox
         self.screen = display_surface
         self.textbox = pygame.Surface((1280, 200))
-        self.textbox.fill((50, 153, 213))
+        self.textbox.fill('bisque')
 
         #text info
         self.dialogue = dialogue
 
         # update screen
             #text info
-        self.text_dialogue = self.font.render(self.dialogue, False, "green")
+        self.text_npcName = self.font.render(self.getName() + ": ", False, 'black')
+        self.text_dialogue = self.font.render(self.dialogue, False, 'black')
 
         # blit to screen
         self.screen.blit(self.textbox, (0, 550))
-        self.screen.blit(self.text_dialogue, (550, 650))
+        self.screen.blit(self.text_npcName, (60, 560))
+        self.screen.blit(self.text_dialogue, (90, 595))
 
     def doneChatting(self):
         return self._done_chatting
