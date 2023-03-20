@@ -2,8 +2,8 @@ import pygame
 import itertools
 
 class Button(pygame.sprite.Sprite):
-    _id_iter = itertools.count()
-    def __init__(self, width, height, pos_x, pos_y, color, action_name):
+    #_id_iter = itertools.count()
+    def __init__(self, width, height, pos_x, pos_y, color, action_name, id):
         super().__init__()
         self.width = width
         self.height = height
@@ -12,10 +12,14 @@ class Button(pygame.sprite.Sprite):
         self.image.fill(color)
         self.rect = self.image.get_rect()
         self.rect.center = (pos_x, pos_y)
-        self._id = next(self._id_iter)
+        #self._id = next(self._id_iter)
+        self._id = id
         self.not_clicked = True
         self.action = False
         self.action_name = action_name
+
+    def setId(self, new_id):
+        self._id = new_id
     def update(self):
         #check for mouse over button hover
         self.isHovered()

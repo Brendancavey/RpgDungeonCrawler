@@ -12,17 +12,18 @@ class BattleSystem():
         self.player_ap = self.default_player_ap
         self.player_items_list = list(self.player.getItems())
         self.player_items_map = self.player.getItems()
+        self.player.resetDebuffs()
 
         # enemy
         self.enemy = enemy
         self.enemy_attack_idx = 0
 
         #buttons
-        self.button1 = Button(200, 50, screen_width//4, screen_height//1.5, "green", self.player.abilities[0])
-        self.button2 = Button(200, 50, screen_width // 1.5, screen_height // 1.5, "green", self.player.abilities[1])
-        self.button3 = Button(200, 50, screen_width // 4, screen_height // 2, "green", self.player.abilities[2])
-        self.button4 = Button(200, 50, screen_width // 1.5, screen_height // 2, "green", self.player.abilities[3])
-        self.button5 = Button(200, 50, screen_width // 1.1, screen_height // 1.1, "green", self.player.abilities[3])
+        self.button1 = Button(200, 50, screen_width//4, screen_height//1.5, "green", self.player.abilities[0], 0)
+        self.button2 = Button(200, 50, screen_width // 1.5, screen_height // 1.5, "green", self.player.abilities[1], 1)
+        self.button3 = Button(200, 50, screen_width // 4, screen_height // 2, "green", self.player.abilities[2], 2)
+        self.button4 = Button(200, 50, screen_width // 1.5, screen_height // 2, "green", self.player.abilities[3], 3)
+        self.button5 = Button(200, 50, screen_width // 1.1, screen_height // 1.1, "green", self.player.abilities[3], 4)
         self.buttons = [self.button1, self.button2, self.button3, self.button4, self.button5]
         self.button_group = pygame.sprite.Group()
         for button in self.buttons:
@@ -52,6 +53,8 @@ class BattleSystem():
         enemy_damage = self.damageToInflict(self.enemy, self.player, enemy_mods[0], enemy_mods[1])
 
         #update player info
+        self.player_items_list = list(self.player.getItems())
+        self.player_items_map = self.player.getItems()
         self.player_items_text = ", ".join((item.getName() + ": " + str(self.player_items_map[item]) for item in self.player_items_map))
 
         #update buttons
@@ -172,9 +175,9 @@ class BattleSystem():
             #enemy turn
             if self.player_ap == 0:
                 self.playerTurnEnd()
-        #if not self.enemy.isAlive():
-           # print("You win!")
-
+    def start(self):
+        self.commenceBattle()
+        self.update()
     def performAction(self, button):
         if button.action:
             # use potion action
@@ -191,10 +194,6 @@ class BattleSystem():
             else:
                 ability = button.action_name
                 self.playerAttacks(ability)
-
-
-
-
         else:
             return
         button.action = False

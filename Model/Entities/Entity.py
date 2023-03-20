@@ -1,3 +1,4 @@
+import Model.Inventory.Item
 from Model.Inventory.Inventory import Inventory
 from Model.Inventory.Equipment import Equipment
 from Model.BattleSystem.Ability.Ability import Ability
@@ -25,6 +26,11 @@ class Entity():
 
     def addDebuff(self, debuff):
         self.status.add(debuff)
+    def resetDebuffs(self):
+        self.status = set()
+        self.dot_damage = []
+        self.weaken_attackPwr = []
+        self.take_more_damage = []
     def addAbility(self, ability):
         self.abilities.append(ability)
     def getName(self):
@@ -59,7 +65,16 @@ class Entity():
         self._power = value
     def setGold(self, value):
         self._inventory.setGold(value)
-
+    def interact(self, interactable, display_surface = None):
+        if isinstance(interactable, Model.Inventory.Item.Item):
+            self.itemObtain(interactable)
+            print("received " + str(interactable))
+            print(self.getInventory())
+        elif isinstance(interactable, int):
+            self.modifyGold(interactable)
+            print("received " + str(interactable) + " gold!")
+        elif isinstance(interactable, Model.Entities.NPC.NPC):
+            interactable.chat(display_surface)
     def itemObtain(self, item):
         self._inventory.inventoryAdd(item)
     def itemUse(self, item):
