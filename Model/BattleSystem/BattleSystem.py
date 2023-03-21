@@ -1,7 +1,7 @@
 from Model.Sprites.Button import Button
 from Model.Overworld.Overworld import Icon
-from Model.Overworld.Overworld import Overworld
-
+from Model.BattleSystem.Debuff.DebuffList import debuff_list
+import Model.Entities.Enemy.Enemy
 import pygame
 class BattleSystem():
     pygame.init()
@@ -21,12 +21,14 @@ class BattleSystem():
         self.player.resetDebuffs()
         self.player_image = pygame.image.load('../View/Graphics/player.png').convert_alpha()
         self.player_hp_bar_surface = pygame.Surface((100, 20))
+        self.player_status_icon = pygame.sprite.Group()
 
         # enemy
         self.enemy = enemy
         self.enemy_attack_idx = 0
         self.enemy_image = enemy.getImage().convert_alpha()
         self.enemy_hp_bar_surface = pygame.Surface((100, 20))
+        self.enemy_status_icon = pygame.sprite.Group()
 
         #buttons
         self.button1 = Button(200, 50, 200, 600, "green", self.player.abilities[0], 0)
@@ -60,14 +62,15 @@ class BattleSystem():
         self.enemy_next_move = self.enemy.getAttack(self.enemy_attack_idx)
         enemy_mods = self.enemy_next_move.getModifiers()
         enemy_damage = self.damageToInflict(self.enemy, self.player, enemy_mods[0], enemy_mods[1])
-        self.enemy_hp_bar = pygame.Surface((100 * self.enemy.getHp()/self.enemy.getMaxHp(), 20))
+        #print(int(100 * self.enemy.getHp()//self.enemy.getMaxHp()))
+        self.enemy_hp_bar = pygame.Surface((int(100 * self.enemy.getHp()//self.enemy.getMaxHp()), 20))
         self.enemy_hp_bar.fill('red')
 
         #update player info
         #self.player_items_list = list(self.player.getItems())
         #self.player_items_map = self.player.getItems()
         #self.player_items_text = ", ".join((item.getName() + ": " + str(self.player_items_map[item]) for item in self.player_items_map))
-        self.player_hp_bar = pygame.Surface((100 * self.player.getHp()/self.player.getMaxHp(), 20))
+        self.player_hp_bar = pygame.Surface((int(100 * self.player.getHp()//self.player.getMaxHp()), 20))
         self.player_hp_bar.fill('red')
 
         #update buttons
@@ -104,6 +107,8 @@ class BattleSystem():
         self.screen.blit(self.player_image, (self.width/4, self.height/2))
         self.screen.blit(self.enemy_image, (self.width/4 + 300, self.height/2))
         self.button_group.draw(self.screen)
+        self.player_status_icon.draw(self.screen)
+        self.enemy_status_icon.draw(self.screen)
         self.screen.blit(self.enemy_hp_bar_surface, (self.width/4 + 300, self.height/2 + 50))
         self.screen.blit(self.enemy_hp_bar, (self.width/4 + 300, self.height/2 + 50))
         self.screen.blit(self.text_enemyHp, (self.width/4 + 300, self.height/2 + 55))
@@ -134,12 +139,41 @@ class BattleSystem():
         return int(round(damage))
     def getPlayerAp(self):
         return self.player_ap
+
+    def checkForStatusIcon(self, entity):
+        if isinstance(entity, Model.Entities.Enemy.Enemy.Enemy):
+            self.enemy_status_icon = pygame.sprite.Group()
+            distance = 300
+        else:
+            self.player_status_icon = pygame.sprite.Group()
+            distance = 0
+        if entity.status:
+            self.cur_width_gap = 5
+            for status in entity.status:
+                if status == debuff_list[0]:
+                    image = pygame.image.load('../View/Graphics/debuff_vulnerable.png').convert_alpha()
+                elif status == debuff_list[1]:
+                    image = pygame.image.load('../View/Graphics/debuff_weaken.png').convert_alpha()
+                elif status == debuff_list[2]:
+                    image = pygame.image.load('../View/Graphics/debuff_bleed.png').convert_alpha()
+                elif status == debuff_list[3]:
+                    image = pygame.image.load('../View/Graphics/debuff_poison.png').convert_alpha()
+                icon = Icon((self.width/4 + distance + self.cur_width_gap, self.height/2 + 85), image = image)
+                self.cur_width_gap += 25
+                if isinstance(entity, Model.Entities.Enemy.Enemy.Enemy):
+                    self.enemy_status_icon.add(icon)
+                else:
+                    self.player_status_icon.add(icon)
+
+
     def playerAttacks(self, ability):
         if self.getPlayerAp() > 0:
             self.player.attack(self.enemy, ability, self.damageToInflict(self.player, self.enemy, ability.getElement(), ability.getDamageMod()))
             if ability.hasDebuff():
                 ability.inflictDebuff(self.enemy)
             self.player_ap -= 1
+        self.checkForStatusIcon(self.player)
+        self.checkForStatusIcon(self.enemy)
 
     def playerTurnEnd(self):
         #decrement player debuffs
@@ -165,6 +199,8 @@ class BattleSystem():
 
         self.enemy.attack(self.player, enemy_next_move, self.damageToInflict(self.enemy, self.player, enemy_attack_mods[0], enemy_attack_mods[1]))
         enemy_next_move.inflictDebuff(self.player)
+        self.checkForStatusIcon(self.player)
+        self.checkForStatusIcon(self.enemy)
 
         #enemy turn end
         self.enemy_attack_idx += 1
@@ -174,6 +210,7 @@ class BattleSystem():
         for debuff in self.enemy.status.copy():
             debuff.counterDecrement()
             debuff.checkForEffectRemoval(self.enemy)
+
         print("\n")#formatting
 
     def getCurrentAP(self):

@@ -20,7 +20,7 @@ class Node(pygame.sprite.Sprite):
     def getPos(self):
         return self.pos
 class Icon(pygame.sprite.Sprite):
-    def __init__(self, pos, color = None, image = None, size = (20,20), inventory_slot = 0, icon_type = None):
+    def __init__(self, pos, color = None, image = None, size = (20,20), idx = 0, icon_type = None):
         super().__init__()
         self.pos = pos
         if image == None and color == None:
@@ -32,7 +32,7 @@ class Icon(pygame.sprite.Sprite):
         else:
             self.image = image
         self.rect = self.image.get_rect(center = pos)
-        self.inventory_slot = inventory_slot
+        self.idx = idx
         self.icon_type = icon_type
     def update(self):
         self.rect.center = self.pos

@@ -77,11 +77,11 @@ class InventoryUI():
         for idx, slot in enumerate(inventory_slots.values()):
             if idx == self.inventory_idx:
                 if isinstance(slot['content'], Model.Items.Potion.Potion):
-                    sprite = Icon(slot['slot_pos'], image = pygame.image.load('../View/Graphics/potionRed.png').convert_alpha(), inventory_slot = idx)
+                    sprite = Icon(slot['slot_pos'], image = pygame.image.load('../View/Graphics/potionRed.png').convert_alpha(), idx= idx)
                     self.items.add(sprite)
                     self.inventory_idx += 1
                 elif isinstance(slot['content'], Model.Items.Weapon.Weapon):
-                    sprite = Icon(slot['slot_pos'], image = pygame.image.load('../View/Graphics/sword.png').convert_alpha(), inventory_slot = idx)
+                    sprite = Icon(slot['slot_pos'], image = pygame.image.load('../View/Graphics/sword.png').convert_alpha(), idx= idx)
                     self.weapons.add(sprite)
                     self.inventory_idx += 1
 
@@ -140,7 +140,7 @@ class InventoryUI():
                 if sprite.rect.collidepoint(pos):
                     self.screen.blit(ui_text_surface, ui_text_surface_pos)
                     idx = self.items.sprites().index(sprite)
-                    if isinstance(inventory_slots[sprite.inventory_slot]['content'], Model.Items.Potion.Potion):
+                    if isinstance(inventory_slots[sprite.idx]['content'], Model.Items.Potion.Potion):
                         if player.getHp() >= player.getMaxHp():
                             self.ui_text2 = self.smallFont.render("Player at max hp!", False, 'grey')
                         else:
@@ -154,7 +154,7 @@ class InventoryUI():
                 if sprite.rect.collidepoint(pos):
                     self.screen.blit(ui_text_surface, ui_text_surface_pos)
                     idx = self.weapons.sprites().index(sprite)
-                    if isinstance(inventory_slots[sprite.inventory_slot]['content'], Model.Items.Weapon.Weapon):
+                    if isinstance(inventory_slots[sprite.idx]['content'], Model.Items.Weapon.Weapon):
                         self.ui_text = self.font.render(list(player.getInventory()['Weapons'])[idx].getDescription(), False, "Green")
                         self.ui_text2 = self.smallFont.render("Click to equip", False, 'grey')
                         self.screen.blit(self.ui_text, ui_text_pos)
@@ -200,21 +200,21 @@ class InventoryUI():
         if self.weapons:
             for sprite in self.weapons.sprites():
                 if sprite.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
-                    if isinstance(inventory_slots[sprite.inventory_slot]['content'], Model.Items.Weapon.Weapon):
+                    if isinstance(inventory_slots[sprite.idx]['content'], Model.Items.Weapon.Weapon):
                         self.clicked = True
-                        player.equip(inventory_slots[sprite.inventory_slot]['content'])
-                        inventory_slots[sprite.inventory_slot]['content'] = None
+                        player.equip(inventory_slots[sprite.idx]['content'])
+                        inventory_slots[sprite.idx]['content'] = None
                         self.weapons.sprites().remove(sprite)
                         self.resetInventory()
                         break
         if self.items:
             for sprite in self.items.sprites():
                 if sprite.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
-                    if isinstance(inventory_slots[sprite.inventory_slot]['content'], Model.Items.Potion.Potion):
+                    if isinstance(inventory_slots[sprite.idx]['content'], Model.Items.Potion.Potion):
                         self.clicked = True
                         if player.getHp() < player.getMaxHp():
-                            player.itemUse(inventory_slots[sprite.inventory_slot]['content'])
-                            inventory_slots[sprite.inventory_slot]['content'] = None
+                            player.itemUse(inventory_slots[sprite.idx]['content'])
+                            inventory_slots[sprite.idx]['content'] = None
                             self.items.sprites().remove(sprite)
                             self.resetInventory()
                             break
