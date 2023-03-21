@@ -1,5 +1,6 @@
 from Model.Entities.Entity import Entity
 import pygame
+pygame.init()
 class NPC(Entity):
     font = pygame.font.Font(None, 35)
     def __init__(self, name, hp, power):

@@ -76,9 +76,9 @@ class Overworld():
         self.width = screen_width
         self.height = screen_height
         self.screen = pygame.display.set_mode((screen_width, screen_height))
-        self.background = pygame.image.load('../View/Graphics/dungeon.png').convert_alpha()
+        #self.background = pygame.image.load('../View/Graphics/dungeon.png').convert_alpha()
 
-        #sprites
+        #call setup
         self.setupNodes()
         self.setupPlayerIcon()
         self.setupOverworldIcons()
@@ -168,11 +168,6 @@ class Overworld():
                     self.ui_weapons.add(sprite)
                     self.inventory_idx += 1
 
-    def updateHud(self):
-        self.hud_text_playerHp = self.font.render("HP: " + str(player.getHp()) + "/" + str(player.getMaxHp()), False, 'red')
-        self.hud_text_playerPwr = self.font.render("Attack: " + str(player.getPower()), False, "white")
-        self.screen.blit(self.hud_text_playerHp,(1100,50))
-        self.screen.blit(self.hud_text_playerPwr,(1100,100))
     def interactWithInventory(self):
         pos = pygame.mouse.get_pos()
         ui_text_pos = (900, 470)
@@ -253,9 +248,7 @@ class Overworld():
                         player.equip(inventory_slots[sprite.inventory_slot]['content'])
                         inventory_slots[sprite.inventory_slot]['content'] = None
                         self.ui_weapons.sprites().remove(sprite)
-                        #reset inventory icons
-                        self.showEquipment()
-                        self.showInventory()
+                        self.resetInventory()
                         break
         if self.ui_items:
             for sprite in self.ui_items.sprites():
@@ -266,15 +259,18 @@ class Overworld():
                             player.itemUse(inventory_slots[sprite.inventory_slot]['content'])
                             inventory_slots[sprite.inventory_slot]['content'] = None
                             self.ui_items.sprites().remove(sprite)
-                            # reset inventory icons
-                            self.showEquipment()
-                            self.showInventory()
+                            self.resetInventory()
                             break
         if self.ui_inventory:
             if self.ui_inventory.sprites()[2].rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1:
                 self.showInventory()
             elif self.ui_inventory.sprites()[3].rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1:
                 self.showEquipment()
+    def resetInventory(self):
+        self.ui_weapons = pygame.sprite.Group()
+        self.ui_items = pygame.sprite.Group()
+        self.inventory_idx = 0
+        self.updateInventory()
     def timer(self):
         delay_time = 175
         if pygame.mouse.get_pressed()[0] == 1 and self.current_time > self.mouse_click_time + delay_time:
@@ -441,7 +437,7 @@ class Overworld():
                 self.checkForNextStage()
 
     def run(self):
-        self.screen.blit(self.background, (0, 0))
+        #self.screen.blit(self.background, (0, 0))
         self.timer()
         self.updatePlayerIconPos()
         self.setupNodes()
@@ -453,12 +449,15 @@ class Overworld():
         self.npc_icons.draw(self.display_surface)
         self.player_icon.draw(self.display_surface)
         self.input()
-        self.updateHud()
-        self.ui_inventory.draw(self.display_surface)
-        self.ui_equipment.draw(self.display_surface)
-        self.screen.blit(self.ui_inventory_title_surface, (940, 145))
-        self.screen.blit(self.ui_inventory_title_text,(940, 145))
-        self.ui_items.draw(self.display_surface)
-        self.ui_weapons.draw(self.display_surface)
-        self.interactWithInventory()
+        #self.ui_inventory.draw(self.display_surface)
+        #self.ui_equipment.draw(self.display_surface)
+        #self.ui_inventory.draw(self.background)
+        #self.ui_equipment.draw(self.background)
+        #self.background.blit(self.ui_inventory_title_surface, (940, 145))
+        #self.background.blit(self.ui_inventory_title_text,(940, 145))
+        #self.ui_items.draw(self.display_surface)
+        #self.ui_weapons.draw(self.display_surface)
+        #self.ui_items.draw(self.background)
+        #self.ui_weapons.draw(self.background)
+        #self.interactWithInventory()
         self.displayWinMessage()

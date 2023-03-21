@@ -41,7 +41,7 @@ font = pygame.font.Font(None, 50)
 #font = pygame.font.font('font/fontstyle.ttf, font-size)
 
 screen = pygame.display.set_mode(resolution)
-pygame.display.set_caption("Simple RPG")
+pygame.display.set_caption("RPG Dungeon Crawler")
 width = screen.get_width()
 height = screen.get_height()
 game = Game(screen)

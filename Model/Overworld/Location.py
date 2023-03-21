@@ -13,7 +13,7 @@ class Location:
         self.location_content = location_data['content']
         self.new_available_locations = location_data['unlock']
 
-        #create_overworld method from Game.py
+        #methods from Game.py
         self.create_overworld = create_overworld
 
         #enemy overworld data
