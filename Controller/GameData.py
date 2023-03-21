@@ -38,9 +38,9 @@ location_4 = {'node_pos' : (490,400), 'content' : enemy2, 'unlock' : [2, 4, 5, 6
 location_5 = {'node_pos' : (490,200), 'content' : potion3, 'unlock' : [4, 5]}
 location_6 = {'node_pos' : (640,400), 'content' : enemy3, 'unlock' : [4, 6, 7]}
 location_7 = {'node_pos' : (640,200), 'content' : potion2, 'unlock' : [6, 7, 9]}
-location_8 = {'node_pos' : (820,400), 'content' : weapon1, 'unlock' : [8, 9, 10]}
+location_8 = {'node_pos' : (820,600), 'content' : weapon1, 'unlock' : [8, 9, 10]}
 location_9 = {'node_pos' : (820,200), 'content' : None, 'unlock' : [7, 8, 9]}
-location_10 = {'node_pos' : (1100,400), 'content' : None, 'unlock' : [8, 10]}
+location_10 = {'node_pos' : (1300,600), 'content' : None, 'unlock' : [8, 10]}
 
 locations = {
     -1: location_00,

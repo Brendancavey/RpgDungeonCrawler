@@ -1,5 +1,6 @@
 from Model.Overworld.Overworld import Overworld
 from Model.Overworld.Location import Location
+from Model.InventoryUI import InventoryUI
 from Controller.GameData import enemy_locations, treasure_locations, npc_locations, player
 from Controller.Setting import screen_height, screen_width
 import pygame
@@ -22,13 +23,14 @@ class Game():
         #player hud
         self.hud_surface = pygame.Surface((screen_width, 50))
         self.hud_surface.fill('darkslategrey')
+        self.ui_inventory = InventoryUI(self.screen)
 
         #background
         self.background = pygame.image.load('../View/Graphics/dungeon.png').convert_alpha()
 
         #create overworld
-        self.overworld = Overworld(self.start_location, self.available_locations, self.screen, self.createLocation, self.enemies,
-                                   self.enemy_locations, self.visited_locations, self.treasure_locations, self.npc_locations)
+        self.overworld = Overworld(self.start_location, self.available_locations, self.screen, self.background, self.createLocation, self.enemies,
+                                   self.enemy_locations, self.visited_locations, self.treasure_locations, self.npc_locations, self.ui_inventory)
         self.screen_status = 'overworld'
 
     def displayBackground(self):
@@ -41,6 +43,15 @@ class Game():
         self.screen.blit(self.hud_text_playerHp, (925, 15))
         self.screen.blit(self.hud_text_playerPwr, (1100, 15))
 
+    def displayInventory(self):
+        self.ui_inventory.timer()
+        self.background.blit(self.ui_inventory.title_surface, (940, 145))
+        self.background.blit(self.ui_inventory.title_text, (940, 145))
+        self.ui_inventory.graphic_inventory.draw(self.background)
+        self.ui_inventory.graphic_equipment.draw(self.background)
+        self.ui_inventory.items.draw(self.background)
+        self.ui_inventory.weapons.draw(self.background)
+        self.ui_inventory.run()
     def createLocation(self, current_location, remaining_enemies, enemy_locations, treasure_locations, npc_locations):
         self.enemy_locations = enemy_locations
         self.treasure_locations = treasure_locations
@@ -58,21 +69,14 @@ class Game():
         self.npc_locations = npc_locations
         #if new_available_locations > self.available_locations:
         #    self.available_locations = new_available_locations
-        self.overworld = Overworld(current_location, self.available_locations, self.screen, self.createLocation, self.enemies,
-                                   self.enemy_locations, self.visited_locations, self.treasure_locations, self.npc_locations)
+        self.overworld = Overworld(current_location, self.available_locations, self.screen, self.background, self.createLocation, self.enemies,
+                                   self.enemy_locations, self.visited_locations, self.treasure_locations, self.npc_locations, self.ui_inventory)
         self.screen_status = 'overworld'
 
     def run(self):
         self.displayBackground()
         self.displayHud()
-        self.overworld.timer()
-        self.background.blit(self.overworld.ui_inventory_title_surface, (940, 145))
-        self.background.blit(self.overworld.ui_inventory_title_text, (940, 145))
-        self.overworld.ui_inventory.draw(self.background)
-        self.overworld.ui_equipment.draw(self.background)
-        self.overworld.ui_items.draw(self.background)
-        self.overworld.ui_weapons.draw(self.background)
-        self.overworld.interactWithInventory()
+        self.displayInventory()
         if self.screen_status == 'overworld':
             self.overworld.run()
         else:
