@@ -39,3 +39,11 @@ an inventory system, a HUD, and much more.
 
 ![](screenshots/screenshot3.JPG)
 
+<h2> Accreditation </h2>
+<li><a href="https://opengameart.org/content/700-rpg-icons" target="_blank">Combat Debuff Icons
+<li><a href="https://opengameart.org/content/10-basic-rpg-enemies-the-goblin-supplement">Enemy Goblin
+<li><a href="https://opengameart.org/users/ravenmore">Inventory, equipment, items, and weapons icons
+<li><a href="https://opengameart.org/content/lpc-medieval-fantasy-character-sprites">Character sprites
+<li><a href="https://opengameart.org/content/dark-rpg-background">Background
+
+
