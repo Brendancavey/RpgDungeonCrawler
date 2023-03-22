@@ -224,6 +224,10 @@ class BattleSystem():
     def timer(self):
         wait_time = 1000
         if self.player_ap <= 0 and self.player_end_turn == False:
+            #disable buttons
+            for button in self.button_group:
+                button.disable()
+
             self.player_end_turn_time = pygame.time.get_ticks()
             self.player_end_turn = True
         self.current_time = pygame.time.get_ticks()
@@ -232,6 +236,9 @@ class BattleSystem():
             self.enemy_turn = True
             self.player_end_turn = False
             self.player_end_turn_time = self.current_time
+            #enable buttons
+            for button in self.button_group:
+                button.enable()
     def getCurrentAP(self):
         return self.player_ap
     def commenceBattle(self):
