@@ -11,10 +11,13 @@ class BattleSystem():
     smallFont = pygame.font.Font(None, 23)
     text_color = 'white'
     def __init__(self, player, enemy, screen_width, screen_height):
+        #time
+        self.player_end_turn_time = pygame.time.get_ticks()
+        self.current_time = pygame.time.get_ticks()
 
         # player
         self.player = player
-        self.default_player_ap = 3
+        self.default_player_ap = 1
         self.player_ap = self.default_player_ap
         #self.player_items_list = list(self.player.getItems())
         #self.player_items_map = self.player.getItems()
@@ -22,6 +25,7 @@ class BattleSystem():
         self.player_image = pygame.image.load('../View/Graphics/player.png').convert_alpha()
         self.player_hp_bar_surface = pygame.Surface((100, 20))
         self.player_status_icon = pygame.sprite.Group()
+        self.player_end_turn = False
 
         # enemy
         self.enemy = enemy
@@ -29,6 +33,7 @@ class BattleSystem():
         self.enemy_image = enemy.getImage().convert_alpha()
         self.enemy_hp_bar_surface = pygame.Surface((100, 20))
         self.enemy_status_icon = pygame.sprite.Group()
+        self.enemy_turn = False
 
         #buttons
         self.button1 = Button(200, 50, 200, 600, "green", self.player.abilities[0], 0)
@@ -56,6 +61,7 @@ class BattleSystem():
         self.text_interface = self.bigFont.render(str(self.damageToInflict(self.player, self.enemy)), False, "green")
 
     def update(self):
+        self.timer()
         #update enemy info
         if self.enemy_attack_idx >= len(self.enemy.getAttackPattern()) :
             self.enemy_attack_idx = 0
@@ -63,15 +69,17 @@ class BattleSystem():
         enemy_mods = self.enemy_next_move.getModifiers()
         enemy_damage = self.damageToInflict(self.enemy, self.player, enemy_mods[0], enemy_mods[1])
         #print(int(100 * self.enemy.getHp()//self.enemy.getMaxHp()))
-        self.enemy_hp_bar = pygame.Surface((int(100 * self.enemy.getHp()//self.enemy.getMaxHp()), 20))
-        self.enemy_hp_bar.fill('red')
+        if self.enemy.isAlive():
+            self.enemy_hp_bar = pygame.Surface((int(100 * self.enemy.getHp()//self.enemy.getMaxHp()), 20))
+            self.enemy_hp_bar.fill('red')
 
         #update player info
         #self.player_items_list = list(self.player.getItems())
         #self.player_items_map = self.player.getItems()
         #self.player_items_text = ", ".join((item.getName() + ": " + str(self.player_items_map[item]) for item in self.player_items_map))
-        self.player_hp_bar = pygame.Surface((int(100 * self.player.getHp()//self.player.getMaxHp()), 20))
-        self.player_hp_bar.fill('red')
+        if self.player.isAlive():
+            self.player_hp_bar = pygame.Surface((int(100 * self.player.getHp()//self.player.getMaxHp()), 20))
+            self.player_hp_bar.fill('red')
 
         #update buttons
         self.button_group.update()
@@ -176,18 +184,18 @@ class BattleSystem():
         self.checkForStatusIcon(self.enemy)
 
     def playerTurnEnd(self):
-        #decrement player debuffs
-        for dot in self.player.dot_damage:
-            print(self.player.getName() + " suffers " + str(dot[1]) + " damage from " + str(dot[0]))
-            self.player.takeDamage(dot[1])
-        for debuff in self.player.status.copy():
-            debuff.counterDecrement()
-            debuff.checkForEffectRemoval(self.player)
         #commence enemy turn
-        print("\n")#formatting
-        self.enemyTurn()
-        # reset player ap
-        self.player_ap = self.default_player_ap
+        if self.enemy_turn:
+            # decrement player debuffs
+            for dot in self.player.dot_damage:
+                print(self.player.getName() + " suffers " + str(dot[1]) + " damage from " + str(dot[0]))
+                self.player.takeDamage(dot[1])
+            for debuff in self.player.status.copy():
+                debuff.counterDecrement()
+                debuff.checkForEffectRemoval(self.player)
+            self.enemyTurn()
+            # reset player ap
+            self.player_ap = self.default_player_ap
 
     def enemyTurn(self):
         #enemyAttacks
@@ -210,9 +218,20 @@ class BattleSystem():
         for debuff in self.enemy.status.copy():
             debuff.counterDecrement()
             debuff.checkForEffectRemoval(self.enemy)
+        self.enemy_turn = False
 
         print("\n")#formatting
+    def timer(self):
+        wait_time = 1000
+        if self.player_ap <= 0 and self.player_end_turn == False:
+            self.player_end_turn_time = pygame.time.get_ticks()
+            self.player_end_turn = True
+        self.current_time = pygame.time.get_ticks()
 
+        if self.current_time - self.player_end_turn_time >= wait_time and self.player_end_turn:
+            self.enemy_turn = True
+            self.player_end_turn = False
+            self.player_end_turn_time = self.current_time
     def getCurrentAP(self):
         return self.player_ap
     def commenceBattle(self):

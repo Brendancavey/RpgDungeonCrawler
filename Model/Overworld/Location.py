@@ -45,3 +45,8 @@ class Location:
                 self.create_overworld(self.current_location, self.new_available_locations, self.remaining_enemies,
                                       self.enemy_locations,
                                       self.visited_locations, self.treasure_locations, self.npc_locations)
+            if not player.isAlive():
+                print("you lose!")
+                self.create_overworld(self.current_location, self.new_available_locations, self.remaining_enemies,
+                                      self.enemy_locations,
+                                      self.visited_locations, self.treasure_locations, self.npc_locations)
