@@ -15,6 +15,11 @@ class BattleSystem():
         self.player_end_turn_time = pygame.time.get_ticks()
         self.current_time = pygame.time.get_ticks()
 
+        # screen and surface
+        self.width = screen_width
+        self.height = screen_height
+        self.screen = pygame.display.set_mode((screen_width, screen_height))
+
         # player
         self.player = player
         self.default_player_ap = 1
@@ -23,9 +28,18 @@ class BattleSystem():
         #self.player_items_map = self.player.getItems()
         self.player.resetDebuffs()
         self.player_image = pygame.image.load('../View/Graphics/player.png').convert_alpha()
+        self.player_icon = Icon((self.width/4 + 25, self.height/2 + 20), image = pygame.image.load('../View/Graphics/player.png').convert_alpha())
+        self.player_sprite = pygame.sprite.GroupSingle()
+        self.player_sprite.add(self.player_icon)
         self.player_hp_bar_surface = pygame.Surface((100, 20))
         self.player_status_icon = pygame.sprite.Group()
         self.player_end_turn = False
+
+        #animation
+        self.playing_player_animation = False
+        self.play_player_animation = pygame.math.Vector2(0, 0)
+        self.playing_enemy_animation = False
+        self.play_enemy_animation = pygame.math.Vector2(0,0)
 
         # enemy
         self.enemy = enemy
@@ -34,6 +48,10 @@ class BattleSystem():
         self.enemy_hp_bar_surface = pygame.Surface((100, 20))
         self.enemy_status_icon = pygame.sprite.Group()
         self.enemy_turn = False
+        self.enemy_icon = Icon((self.width/4 + 320, self.height/2 + 25), image = self.enemy_image)
+        self.enemy_sprite = pygame.sprite.GroupSingle()
+        self.enemy_sprite.add(self.enemy_icon)
+
 
         #buttons
         self.button1 = Button(200, 50, 200, 600, "green", self.player.abilities[0], 0)
@@ -45,11 +63,6 @@ class BattleSystem():
         self.button_group = pygame.sprite.Group()
         for button in self.buttons:
             self.button_group.add(button)
-
-        # screen and surface
-        self.width = screen_width
-        self.height = screen_height
-        self.screen = pygame.display.set_mode((screen_width, screen_height))
 
             #text info
         self.text_enemyHp = self.smallFont.render(str(self.enemy.getName()) + " HP: " + str(self.enemy.getHp()), False, self.text_color)
@@ -112,8 +125,10 @@ class BattleSystem():
             self.text_interface = self.bigFont.render("", False, 'green')
 
             #blit to screen
-        self.screen.blit(self.player_image, (self.width/4, self.height/2))
-        self.screen.blit(self.enemy_image, (self.width/4 + 300, self.height/2))
+        #self.screen.blit(self.player_image, (self.width/4, self.height/2))
+        self.player_sprite.draw(self.screen)
+        #self.screen.blit(self.enemy_image, (self.width/4 + 300, self.height/2))
+        self.enemy_sprite.draw(self.screen)
         self.button_group.draw(self.screen)
         self.player_status_icon.draw(self.screen)
         self.enemy_status_icon.draw(self.screen)
@@ -130,6 +145,11 @@ class BattleSystem():
         self.screen.blit(self.text_button2, (420, 585))
         self.screen.blit(self.text_button3, (720, 585))
         self.screen.blit(self.text_button4, (1020, 585))
+
+        self.animatePlayer()
+        self.animateEnemy()
+        self.player_sprite.update()
+        self.enemy_sprite.update()
 
     def damageToInflict(self, attacker, target, element = None, attack_mod = None):
         if attack_mod:
@@ -173,16 +193,69 @@ class BattleSystem():
                 else:
                     self.player_status_icon.add(icon)
 
+    def animatePlayer(self):
+        if not self.playing_player_animation:
+            self.player_origin_point = self.player_sprite.sprite.pos
+        if self.playing_player_animation and self.play_player_animation:
+            self.player_sprite.sprite.pos += self.play_player_animation * 16
+            if self.enemy_sprite.sprite.detection_zone.collidepoint(self.player_sprite.sprite.pos):
+                self.playerDealDamage()
+                #self.play_animation = pygame.math.Vector2(0,0)
+                self.player_sprite.sprite.pos = self.player_origin_point
+                self.playing_player_animation = False
 
-    def playerAttacks(self, ability):
-        if self.getPlayerAp() > 0:
-            self.player.attack(self.enemy, ability, self.damageToInflict(self.player, self.enemy, ability.getElement(), ability.getDamageMod()))
-            if ability.hasDebuff():
-                ability.inflictDebuff(self.enemy)
-            self.player_ap -= 1
+    def animateEnemy(self):
+        if not self.playing_enemy_animation:
+            self.enemy_origin_point = self.enemy_sprite.sprite.pos
+        if self.playing_enemy_animation and self.play_enemy_animation and self.enemy_turn:
+            self.enemy_sprite.sprite.pos += self.play_enemy_animation * 16
+            if self.player_sprite.sprite.detection_zone.collidepoint(self.enemy_sprite.sprite.pos):
+                self.enemyDealDamage()
+                self.enemy_sprite.sprite.pos = self.enemy_origin_point
+                self.playing_enemy_animation = False
+                self.play_enemy_animation = pygame.math.Vector2(0, 0)
+    def enemyDealDamage(self):
+        # enemyAttacks
+        if self.enemy_attack_idx >= len(self.enemy.getAttackPattern()):
+            self.enemy_attack_idx = 0
+
+        enemy_next_move = self.enemy.getAttack(self.enemy_attack_idx)
+        enemy_attack_mods = self.enemy.getAttack(
+            self.enemy_attack_idx).getModifiers()  # (self.player, self.damageToInflict(self.enemy, self.player))
+
+        self.enemy.attack(self.player, enemy_next_move,
+                          self.damageToInflict(self.enemy, self.player, enemy_attack_mods[0], enemy_attack_mods[1]))
+        enemy_next_move.inflictDebuff(self.player)
         self.checkForStatusIcon(self.player)
         self.checkForStatusIcon(self.enemy)
 
+        # enemy turn end
+        self.enemy_attack_idx += 1
+        for dot in self.enemy.dot_damage:
+            print(self.enemy.getName() + " suffers " + str(dot[1]) + " damage from " + str(dot[0]))
+            self.enemy.takeDamage(dot[1])
+        for debuff in self.enemy.status.copy():
+            debuff.counterDecrement()
+            debuff.checkForEffectRemoval(self.enemy)
+        self.enemy_turn = False
+        # enable buttons
+        for button in self.button_group:
+            button.enable()
+
+    def playerAttacks(self):
+        if self.getPlayerAp() > 0:
+            self.playing_player_animation = True
+            self.play_player_animation = (pygame.math.Vector2(self.enemy_sprite.sprite.rect.center) - pygame.math.Vector2(self.player_sprite.sprite.rect.center)).normalize()
+
+    def playerDealDamage(self):
+        self.player.attack(self.enemy, self.ability,
+                           self.damageToInflict(self.player, self.enemy, self.ability.getElement(), self.ability.getDamageMod()))
+        if self.ability.hasDebuff():
+            self.ability.inflictDebuff(self.enemy)
+        self.player_ap -= 1
+
+        self.checkForStatusIcon(self.player)
+        self.checkForStatusIcon(self.enemy)
     def playerTurnEnd(self):
         #commence enemy turn
         if self.enemy_turn:
@@ -198,28 +271,10 @@ class BattleSystem():
             self.player_ap = self.default_player_ap
 
     def enemyTurn(self):
-        #enemyAttacks
-        if self.enemy_attack_idx >= len(self.enemy.getAttackPattern()) :
-            self.enemy_attack_idx = 0
-
-        enemy_next_move = self.enemy.getAttack(self.enemy_attack_idx)
-        enemy_attack_mods = self.enemy.getAttack(self.enemy_attack_idx).getModifiers()#(self.player, self.damageToInflict(self.enemy, self.player))
-
-        self.enemy.attack(self.player, enemy_next_move, self.damageToInflict(self.enemy, self.player, enemy_attack_mods[0], enemy_attack_mods[1]))
-        enemy_next_move.inflictDebuff(self.player)
-        self.checkForStatusIcon(self.player)
-        self.checkForStatusIcon(self.enemy)
-
-        #enemy turn end
-        self.enemy_attack_idx += 1
-        for dot in self.enemy.dot_damage:
-            print(self.enemy.getName() + " suffers " + str(dot[1]) + " damage from " + str(dot[0]))
-            self.enemy.takeDamage(dot[1])
-        for debuff in self.enemy.status.copy():
-            debuff.counterDecrement()
-            debuff.checkForEffectRemoval(self.enemy)
-        self.enemy_turn = False
-
+        #self.enemyDealDamage()
+        self.playing_enemy_animation = True
+        self.play_enemy_animation = (pygame.math.Vector2(self.player_sprite.sprite.rect.center) - pygame.math.Vector2(
+            self.enemy_sprite.sprite.rect.center)).normalize()
         print("\n")#formatting
     def timer(self):
         wait_time = 1000
@@ -236,9 +291,14 @@ class BattleSystem():
             self.enemy_turn = True
             self.player_end_turn = False
             self.player_end_turn_time = self.current_time
-            #enable buttons
-            for button in self.button_group:
-                button.enable()
+
+        """if self.enemy_turn:
+            self.player_end_turn_time = self.current_time
+            self.playing_enemy_animation = True
+            self.play_enemy_animation = (pygame.math.Vector2(self.player_sprite.sprite.rect.center) - pygame.math.Vector2(self.enemy_sprite.sprite.rect.center)).normalize()"""
+
+
+
     def getCurrentAP(self):
         return self.player_ap
     def commenceBattle(self):
@@ -270,8 +330,8 @@ class BattleSystem():
                 else:
                     print("inventory empty")
             else:
-                ability = button.action_name
-                self.playerAttacks(ability)
+                self.ability = button.action_name
+                self.playerAttacks()
         else:
             return
         button.action = False

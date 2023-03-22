@@ -20,7 +20,7 @@ class Node(pygame.sprite.Sprite):
     def getPos(self):
         return self.pos
 class Icon(pygame.sprite.Sprite):
-    def __init__(self, pos, color = None, image = None, size = (20,20), idx = 0, icon_type = None):
+    def __init__(self, pos, color = None, image = None, size = (20,20), idx = 0, icon_type = None, icon_speed = 16):
         super().__init__()
         self.pos = pos
         if image == None and color == None:
@@ -32,6 +32,7 @@ class Icon(pygame.sprite.Sprite):
         else:
             self.image = image
         self.rect = self.image.get_rect(center = pos)
+        self.detection_zone = pygame.Rect(self.rect.centerx-(icon_speed/2),self.rect.centery-(icon_speed/2),icon_speed,icon_speed)
         self.idx = idx
         self.icon_type = icon_type
     def update(self):
