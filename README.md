@@ -25,3 +25,17 @@ an inventory system, a HUD, and much more.
 
 <h2>Environment Used</h2>
  <li>Windows 10</li>
+ 
+<h2>Screenshots</h2>
+<p align="center">Exploration</p>
+
+![](screenshots/screenshot1.JPG)
+
+<p align="center">Inventory and Equipment Panels</p>
+
+![](screenshots/screenshot2.JPG)
+
+<p align="center">Strategic Turn-Based Combat</p>
+
+![](screenshots/screenshot3.JPG)
+
