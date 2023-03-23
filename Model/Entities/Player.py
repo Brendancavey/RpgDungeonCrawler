@@ -5,7 +5,7 @@ class Player(Entity):
         super().__init__(name, hp, power)
         self.addAbility(ability_list[0])
         self.addAbility(ability_list[1])
-        self.addAbility(ability_list[2])
+        self.addAbility(ability_list[3])
 
     def _checkForDeath(self):
         if self.getHp() <= 0:

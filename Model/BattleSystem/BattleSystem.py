@@ -16,17 +16,15 @@ class BattleSystem():
         self.player_end_turn_time = pygame.time.get_ticks()
         self.current_time = pygame.time.get_ticks()
 
-        # screen and surface
+        #screen and surface
         self.width = screen_width
         self.height = screen_height
         self.screen = pygame.display.set_mode((screen_width, screen_height))
 
-        # player
+        #player
         self.player = player
         self.default_player_ap = 2
         self.player_ap = self.default_player_ap
-        #self.player_items_list = list(self.player.getItems())
-        #self.player_items_map = self.player.getItems()
         self.player.resetDebuffs()
         self.player_image = pygame.image.load('../View/Graphics/player.png').convert_alpha()
         self.player_icon = Icon((self.width/4 + 25, self.height/2 + 20), image = pygame.image.load('../View/Graphics/player.png').convert_alpha())
@@ -42,7 +40,7 @@ class BattleSystem():
         self.playing_enemy_animation = False
         self.play_enemy_animation = pygame.math.Vector2(0,0)
 
-        # enemy
+        #enemy
         self.enemy = enemy
         self.enemy_attack_idx = 0
         self.enemy_image = enemy.getImage().convert_alpha()
@@ -53,19 +51,21 @@ class BattleSystem():
         self.enemy_sprite = pygame.sprite.GroupSingle()
         self.enemy_sprite.add(self.enemy_icon)
 
-
         #buttons
-        self.button1 = Button(200, 50, 200, 600, "green", self.player.abilities[0], 0)
-        self.button2 = Button(200, 50, 500, 600, "green", self.player.abilities[1], 1)
-        self.button3 = Button(200, 50, 800, 600, "green", self.player.abilities[2], 2)
-        self.button4 = Button(200, 50, 1100, 600, "green", self.player.abilities[3], 3)
-        #self.button5 = Button(200, 50, 1150, 75, "green", self.player.abilities[3], 4)
-        self.buttons = [self.button1, self.button2, self.button3, self.button4]#, self.button5]
+        self.cur_button_gap = 200
+        self.text_button_gap = 200
+        self.buttons = []
+        self.text_buttons = []
+        self.display_text_interface = False
         self.button_group = pygame.sprite.Group()
+        for idx in range(len(self.player.abilities)):
+            self.button = Button(200, 50, self.cur_button_gap, 600, 'green', self.player.abilities[idx], idx)
+            self.cur_button_gap += 300
+            self.buttons.append(self.button)
         for button in self.buttons:
             self.button_group.add(button)
 
-            #text info
+        #text info
         self.text_enemyHp = self.smallFont.render(str(self.enemy.getName()) + " HP: " + str(self.enemy.getHp()), False, self.text_color)
         self.text_enemy_intent = self.bigFont.render(
             str(self.enemy.getAttack(self.enemy_attack_idx)) + ": " + str(self.damageToInflict(self.enemy, self.player)),
@@ -83,7 +83,6 @@ class BattleSystem():
             self.enemy_next_move = self.enemy.getAttack(self.enemy_attack_idx)
             self.enemy_mods = self.enemy_next_move.getModifiers()
             self.enemy_damage = self.damageToInflict(self.enemy, self.player, self.enemy_mods[0], self.enemy_mods[1])
-            #print(int(100 * self.enemy.getHp()//self.enemy.getMaxHp()))
             self.enemy_hp_bar = pygame.Surface((int(100 * self.enemy.getHp()//self.enemy.getMaxHp()), 20))
             self.enemy_hp_bar.fill('red')
             self.enemy_sprite.draw(self.screen)
@@ -99,63 +98,47 @@ class BattleSystem():
             self.enemy_hp_bar
 
         #update player info
-        #self.player_items_list = list(self.player.getItems())
-        #self.player_items_map = self.player.getItems()
-        #self.player_items_text = ", ".join((item.getName() + ": " + str(self.player_items_map[item]) for item in self.player_items_map))
         if self.player.isAlive():
             self.player_hp_bar = pygame.Surface((int(100 * self.player.getHp()//self.player.getMaxHp()), 20))
             self.player_hp_bar.fill('red')
-
+            self.animatePlayer()
+            self.player_sprite.update()
 
         #update buttons
         self.button_group.update()
 
-        #update screen
-            #text info
-        self.text_button1 = self.mediumFont.render(self.button1.action_name.getName(), False, "black")
-        self.text_button2 = self.mediumFont.render(self.button2.action_name.getName(), False, "black")
-        self.text_button3 = self.mediumFont.render(self.button3.action_name.getName(), False, "black")
-        self.text_button4 = self.mediumFont.render(self.button4.action_name.getName(), False, "black")
+        #update text info
+        for button in self.button_group:
+            self.text_button = self.mediumFont.render(button.action_name.getName(), False, "black")
+            self.text_buttons.append(self.text_button)
         self.text_enemyHp = self.smallFont.render("HP: " + str(self.enemy.getHp()) + "/" + str(self.enemy.getMaxHp()), False, self.text_color)
         self.text_enemy_intent = self.mediumFont.render(str(self.enemy_next_move) + (": " + str(self.enemy_damage) if self.enemy_damage > 0 else ""), False, "red")
         self.text_playerAp = self.bigFont.render("AP: " + str(self.getPlayerAp()), False, self.text_color)
         self.text_playerHp = self.smallFont.render("HP: " + str(self.player.getHp()) + "/" + str(self.player.getMaxHp()), False,
                                                  self.text_color)
+        #text interface
+        for button in self.button_group:
+            if button.isHovered():
+                self.text_interface = self.bigFont.render(button.action_name.getDescription(
+                    self.damageToInflict(self.player, self.enemy, button.action_name.getElement(),
+                                         button.action_name.getDamageMod())), False,
+                                                          "green")
+                self.screen.blit(self.text_interface, (100, 650))
+        self.text_interface = self.bigFont.render("", False, 'green')
 
-            #text interface
-        if self.button1.isHovered():
-            self.text_interface = self.bigFont.render(self.button1.action_name.getDescription(self.damageToInflict(self.player, self.enemy, self.button1.action_name.getElement(), self.button1.action_name.getDamageMod())), False,
-                                                       "green")
-        elif self.button2.isHovered():
-            self.text_interface = self.bigFont.render(self.button2.action_name.getDescription(self.damageToInflict(self.player, self.enemy, self.button2.action_name.getElement(), self.button2.action_name.getDamageMod())), False, "green")
-        elif self.button3.isHovered():
-            self.text_interface = self.bigFont.render(self.button3.action_name.getDescription(self.damageToInflict(self.player, self.enemy, self.button3.action_name.getElement(), self.button3.action_name.getDamageMod())), False, "green")
-        elif self.button4.isHovered():
-            self.text_interface = self.bigFont.render(self.button4.action_name.getDescription(self.damageToInflict(self.player, self.enemy, self.button4.action_name.getElement(), self.button4.action_name.getDamageMod())), False, "green")
-        #elif self.button5.isHovered():
-         #   self.text_interface = self.bigFont.render((self.player_items_text) if self.player_items_list else "Inventory is empty", False, "green")
-        else:
-            self.text_interface = self.bigFont.render("", False, 'green')
-
-            #blit to screen
-        #self.screen.blit(self.player_image, (self.width/4, self.height/2))
+        #blit to screen
         self.player_sprite.draw(self.screen)
-        #self.screen.blit(self.enemy_image, (self.width/4 + 300, self.height/2))
         self.button_group.draw(self.screen)
         self.player_status_icon.draw(self.screen)
         self.screen.blit(self.text_playerAp, (1150, 650))
         self.screen.blit(self.player_hp_bar_surface, (self.width/4, self.height/2 + 50))
         self.screen.blit(self.player_hp_bar, (self.width/4, self.height/2 + 50))
         self.screen.blit(self.text_playerHp, (self.width/4, self.height/2 + 55))
-        self.screen.blit(self.text_interface, (100, 650))
-        self.screen.blit(self.text_button1, (120, 585))
-        self.screen.blit(self.text_button2, (420, 585))
-        self.screen.blit(self.text_button3, (720, 585))
-        self.screen.blit(self.text_button4, (1020, 585))
-
-        self.animatePlayer()
-        self.player_sprite.update()
-
+        #display text for buttons
+        for idx, text in enumerate(self.text_buttons):
+            if len(self.button_group.sprites()) > idx:
+                pos_x = self.button_group.sprites()[idx].pos_x
+                self.screen.blit(text, (pos_x - 80, 585))
 
     def damageToInflict(self, attacker, target, element = None, attack_mod = None):
         if attack_mod:
@@ -213,7 +196,6 @@ class BattleSystem():
                 attack_sound = mixer.Sound('../Controller/Sounds/Trap_00.wav')
                 attack_sound.play()
                 self.playerDealDamage()
-                #self.play_animation = pygame.math.Vector2(0,0)
                 self.player_sprite.sprite.pos = self.player_origin_point
                 self.playing_player_animation = False
 
@@ -233,7 +215,6 @@ class BattleSystem():
                 self.enemyDealDamage()
                 self.enemy_sprite.sprite.pos = self.enemy_origin_point
                 self.playing_enemy_animation = False
-                #self.play_enemy_animation = pygame.math.Vector2(0, 0)
     def enemyDealDamage(self):
         # enemyAttacks
         if self.enemy_attack_idx >= len(self.enemy.getAttackPattern()):
@@ -241,13 +222,13 @@ class BattleSystem():
 
         enemy_next_move = self.enemy.getAttack(self.enemy_attack_idx)
         enemy_attack_mods = self.enemy.getAttack(
-            self.enemy_attack_idx).getModifiers()  # (self.player, self.damageToInflict(self.enemy, self.player))
+            self.enemy_attack_idx).getModifiers()
 
         self.enemy.attack(self.player, enemy_next_move,
                           self.damageToInflict(self.enemy, self.player, enemy_attack_mods[0], enemy_attack_mods[1]))
         enemy_next_move.inflictDebuff(self.player)
 
-        # enemy turn end
+        #enemy turn end
         self.enemy_attack_idx += 1
         for dot in self.enemy.dot_damage:
             print(self.enemy.getName() + " suffers " + str(dot[1]) + " damage from " + str(dot[0]))
@@ -318,16 +299,6 @@ class BattleSystem():
             self.enemy_turn = True
             self.player_end_turn = False
             self.player_end_turn_time = self.current_time
-
-        """if self.enemy_turn:
-            self.player_end_turn_time = self.current_time
-            self.playing_enemy_animation = True
-            self.play_enemy_animation = (pygame.math.Vector2(self.player_sprite.sprite.rect.center) - pygame.math.Vector2(self.enemy_sprite.sprite.rect.center)).normalize()"""
-
-
-
-    def getCurrentAP(self):
-        return self.player_ap
     def commenceBattle(self):
         for button in self.button_group:
             #player turn
@@ -345,20 +316,8 @@ class BattleSystem():
         self.update()
     def performAction(self, button):
         if button.action:
-            # use potion action
-            if button._id == 4:
-                if self.player_items_list:
-                    if self.player.isFullHp():
-                        print(self.player.getName() + " is already at full HP!")
-                    else:
-                        print(self.player_items_list)
-                        self.player.itemUse(self.player_items_list[0])
-                        self.player_items_list = list(self.player.getItems())
-                else:
-                    print("inventory empty")
-            else:
-                self.ability = button.action_name
-                self.playerAttacks()
+            self.ability = button.action_name
+            self.playerAttacks()
         else:
             return
         button.action = False

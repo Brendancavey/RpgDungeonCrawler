@@ -11,6 +11,8 @@ class Button(pygame.sprite.Sprite):
         self.image = pygame.Surface([width, height])
         self.image.fill(color)
         self.rect = self.image.get_rect()
+        self.pos_x = pos_x
+        self.pos_y = pos_y
         self.rect.center = (pos_x, pos_y)
         #self._id = next(self._id_iter)
         self._id = id
