@@ -1,5 +1,5 @@
 from Model.BattleSystem.Effect import Effect
-import Model.BattleSystem.EffectTypes as e
+from Model.BattleSystem.EffectTypes import _effect_types_map
 class Debuff():
     def __init__(self, name, turn_counter, type_key, modifier):
         self.name = name
@@ -22,11 +22,11 @@ class Debuff():
         if self not in enemy.status:
             self.turn_counter = self.default_turn_counter
             effect_type = self.effect.getType()
-            if effect_type == e._effect_types_map[0]:
+            if effect_type == _effect_types_map[0]:
                 enemy.dot_damage.append(self.status_mod)
-            elif effect_type == e._effect_types_map[1]:
+            elif effect_type == _effect_types_map[1]:
                 enemy.take_more_damage.append(self.status_mod)
-            elif effect_type == e._effect_types_map[2]:
+            elif effect_type == _effect_types_map[2]:
                 enemy.weaken_attackPwr.append(self.status_mod)
             print("Inflicted " + enemy.getName() + " with " + self.name)
         else:
@@ -35,9 +35,9 @@ class Debuff():
         if self.turn_counter <= 0:
             entity.status.remove(self)
             effect_type = self.effect.getType()
-            if effect_type == e._effect_types_map[0]:
+            if effect_type == _effect_types_map[0]:
                 entity.dot_damage.remove(self.status_mod)
-            elif effect_type == e._effect_types_map[1]:
+            elif effect_type == _effect_types_map[1]:
                 entity.take_more_damage.remove(self.status_mod)
-            elif effect_type == e._effect_types_map[2]:
+            elif effect_type == _effect_types_map[2]:
                 entity.weaken_attackPwr.remove(self.status_mod)

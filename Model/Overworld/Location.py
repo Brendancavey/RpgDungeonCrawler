@@ -13,7 +13,7 @@ class Location:
         self.location_content = location_data['content']
         self.new_available_locations = location_data['unlock']
 
-        #create_overworld method from Game.py
+        #methods from Game.py
         self.create_overworld = create_overworld
 
         #enemy overworld data
@@ -42,6 +42,11 @@ class Location:
             self.battle.start()
             if not self.location_content.isAlive():
                 print("you win!")
+                self.create_overworld(self.current_location, self.new_available_locations, self.remaining_enemies,
+                                      self.enemy_locations,
+                                      self.visited_locations, self.treasure_locations, self.npc_locations)
+            if not player.isAlive():
+                print("you lose!")
                 self.create_overworld(self.current_location, self.new_available_locations, self.remaining_enemies,
                                       self.enemy_locations,
                                       self.visited_locations, self.treasure_locations, self.npc_locations)

@@ -41,14 +41,11 @@ font = pygame.font.Font(None, 50)
 #font = pygame.font.font('font/fontstyle.ttf, font-size)
 
 screen = pygame.display.set_mode(resolution)
-pygame.display.set_caption("Simple RPG")
+pygame.display.set_caption("RPG Dungeon Crawler")
 width = screen.get_width()
 height = screen.get_height()
 game = Game(screen)
 
-test_surface = pygame.Surface(resolution)
-test_surface.fill(blue)
-#background = pygame.image.load('graphics/background.png').convert()
 
 battle = BattleSystem(player, e.enemy_list[random.randint(0,len(e.enemy_list)-1)], width, height)
 while True:
@@ -57,10 +54,6 @@ while True:
             pygame.quit()
             exit()
     game.run()
-    #battle.commenceBattle()
-    #battle.update()
-
     pygame.display.update()
-    #screen.blit(background, (0,0))
 
     clock.tick(framerate)
