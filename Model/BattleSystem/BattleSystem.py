@@ -258,11 +258,14 @@ class BattleSystem():
         self.checkForStatusIcon(self.player)
         self.checkForStatusIcon(self.enemy)
         self.enemy_turn = False
-        # enable buttons
+        self.enableButtons()
+
+    def enableButtons(self):
         for button in self.button_group:
             button.enable()
-
-
+    def disableButtons(self):
+        for button in self.button_group:
+            button.disable()
     def playerAttacks(self):
         if self.getPlayerAp() > 0:
             self.playing_player_animation = True
@@ -277,6 +280,9 @@ class BattleSystem():
 
         self.checkForStatusIcon(self.player)
         self.checkForStatusIcon(self.enemy)
+        self.enableButtons()
+        if not self.enemy.isAlive():
+            self.disableButtons()
     def playerTurnEnd(self):
         #commence enemy turn
         if self.enemy_turn:
