@@ -59,6 +59,7 @@ class Location:
                 lose_sound = mixer.Sound('../Controller/Sounds/lose sound 1_0.wav')
                 lose_sound.play()
                 print("you lose!")
+                print(self.enemy_locations)
                 self.create_overworld(self.current_location, self.new_available_locations, self.remaining_enemies,
                                       self.enemy_locations,
                                       self.visited_locations, self.treasure_locations, self.npc_locations)
