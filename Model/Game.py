@@ -3,6 +3,7 @@ from Model.Overworld.Location import Location
 from Model.InventoryUI import InventoryUI
 from Controller.GameData import enemy_locations, treasure_locations, npc_locations, player
 from Controller.Setting import screen_height, screen_width
+from pygame import mixer
 import pygame
 
 class Game():
@@ -10,6 +11,8 @@ class Game():
     def __init__(self, screen):
         self.player = player
         self.screen = screen
+        mixer.music.load('../Controller/Sounds/TheLoomingBattle.OGG')
+        mixer.music.play(-1)
 
         #overworld data
         self.available_locations = [-1, 0, 1, 2]

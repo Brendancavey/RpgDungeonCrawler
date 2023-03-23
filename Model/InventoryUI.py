@@ -1,6 +1,7 @@
 import pygame
 import Model.Items.Potion
 import Model.Items.Weapon
+from pygame import mixer
 from Controller.GameData import player, inventory_slots
 from Model.Overworld.Overworld import Icon
 
@@ -201,6 +202,8 @@ class InventoryUI():
             for sprite in self.weapons.sprites():
                 if sprite.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
                     if isinstance(inventory_slots[sprite.idx]['content'], Model.Items.Weapon.Weapon):
+                        weapon_sound = mixer.Sound('../Controller/Sounds/sword-unsheathe.wav')
+                        weapon_sound.play()
                         self.clicked = True
                         player.equip(inventory_slots[sprite.idx]['content'])
                         inventory_slots[sprite.idx]['content'] = None
@@ -211,6 +214,8 @@ class InventoryUI():
             for sprite in self.items.sprites():
                 if sprite.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
                     if isinstance(inventory_slots[sprite.idx]['content'], Model.Items.Potion.Potion):
+                        potion_sound = mixer.Sound('../Controller/Sounds/bubble2.wav')
+                        potion_sound.play()
                         self.clicked = True
                         if player.getHp() < player.getMaxHp():
                             player.itemUse(inventory_slots[sprite.idx]['content'])
@@ -218,8 +223,18 @@ class InventoryUI():
                             self.items.sprites().remove(sprite)
                             self.resetInventory()
                             break
+        if pygame.mouse.get_pressed()[0] == 0:
+            self.play_sound = False
         if self.graphic_inventory:
             if self.graphic_inventory.sprites()[2].rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1:
+                if not self.play_sound:
+                    inventory_sound = mixer.Sound('../Controller/Sounds/cloth.wav')
+                    inventory_sound.play()
+                self.play_sound = True
                 self.showInventory()
             elif self.graphic_inventory.sprites()[3].rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1:
+                if not self.play_sound:
+                    equipment_sound = mixer.Sound('../Controller/Sounds/chainmail2.wav')
+                    equipment_sound.play()
+                    self.play_sound = True
                 self.showEquipment()

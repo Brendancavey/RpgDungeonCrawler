@@ -2,6 +2,7 @@ import pygame
 import Model.Inventory.Item
 from Controller.GameData import locations, inventory_slots, player
 from Controller.Setting import screen_height, screen_width
+from pygame import mixer
 import Model.Entities.Enemy.Enemy
 class Node(pygame.sprite.Sprite):
     def __init__(self, pos, status, icon_speed):
@@ -168,6 +169,8 @@ class Overworld():
 
         #collide with enemy
         if pygame.sprite.spritecollide(self.player_icon.sprite, self.enemy_icons, True):
+            enemy_sound = mixer.Sound('../Controller/Sounds/ogre2.wav')
+            enemy_sound.play()
             self.enemy_locations.remove(self.current_location)
             self.create_location(self.current_location, self.enemy_icons, self.enemy_locations, self.treasure_locations,
                                  self.npc_locations)
@@ -175,6 +178,8 @@ class Overworld():
 
         #collide with treasure
         if pygame.sprite.spritecollide(self.player_icon.sprite, self.treasure_icons, True):
+            treasure_sound = mixer.Sound('../Controller/Sounds/swing2.wav')
+            treasure_sound.play()
             self.treasure_locations.remove(self.current_location)
             print("You received a treasure!")
             location_content = location_data['content']

@@ -1,6 +1,7 @@
 from Model.Sprites.Button import Button
 from Model.Overworld.Overworld import Icon
 from Model.BattleSystem.Debuff.DebuffList import debuff_list
+from pygame import mixer
 import Model.Entities.Enemy.Enemy
 import pygame
 class BattleSystem():
@@ -22,7 +23,7 @@ class BattleSystem():
 
         # player
         self.player = player
-        self.default_player_ap = 1
+        self.default_player_ap = 2
         self.player_ap = self.default_player_ap
         #self.player_items_list = list(self.player.getItems())
         #self.player_items_map = self.player.getItems()
@@ -76,15 +77,26 @@ class BattleSystem():
     def update(self):
         self.timer()
         #update enemy info
-        if self.enemy_attack_idx >= len(self.enemy.getAttackPattern()) :
-            self.enemy_attack_idx = 0
-        self.enemy_next_move = self.enemy.getAttack(self.enemy_attack_idx)
-        enemy_mods = self.enemy_next_move.getModifiers()
-        enemy_damage = self.damageToInflict(self.enemy, self.player, enemy_mods[0], enemy_mods[1])
-        #print(int(100 * self.enemy.getHp()//self.enemy.getMaxHp()))
         if self.enemy.isAlive():
+            if self.enemy_attack_idx >= len(self.enemy.getAttackPattern()) :
+                self.enemy_attack_idx = 0
+            self.enemy_next_move = self.enemy.getAttack(self.enemy_attack_idx)
+            self.enemy_mods = self.enemy_next_move.getModifiers()
+            self.enemy_damage = self.damageToInflict(self.enemy, self.player, self.enemy_mods[0], self.enemy_mods[1])
+            #print(int(100 * self.enemy.getHp()//self.enemy.getMaxHp()))
             self.enemy_hp_bar = pygame.Surface((int(100 * self.enemy.getHp()//self.enemy.getMaxHp()), 20))
             self.enemy_hp_bar.fill('red')
+            self.enemy_sprite.draw(self.screen)
+            self.enemy_status_icon.draw(self.screen)
+            self.screen.blit(self.enemy_hp_bar_surface, (self.width / 4 + 300, self.height / 2 + 50))
+            self.screen.blit(self.enemy_hp_bar, (self.width / 4 + 300, self.height / 2 + 50))
+            self.screen.blit(self.text_enemyHp, (self.width / 4 + 300, self.height / 2 + 55))
+            self.screen.blit(self.text_enemy_intent, (self.width / 4 + 300, self.height / 2 - 50))
+            self.animateEnemy()
+            self.enemy_sprite.update()
+        else:
+            self.enemy_sprite = pygame.sprite.GroupSingle()
+            self.enemy_hp_bar
 
         #update player info
         #self.player_items_list = list(self.player.getItems())
@@ -93,6 +105,7 @@ class BattleSystem():
         if self.player.isAlive():
             self.player_hp_bar = pygame.Surface((int(100 * self.player.getHp()//self.player.getMaxHp()), 20))
             self.player_hp_bar.fill('red')
+
 
         #update buttons
         self.button_group.update()
@@ -104,7 +117,7 @@ class BattleSystem():
         self.text_button3 = self.mediumFont.render(self.button3.action_name.getName(), False, "black")
         self.text_button4 = self.mediumFont.render(self.button4.action_name.getName(), False, "black")
         self.text_enemyHp = self.smallFont.render("HP: " + str(self.enemy.getHp()) + "/" + str(self.enemy.getMaxHp()), False, self.text_color)
-        self.text_enemy_intent = self.mediumFont.render(str(self.enemy_next_move) + (": " + str(enemy_damage) if enemy_damage > 0 else ""), False, "red")
+        self.text_enemy_intent = self.mediumFont.render(str(self.enemy_next_move) + (": " + str(self.enemy_damage) if self.enemy_damage > 0 else ""), False, "red")
         self.text_playerAp = self.bigFont.render("AP: " + str(self.getPlayerAp()), False, self.text_color)
         self.text_playerHp = self.smallFont.render("HP: " + str(self.player.getHp()) + "/" + str(self.player.getMaxHp()), False,
                                                  self.text_color)
@@ -128,14 +141,8 @@ class BattleSystem():
         #self.screen.blit(self.player_image, (self.width/4, self.height/2))
         self.player_sprite.draw(self.screen)
         #self.screen.blit(self.enemy_image, (self.width/4 + 300, self.height/2))
-        self.enemy_sprite.draw(self.screen)
         self.button_group.draw(self.screen)
         self.player_status_icon.draw(self.screen)
-        self.enemy_status_icon.draw(self.screen)
-        self.screen.blit(self.enemy_hp_bar_surface, (self.width/4 + 300, self.height/2 + 50))
-        self.screen.blit(self.enemy_hp_bar, (self.width/4 + 300, self.height/2 + 50))
-        self.screen.blit(self.text_enemyHp, (self.width/4 + 300, self.height/2 + 55))
-        self.screen.blit(self.text_enemy_intent, (self.width/4 + 300, self.height/2 - 50))
         self.screen.blit(self.text_playerAp, (1150, 650))
         self.screen.blit(self.player_hp_bar_surface, (self.width/4, self.height/2 + 50))
         self.screen.blit(self.player_hp_bar, (self.width/4, self.height/2 + 50))
@@ -147,9 +154,8 @@ class BattleSystem():
         self.screen.blit(self.text_button4, (1020, 585))
 
         self.animatePlayer()
-        self.animateEnemy()
         self.player_sprite.update()
-        self.enemy_sprite.update()
+
 
     def damageToInflict(self, attacker, target, element = None, attack_mod = None):
         if attack_mod:
@@ -195,10 +201,17 @@ class BattleSystem():
 
     def animatePlayer(self):
         if not self.playing_player_animation:
+            self.play_player_sound = False
             self.player_origin_point = self.player_sprite.sprite.pos
         if self.playing_player_animation and self.play_player_animation:
+            if not self.play_player_sound:
+                self.play_player_sound = True
+                movement_sound = mixer.Sound('../Controller/Sounds/melee sound.wav')
+                movement_sound.play()
             self.player_sprite.sprite.pos += self.play_player_animation * 16
             if self.enemy_sprite.sprite.detection_zone.collidepoint(self.player_sprite.sprite.pos):
+                attack_sound = mixer.Sound('../Controller/Sounds/Trap_00.wav')
+                attack_sound.play()
                 self.playerDealDamage()
                 #self.play_animation = pygame.math.Vector2(0,0)
                 self.player_sprite.sprite.pos = self.player_origin_point
@@ -206,10 +219,17 @@ class BattleSystem():
 
     def animateEnemy(self):
         if not self.playing_enemy_animation:
+            self.play_enemy_sound = False
             self.enemy_origin_point = self.enemy_sprite.sprite.pos
         if self.playing_enemy_animation and self.play_enemy_animation and self.enemy_turn:
+            if not self.play_enemy_sound:
+                self.play_enemy_sound = True
+                movement_sound = mixer.Sound('../Controller/Sounds/swing.wav')
+                movement_sound.play()
             self.enemy_sprite.sprite.pos += self.play_enemy_animation * 16
             if self.player_sprite.sprite.detection_zone.collidepoint(self.enemy_sprite.sprite.pos):
+                attack_sound = mixer.Sound('../Controller/Sounds/sword-unsheathe5.wav')
+                attack_sound.play()
                 self.enemyDealDamage()
                 self.enemy_sprite.sprite.pos = self.enemy_origin_point
                 self.playing_enemy_animation = False
@@ -267,12 +287,12 @@ class BattleSystem():
             for debuff in self.player.status.copy():
                 debuff.counterDecrement()
                 debuff.checkForEffectRemoval(self.player)
-            self.enemyTurn()
+            if self.enemy.isAlive():
+                self.enemyTurn()
             # reset player ap
             self.player_ap = self.default_player_ap
 
     def enemyTurn(self):
-        #self.enemyDealDamage()
         self.playing_enemy_animation = True
         self.play_enemy_animation = (pygame.math.Vector2(self.player_sprite.sprite.rect.center) - pygame.math.Vector2(
             self.enemy_sprite.sprite.rect.center)).normalize()
