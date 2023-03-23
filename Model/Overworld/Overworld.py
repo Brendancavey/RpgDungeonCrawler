@@ -1,6 +1,7 @@
 import pygame
 import Model.Inventory.Item
-from Controller.GameData import locations, inventory_slots, player
+from Controller import GameData
+from Controller.GameData import locations, inventory_slots, player, enemy_locations, treasure_locations, npc_locations
 from Controller.Setting import screen_height, screen_width
 from pygame import mixer
 import Model.Entities.Enemy.Enemy
@@ -51,7 +52,7 @@ class Overworld():
         self.current_location = start_location
         self.create_location = create_location
         self.ui_inventory = ui_inventory
-        self.win_game = False
+        self.win_level = False
 
         #enemies
         self.enemy_icons = enemies
@@ -94,11 +95,18 @@ class Overworld():
             return self.current_location - 2
     def checkForWinCondition(self):
         if self.current_location == 10:
-            self.win_game = True
+            self.win_level = True
     def displayWinMessage(self):
-        if self.win_game == True:
-            win_text = self.largeFont.render("Thank you for play testing!", False, "green")
-            self.screen.blit(win_text, (300, 100))
+        if self.win_level == True:
+            GameData.level += 1
+            GameData.locations = GameData.determineLevel()
+            GameData.treasure_locations = GameData.determineTreasureLocations()
+            GameData.enemy_locations = GameData.determineEnemyLocations()
+            GameData.npc_locations = GameData.determineNpcLocations()
+            #win_text = self.largeFont.render("Thank you for play testing!", False, "green")
+            #self.screen.blit(win_text, (300, 100))
+            self.__init__(0, [-1, 0], self.display_surface, self.background, self.create_location,
+                          self.enemy_icons, GameData.enemy_locations, [], GameData.treasure_locations, GameData.npc_locations, self.ui_inventory )
     def findNextNode(self, current_location, direction):
         if direction == 'up':
             return current_location + 1
@@ -119,17 +127,17 @@ class Overworld():
 
         #load graphic
         for idx, location in enumerate(self.cur_adjacency_list):
-            if isinstance(locations[location]['content'], Model.Entities.Enemy.Enemy.Enemy):
+            if isinstance(GameData.locations[location]['content'], Model.Entities.Enemy.Enemy.Enemy):
                 icon = Icon(self.nodes.sprites()[idx].rect.center,
                             image = pygame.image.load('../View/Graphics/goblin.png').convert_alpha(),
                             icon_type = 'enemy')
                 icon_sprites.append(icon)
-            elif isinstance(locations[location]['content'], Model.Inventory.Item.Item):
+            elif isinstance(GameData.locations[location]['content'], Model.Inventory.Item.Item):
                 icon = Icon(self.nodes.sprites()[idx].rect.center,
                             image = pygame.image.load('../View/Graphics/chest.png').convert_alpha(),
                             icon_type = 'treasure')
                 icon_sprites.append(icon)
-            elif isinstance(locations[location]['content'], Model.Entities.NPC.NPC):
+            elif isinstance(GameData.locations[location]['content'], Model.Entities.NPC.NPC):
                 icon = Icon(self.nodes.sprites()[idx].rect.center,
                             image = pygame.image.load('../View/Graphics/NPC1.png').convert_alpha(),
                             icon_type = 'npc')
@@ -150,21 +158,21 @@ class Overworld():
 
     def setupNodes(self):
         self.nodes = pygame.sprite.Group()
-        self.cur_adjacency_list = locations[self.current_location]['unlock']
+        self.cur_adjacency_list = GameData.locations[self.current_location]['unlock']
         for node in self.cur_adjacency_list:
-            node_sprite = Node(locations[node]['node_pos'], 'available', self.speed)
+            node_sprite = Node(GameData.locations[node]['node_pos'], 'available', self.speed)
             self.nodes.add(node_sprite)
 
     def drawPaths(self):
         line_width = 6
-        self.current_point = locations[self.current_location]['node_pos']
+        self.current_point = GameData.locations[self.current_location]['node_pos']
         points = [node.getPos() for node in self.nodes if node.status == 'available']
         for point in points:
             pygame.draw.lines(self.display_surface, 'white', False, (self.current_point, point), line_width)
 
     def input(self):
         keys = pygame.key.get_pressed()
-        location_data = locations[self.current_location]
+        location_data = GameData.locations[self.current_location]
         new_available_locations = location_data['unlock']
 
         #collide with enemy

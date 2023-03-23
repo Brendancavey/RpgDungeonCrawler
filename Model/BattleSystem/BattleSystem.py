@@ -72,7 +72,7 @@ class BattleSystem():
             False, "red")
         self.text_playerAp = self.bigFont.render("AP: " + str(self.getPlayerAp()), False, "black")
         self.text_playerHp = self.smallFont.render(str(self.player.getName()) + " HP: " + str(self.player.getHp()), False, self.text_color)
-        self.text_interface = self.bigFont.render(str(self.damageToInflict(self.player, self.enemy)), False, "green")
+        self.text_interface = self.bigFont.render("", False, "green")
 
     def update(self):
         self.timer()
@@ -95,7 +95,6 @@ class BattleSystem():
             self.enemy_sprite.update()
         else:
             self.enemy_sprite = pygame.sprite.GroupSingle()
-            self.enemy_hp_bar
 
         #update player info
         if self.player.isAlive():
@@ -123,7 +122,7 @@ class BattleSystem():
                     self.damageToInflict(self.player, self.enemy, button.action_name.getElement(),
                                          button.action_name.getDamageMod())), False,
                                                           "green")
-                self.screen.blit(self.text_interface, (100, 650))
+            self.screen.blit(self.text_interface, (100, 650))
         self.text_interface = self.bigFont.render("", False, 'green')
 
         #blit to screen

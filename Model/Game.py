@@ -1,11 +1,11 @@
+from Controller import GameData
 from Model.Overworld.Overworld import Overworld
 from Model.Overworld.Location import Location
 from Model.InventoryUI import InventoryUI
-from Controller.GameData import enemy_locations, treasure_locations, npc_locations, player
+from Controller.GameData import enemy_locations, treasure_locations, npc_locations, player, locations
 from Controller.Setting import screen_height, screen_width
 from pygame import mixer
 import pygame
-
 class Game():
     font = pygame.font.Font(None, 35)
     def __init__(self, screen):

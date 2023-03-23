@@ -1,3 +1,4 @@
+from Controller import GameData
 from Controller.GameData import locations, player
 from Controller.Setting import screen_width, screen_height
 from Model.BattleSystem.BattleSystem import BattleSystem
@@ -11,7 +12,7 @@ class Location:
         #location setup
         self.display_surface = surface
         self.current_location = current_location
-        location_data = locations[current_location]
+        location_data = GameData.locations[current_location]
         self.location_content = location_data['content']
         self.new_available_locations = location_data['unlock']
 
@@ -51,10 +52,19 @@ class Location:
                     win_sound.play()
                     self.win_time = pygame.time.get_ticks()
                     self.win = True
+
                 if current_time - self.win_time >= 1500 and self.win:
+                    #go back to overworld
+                    print("going back to overworld")
                     self.create_overworld(self.current_location, self.new_available_locations, self.remaining_enemies,
                                           self.enemy_locations,
                                           self.visited_locations, self.treasure_locations, self.npc_locations)
+                    #reinitialize enemy for reuse
+                    print("reinitialized enemy")
+                    self.location_content.__init__(self.location_content.getName(), self.location_content.getMaxHp(),
+                                                   self.location_content.getPower(),
+                                                   self.location_content.getAttackPattern(),
+                                                   self.location_content.image)
             if not player.isAlive():
                 lose_sound = mixer.Sound('../Controller/Sounds/lose sound 1_0.wav')
                 lose_sound.play()
