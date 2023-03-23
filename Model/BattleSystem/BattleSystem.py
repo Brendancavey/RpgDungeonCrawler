@@ -213,7 +213,7 @@ class BattleSystem():
                 self.enemyDealDamage()
                 self.enemy_sprite.sprite.pos = self.enemy_origin_point
                 self.playing_enemy_animation = False
-                self.play_enemy_animation = pygame.math.Vector2(0, 0)
+                #self.play_enemy_animation = pygame.math.Vector2(0, 0)
     def enemyDealDamage(self):
         # enemyAttacks
         if self.enemy_attack_idx >= len(self.enemy.getAttackPattern()):
@@ -226,8 +226,6 @@ class BattleSystem():
         self.enemy.attack(self.player, enemy_next_move,
                           self.damageToInflict(self.enemy, self.player, enemy_attack_mods[0], enemy_attack_mods[1]))
         enemy_next_move.inflictDebuff(self.player)
-        self.checkForStatusIcon(self.player)
-        self.checkForStatusIcon(self.enemy)
 
         # enemy turn end
         self.enemy_attack_idx += 1
@@ -237,10 +235,13 @@ class BattleSystem():
         for debuff in self.enemy.status.copy():
             debuff.counterDecrement()
             debuff.checkForEffectRemoval(self.enemy)
+        self.checkForStatusIcon(self.player)
+        self.checkForStatusIcon(self.enemy)
         self.enemy_turn = False
         # enable buttons
         for button in self.button_group:
             button.enable()
+
 
     def playerAttacks(self):
         if self.getPlayerAp() > 0:
