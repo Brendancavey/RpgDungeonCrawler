@@ -56,6 +56,7 @@ class Game():
         self.ui_inventory.weapons.draw(self.background)
         self.ui_inventory.armor.draw(self.background)
         self.ui_inventory.accessories.draw(self.background)
+        self.ui_inventory.inv_quantity.draw(self.background)
         self.ui_inventory.run()
     def createLocation(self, current_location, remaining_enemies, enemy_locations, treasure_locations, npc_locations):
         self.enemy_locations = enemy_locations

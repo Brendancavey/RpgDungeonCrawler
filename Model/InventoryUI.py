@@ -11,6 +11,8 @@ class InventoryUI():
     font = pygame.font.Font(None, 35)
     largeFont = pygame.font.Font(None, 65)
     smallFont = pygame.font.Font(None, 29)
+    smallBold = pygame.font.Font(None, 30)
+    smallBold.set_bold
     def __init__(self, screen):
         #setup
         self.screen = screen
@@ -28,6 +30,9 @@ class InventoryUI():
     def resetInventory(self):
         self.weapons = pygame.sprite.Group()
         self.items = pygame.sprite.Group()
+        self.armor = pygame.sprite.Group()
+        self.accessories = pygame.sprite.Group()
+        self.inv_quantity = pygame.sprite.Group()
         self.inventory_idx = 0
         self.updateInventory()
     def setupInventory(self):
@@ -66,17 +71,24 @@ class InventoryUI():
         self.weapons = pygame.sprite.Group()
         self.armor = pygame.sprite.Group()
         self.accessories = pygame.sprite.Group()
+        #quantity
+        self.inv_quantity = pygame.sprite.Group()
 
         #find empty slot
         for inventory in player.getInventory():
             if isinstance(player.getInventory()[inventory], dict):
                 for item in player.getInventory()[inventory]:
+                    quantity = self.smallBold.render(str(player.getInventory()[inventory][item]), False, 'red')
                     for slot in inventory_slots.values():
                         if slot['content']:
-                            if item.getId() == slot['content'].getId():
+                            if item.getName() == slot['content'].getName():
+                                print("Same item")
                                 break
                         else:
+                            print("received")
                             slot['content'] = item
+                            qnty_sprite = Icon((slot['slot_pos'][0] + 25, slot['slot_pos'][1] + 15), image = quantity)
+                            self.inv_quantity.add(qnty_sprite)
                             break
         #update slot with graphic
         for idx, slot in enumerate(inventory_slots.values()):
@@ -121,6 +133,7 @@ class InventoryUI():
         self.items = pygame.sprite.Group()
         self.armor = pygame.sprite.Group()
         self.accessories = pygame.sprite.Group()
+        self.inv_quantity = pygame.sprite.Group()
 
         #reset inventory slot idx
         """have items appear in correct order when going back to inventory"""

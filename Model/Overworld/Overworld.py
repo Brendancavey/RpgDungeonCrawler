@@ -7,6 +7,7 @@ from pygame import mixer
 import Model.Entities.Enemy.Enemy
 class Node(pygame.sprite.Sprite):
     def __init__(self, pos, status, icon_speed):
+        icon_speed += 1
         node_size = (100,80)
         super().__init__()
         self.image = pygame.Surface(node_size)
@@ -53,6 +54,11 @@ class Overworld():
         self.create_location = create_location
         self.ui_inventory = ui_inventory
         self.win_level = False
+
+        #timer
+        self.key_press_time = pygame.time.get_ticks()
+        self.current_time = pygame.time.get_ticks()
+        self.key_pressed = False
 
         #enemies
         self.enemy_icons = enemies
@@ -201,7 +207,7 @@ class Overworld():
             player.interact(location_content, self.display_surface)
 
         #player_icon movement
-        if not self.moving:
+        if not self.moving and not self.key_pressed:
             if keys[pygame.K_UP] and self.getNextNode('up') in self.cur_adjacency_list:
                 self.visited.append(self.current_location)
                 self.move_direction = self.getMovementData(self.getNextNode('up'))
@@ -236,7 +242,7 @@ class Overworld():
         return(end - start).normalize()
     def updatePlayerIconPos(self):
         if self.moving and self.move_direction:
-            self.player_icon.sprite.pos += self.move_direction * self.speed
+            self.player_icon.sprite.pos += self.move_direction * (self.speed)
             idx_of_nodes = self.cur_adjacency_list.index(self.current_location)
             target_node = self.nodes.sprites()[idx_of_nodes]
             if target_node.detection_zone.collidepoint(self.player_icon.sprite.pos):
