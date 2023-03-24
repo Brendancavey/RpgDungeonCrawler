@@ -16,7 +16,7 @@ class Game():
 
         #overworld data
         self.available_locations = [-1, 0, 1, 2]
-        self.start_location = 0
+        self.start_location = -1
         self.visited_locations = []
         self.enemies = pygame.sprite.Group()
         self.enemy_locations = enemy_locations
@@ -38,11 +38,14 @@ class Game():
 
     def displayBackground(self):
         self.screen.blit(self.background, (0, 0))
+
     def displayHud(self):
         self.hud_text_playerHp = self.font.render("HP: " + str(player.getHp()) + "/" + str(player.getMaxHp()), False,
                                                   'white')
         self.hud_text_playerPwr = self.font.render("Attack: " + str(player.getPower()), False, "white")
+        self.hud_text_level = self.font.render("Stage: " + str(GameData.level), False, 'white')
         self.screen.blit(self.hud_surface, (0, 0))
+        self.screen.blit(self.hud_text_level, (50, 15))
         self.screen.blit(self.hud_text_playerHp, (925, 15))
         self.screen.blit(self.hud_text_playerPwr, (1100, 15))
 

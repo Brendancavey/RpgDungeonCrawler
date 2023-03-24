@@ -104,15 +104,22 @@ class Overworld():
             self.win_level = True
     def displayWinMessage(self):
         if self.win_level == True:
-            GameData.level += 1
-            GameData.locations = GameData.determineLevel()
-            GameData.treasure_locations = GameData.determineTreasureLocations()
-            GameData.enemy_locations = GameData.determineEnemyLocations()
-            GameData.npc_locations = GameData.determineNpcLocations()
-            #win_text = self.largeFont.render("Thank you for play testing!", False, "green")
-            #self.screen.blit(win_text, (300, 100))
-            self.__init__(0, [-1, 0], self.display_surface, self.background, self.create_location,
-                          self.enemy_icons, GameData.enemy_locations, [], GameData.treasure_locations, GameData.npc_locations, self.ui_inventory )
+            #demo purposes
+            if GameData.level <= 2:
+                GameData.level += 1
+            if GameData.level >= 3:
+                win_text = self.largeFont.render("Thank you for play testing!", False, "green")
+                self.screen.blit(win_text, (300, 100))
+            #advance to next stage
+            else:
+                GameData.locations = GameData.determineLevel()
+                GameData.treasure_locations = GameData.determineTreasureLocations()
+                GameData.enemy_locations = GameData.determineEnemyLocations()
+                GameData.npc_locations = GameData.determineNpcLocations()
+                next_stage_sound = mixer.Sound('../Controller/Sounds/win sound 1-2.wav')
+                next_stage_sound.play()
+                self.__init__(0, [-1, 0], self.display_surface, self.background, self.create_location,
+                              self.enemy_icons, GameData.enemy_locations, [], GameData.treasure_locations, GameData.npc_locations, self.ui_inventory )
     def findNextNode(self, current_location, direction):
         if direction == 'up':
             return current_location + 1
