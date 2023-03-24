@@ -287,15 +287,19 @@ class InventoryUI():
             for sprite in self.items.sprites():
                 if sprite.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
                     if isinstance(inventory_slots[sprite.idx]['content'], Model.Items.Potion.Potion):
-                        potion_sound = mixer.Sound('../Controller/Sounds/bubble2.wav')
-                        potion_sound.play()
                         self.clicked = True
                         if player.getHp() < player.getMaxHp():
+                            potion_sound = mixer.Sound('../Controller/Sounds/bubble2.wav')
+                            potion_sound.play()
                             player.itemUse(inventory_slots[sprite.idx]['content'])
                             inventory_slots[sprite.idx]['content'] = None
                             self.items.sprites().remove(sprite)
                             self.resetInventory()
                             break
+                        else:
+                            potion_sound = mixer.Sound('../Controller/Sounds/interface6.wav')
+                            potion_sound.play()
+
         if pygame.mouse.get_pressed()[0] == 0:
             self.play_sound = False
         if self.graphic_inventory:
