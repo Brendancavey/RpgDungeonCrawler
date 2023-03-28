@@ -140,6 +140,7 @@ class BattleSystem():
         self.text_interface2 = self.mediumFont.render("", False, 'grey')
 
         #blit to screen
+        self.hoverStatusIcon()
         self.player_sprite.draw(self.screen)
         self.button_group.draw(self.screen)
         self.player_status_icon.draw(self.screen)
@@ -196,7 +197,22 @@ class BattleSystem():
                     self.enemy_status_icon.add(icon)
                 else:
                     self.player_status_icon.add(icon)
+    def hoverStatusIcon(self):
+        def showStatus(entity):
+            status_description = list(entity.status)[idx].getDescription()
+            turn_counter = list(entity.status)[idx].getTurnCounter()
+            self.text_interface = self.bigFont.render(status_description, False, 'green')
+            self.text_interface2 = self.mediumFont.render("Remaining turns: " + str(turn_counter), False, 'grey')
 
+        pos = pygame.mouse.get_pos()
+        for idx, icon in enumerate(self.enemy_status_icon.sprites()):
+            if icon.rect.collidepoint(pos):
+                showStatus(self.enemy)
+                break
+        for idx, icon in enumerate(self.player_status_icon.sprites()):
+            if icon.rect.collidepoint(pos):
+                showStatus(self.player)
+                break
     def animatePlayer(self):
         if not self.playing_player_animation:
             self.play_player_sound = False
@@ -315,6 +331,7 @@ class BattleSystem():
             self.player_end_turn = False
             self.player_end_turn_time = self.current_time
     def commenceBattle(self):
+
         for button in self.button_group:
             #player turn
             if not self.playing_player_animation or not self.playing_enemy_animation:
@@ -324,7 +341,6 @@ class BattleSystem():
                     print(self.enemy.take_more_damage)
                     print(self.enemy.weaken_attackPwr)
                     print(self.enemy.dot_damage)
-
             #enemy turn
             if self.player_ap <= 0:
                 self.playerTurnEnd()

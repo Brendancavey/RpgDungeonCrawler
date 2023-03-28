@@ -1,12 +1,13 @@
 from Model.BattleSystem.Effect import Effect
 from Model.BattleSystem.EffectTypes import _effect_types_map
 class Debuff():
-    def __init__(self, name, turn_counter, type_key, modifier):
+    def __init__(self, name, turn_counter, type_key, modifier, description):
         self.name = name
         self.default_turn_counter = turn_counter
         self.turn_counter = turn_counter
         self.effect = Effect(type_key, modifier)
         self.status_mod = (self.name, self.effect.getModifier())
+        self.description = description
 
     def __repr__(self):
         return self.name + ": " + str(self.turn_counter)
@@ -14,6 +15,8 @@ class Debuff():
         return self.name + ": " + str(self.default_turn_counter)
     def getTurnCounter(self):
         return self.turn_counter
+    def getDescription(self):
+        return self.name + ": " + self.description
     def counterDecrement(self, value = 1):
         self.turn_counter -= value
     def counterIncrement(self, value = 1):

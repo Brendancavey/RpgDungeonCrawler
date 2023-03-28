@@ -11,8 +11,15 @@ class Game():
     def __init__(self, screen):
         self.player = player
         self.screen = screen
-        mixer.music.load('../Controller/Sounds/TheLoomingBattle.OGG')
-        mixer.music.play(-1)
+        mixer.Channel(0).play(mixer.Sound('../Controller/Sounds/TheLoomingBattle.OGG'))
+        #mixer.Channel(0).play(-1)
+        mixer.Channel(1).play(mixer.Sound('../Controller/Sounds/Ambience_Cave_00.wav'))
+        #mixer.Channel(1).play(-1)
+        #mixer.music.load('../Controller/Sounds/TheLoomingBattle.OGG')
+        #mixer.music.play(-1)
+        #mixer.music.set_volume(0.80)
+        #mixer.music.load('../Controller/Sounds/Ambience_Cave_00.wav')
+        #mixer.music.play(-1)
 
         #overworld data
         self.available_locations = [-1, 0, 1, 2]

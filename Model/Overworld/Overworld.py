@@ -54,6 +54,8 @@ class Overworld():
         self.create_location = create_location
         self.ui_inventory = ui_inventory
         self.win_level = False
+        self.level_up = False
+        self.checkForLevelUp()
 
         #timer
         self.key_press_time = pygame.time.get_ticks()
@@ -99,6 +101,28 @@ class Overworld():
             return self.current_location - 1
         elif direction == 'left':
             return self.current_location - 2
+    def checkForLevelUp(self):
+        if GameData.defeated_enemies == 2 and player.player_level == 1:
+            mixer.Channel(0).pause()
+            level_up_sound = mixer.Sound('../Controller/Sounds/Jingle_Win_00.wav')
+            level_up_sound.play()
+            player.modifyMaxHp(player.getMaxHp() + 1)
+            player.max_ap += 1
+            player.player_level += 1
+            self.level_up = True
+    def displayLevelUpMessage(self):
+        if self.level_up == True:
+            level_up_text = self.largeFont.render("You've grown stronger!", False, 'green')
+            textbox = pygame.Surface((1280, 200))
+            textbox.fill('bisque')
+            level_up_hp = self.smallFont.render("HP: +1", False, 'black')
+            level_up_ap = self.smallFont.render("AP: +1", False, 'black')
+            self.screen.blit(level_up_text, (300, 100))
+            self.screen.blit(textbox, (0, 550))
+            self.screen.blit(level_up_hp, (25, 565))
+            self.screen.blit(level_up_ap, (25, 585))
+        else:
+            mixer.Channel(0).unpause()
     def checkForWinCondition(self):
         if self.current_location == 10:
             self.win_level = True
@@ -218,15 +242,19 @@ class Overworld():
             if keys[pygame.K_UP] and self.getNextNode('up') in self.cur_adjacency_list:
                 self.visited.append(self.current_location)
                 self.move_direction = self.getMovementData(self.getNextNode('up'))
+                self.level_up = False
             elif keys[pygame.K_DOWN] and self.getNextNode('down') in self.cur_adjacency_list:
                 self.visited.append(self.current_location)
                 self.move_direction = self.getMovementData(self.getNextNode('down'))
+                self.level_up = False
             elif keys[pygame.K_RIGHT] and self.getNextNode('right') in self.cur_adjacency_list:
                 self.visited.append(self.current_location)
                 self.move_direction = self.getMovementData(self.getNextNode('right'))
+                self.level_up = False
             elif(keys[pygame.K_LEFT]) and self.getNextNode('left') in self.cur_adjacency_list:
                 self.visited.append(self.current_location)
                 self.move_direction = self.getMovementData(self.getNextNode('left'))
+                self.level_up = False
 
         #update for new location
         self.cur_adjacency_list = new_available_locations
@@ -268,3 +296,4 @@ class Overworld():
         self.player_icon.draw(self.display_surface)
         self.input()
         self.displayWinMessage()
+        self.displayLevelUpMessage()
