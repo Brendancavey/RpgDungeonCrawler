@@ -263,9 +263,8 @@ class BattleSystem():
         for button in self.button_group:
             button.disable()
     def playerAttacks(self):
-        if self.getPlayerAp() > 0:
-            self.playing_player_animation = True
-            self.play_player_animation = (pygame.math.Vector2(self.enemy_sprite.sprite.rect.center) - pygame.math.Vector2(self.player_sprite.sprite.rect.center)).normalize()
+        self.playing_player_animation = True
+        self.play_player_animation = (pygame.math.Vector2(self.enemy_sprite.sprite.rect.center) - pygame.math.Vector2(self.player_sprite.sprite.rect.center)).normalize()
 
     def playerDealDamage(self):
         self.player.attack(self.enemy, self.ability,
@@ -274,6 +273,7 @@ class BattleSystem():
             self.ability.inflictDebuff(self.enemy)
 
         self.player_ap -= self.ability.cost
+
         self.checkForStatusIcon(self.player)
         self.checkForStatusIcon(self.enemy)
         self.enableButtons()
@@ -317,12 +317,13 @@ class BattleSystem():
     def commenceBattle(self):
         for button in self.button_group:
             #player turn
-            if button.isClicked() and button.action_name.cost <= self.getPlayerAp():
-                self.performAction(button)
-                print(self.enemy.status)
-                print(self.enemy.take_more_damage)
-                print(self.enemy.weaken_attackPwr)
-                print(self.enemy.dot_damage)
+            if not self.playing_player_animation or not self.playing_enemy_animation:
+                if button.isClicked() and button.action_name.cost <= self.getPlayerAp():
+                    self.performAction(button)
+                    print(self.enemy.status)
+                    print(self.enemy.take_more_damage)
+                    print(self.enemy.weaken_attackPwr)
+                    print(self.enemy.dot_damage)
 
             #enemy turn
             if self.player_ap <= 0:
