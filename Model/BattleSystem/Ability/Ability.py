@@ -1,10 +1,11 @@
 class Ability():
-    def __init__(self, name, element, damage_mod, debuff = None, description = None):
+    def __init__(self, name, element, damage_mod, debuff = None, description = None, cost = None):
         self.name = name
         self.element = element
         self.damage_mod = damage_mod
         self.debuff = debuff
         self.description = description
+        self.cost = cost
 
     def __repr__(self):
         return self.name
