@@ -14,7 +14,7 @@ class Location:
     smallFont.set_bold(True)
     mediumFont = pygame.font.Font(None, 35)
     def __init__(self, current_location, surface, create_overworld, remaining_enemies, enemy_locations, visited_locations,
-                 treasure_locations, npc_locations):
+                 treasure_locations, npc_locations, ui_inventory):
         #location setup
         self.display_surface = surface
         self.current_location = current_location
@@ -25,6 +25,9 @@ class Location:
         #time
         self.click_time = pygame.time.get_ticks()
         self.current_time = pygame.time.get_ticks()
+
+        #ui inventory
+        self.ui_inventory = ui_inventory
 
         #methods from Game.py
         self.create_overworld = create_overworld
@@ -129,6 +132,7 @@ class Location:
                         self.location_content.loot.pop(idx)
                         self.setupLoot()
                     self.clicked = True
+                    self.ui_inventory.showInventory()
     def timer(self):
         wait_time = 500
         if self.clicked and pygame.mouse.get_pressed()[0] == 1:

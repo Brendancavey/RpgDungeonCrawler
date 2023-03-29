@@ -76,7 +76,7 @@ class Game():
         self.treasure_locations = treasure_locations
         self.npc_locations = npc_locations
         self.location = Location(current_location, self.screen, self.createOverworld, remaining_enemies, self.enemy_locations,
-                                 self.visited_locations, self.treasure_locations, self.npc_locations)
+                                 self.visited_locations, self.treasure_locations, self.npc_locations, self.ui_inventory)
         self.screen_status = 'level'
 
     def createOverworld(self, current_location, new_available_locations, remaining_enemies, enemy_locations, visited_locations,
