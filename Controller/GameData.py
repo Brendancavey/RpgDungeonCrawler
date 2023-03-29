@@ -40,7 +40,7 @@ def determineLevel():
         location_9 = {'node_pos' : (820,200), 'content' : enemy_list[1], 'unlock' : [7, 8, 9]}
         location_10 = {'node_pos' : (1030,700), 'content' : None, 'unlock' : [8, 10]}
     elif level == 1:
-        location_00 = {'node_pos': (200, 750), 'content': weapons_list[0], 'unlock': [-1, 0]}
+        location_00 = {'node_pos': (300, 600), 'content': weapons_list[0], 'unlock': [-1, 0]}
         location_0 = {'node_pos': (110, 600), 'content': None, 'unlock': [-1, 0, 1]}
         location_1 = {'node_pos': (110, 400), 'content': enemy_list[1], 'unlock': [0, 1, 3]}
         location_2 = {'node_pos': (300, 500), 'content': enemy_list[2], 'unlock': [0, 2, 3, 4]}

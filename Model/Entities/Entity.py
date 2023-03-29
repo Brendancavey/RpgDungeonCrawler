@@ -21,6 +21,7 @@ class Entity():
         self.take_more_damage = []
         #abilities
         self.abilities = []
+        self.ability = None #ability used in Battle System
 
 
     def addDebuff(self, debuff):

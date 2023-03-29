@@ -111,14 +111,10 @@ class Overworld():
             player.modifyMaxHp(player.getMaxHp() + 1)
             player.max_ap += 1
             player.player_level += 1
-            self.level_up = True
-        elif GameData.defeated_enemies == 5 and player.player_level == 2:
-            mixer.Channel(0).pause()
-            level_up_sound = mixer.Sound('../Controller/Sounds/Jingle_Win_00.wav')
-            level_up_sound.play()
-            player.player_level += 1
             player.addAbility(ability_list[1])
             self.level_up = True
+        elif GameData.defeated_enemies == 5 and player.player_level == 2:
+            pass
     def displayLevelUpMessage(self):
         if self.level_up and player.player_level == 2:
             level_up_text = self.largeFont.render("You've grown stronger!", False, 'green')
@@ -127,22 +123,15 @@ class Overworld():
             level_up_lvl = self.smallFont.render("Lvl: " + str(player.player_level), False, 'black')
             level_up_hp = self.smallFont.render("HP: +1", False, 'black')
             level_up_ap = self.smallFont.render("AP: +1", False, 'black')
+            new_ability = self.smallFont.render("New ability unlocked: " + str(player.abilities[1]), False, 'black')
             self.screen.blit(level_up_text, (300, 100))
             self.screen.blit(textbox, (0, 550))
             self.screen.blit(level_up_lvl, (25, 565))
             self.screen.blit(level_up_hp, (25, 590))
             self.screen.blit(level_up_ap, (25, 615))
+            self.screen.blit(new_ability, (25, 640))
         elif self.level_up and player.player_level == 3:
-            level_up_text = self.largeFont.render("You've grown stronger!", False, 'green')
-            textbox = pygame.Surface((1280, 200))
-            textbox.fill('bisque')
-
-            level_up_lvl = self.smallFont.render("Lvl: " + str(player.player_level), False, 'black')
-            new_ability = self.smallFont.render("New ability unlocked: " + str(player.abilities[1]), False, 'black')
-            self.screen.blit(level_up_text, (300, 100))
-            self.screen.blit(textbox, (0, 550))
-            self.screen.blit(level_up_lvl, (25, 565))
-            self.screen.blit(new_ability, (25, 590))
+            pass
         else:
             mixer.Channel(0).unpause()
     def checkForWinCondition(self):

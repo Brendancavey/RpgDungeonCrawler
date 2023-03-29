@@ -1,6 +1,7 @@
 from Model.Sprites.Button import Button
 from Model.Overworld.Overworld import Icon
 from Model.BattleSystem.Debuff.DebuffList import debuff_list
+from Model.BattleSystem.Ability.AbilityList import ability_list
 from pygame import mixer
 import Model.Entities.Enemy.Enemy
 import pygame
@@ -52,6 +53,9 @@ class BattleSystem():
         self.enemy_icon = Icon((self.width/4 + 320, self.height/2 + 25), image = self.enemy_image)
         self.enemy_sprite = pygame.sprite.GroupSingle()
         self.enemy_sprite.add(self.enemy_icon)
+        self.enemy_next_move = self.enemy.getAttack(self.enemy_attack_idx)
+        self.enemy_mods = self.enemy_next_move.getModifiers()
+        self.enemy_damage = self.damageToInflict(self.enemy, self.player, self.enemy_mods[0], self.enemy_mods[1])
 
         #buttons
         self.cur_button_gap = 200
@@ -84,11 +88,7 @@ class BattleSystem():
         self.timer()
         #update enemy info
         if self.enemy.isAlive():
-            if self.enemy_attack_idx >= len(self.enemy.getAttackPattern()) :
-                self.enemy_attack_idx = 0
-            self.enemy_next_move = self.enemy.getAttack(self.enemy_attack_idx)
-            self.enemy_mods = self.enemy_next_move.getModifiers()
-            self.enemy_damage = self.damageToInflict(self.enemy, self.player, self.enemy_mods[0], self.enemy_mods[1])
+
             self.enemy_hp_bar = pygame.Surface((int(100 * self.enemy.getHp()//self.enemy.getMaxHp()), 20))
             self.enemy_hp_bar.fill('red')
             self.enemy_sprite.draw(self.screen)
@@ -165,6 +165,12 @@ class BattleSystem():
             damage = attacker.getPower()
         #if target.isWeak(element):
             #damage = damage * 2
+        bleed = debuff_list[2]
+        if bleed in target.status and attacker.ability == ability_list[5]:
+            damage *= 2
+            self.player.ability.special_message = None
+        elif self.player.ability == ability_list[5]:
+            self.player.ability.special_message = self.player.ability.default_special_message
         for mod in target.take_more_damage:
             damage *= mod[1]
         for mod in attacker.weaken_attackPwr:
@@ -260,6 +266,12 @@ class BattleSystem():
                           self.damageToInflict(self.enemy, self.player, enemy_attack_mods[0], enemy_attack_mods[1]))
         enemy_next_move.inflictDebuff(self.player)
 
+        if self.enemy_attack_idx >= len(self.enemy.getAttackPattern()):
+            self.enemy_attack_idx = 0
+        self.enemy_next_move = self.enemy.getAttack(self.enemy_attack_idx)
+        self.enemy_mods = self.enemy_next_move.getModifiers()
+        self.enemy_damage = self.damageToInflict(self.enemy, self.player, self.enemy_mods[0], self.enemy_mods[1])
+
         #enemy turn end
         self.enemy_attack_idx += 1
         for dot in self.enemy.dot_damage:
@@ -271,7 +283,8 @@ class BattleSystem():
         self.checkForStatusIcon(self.player)
         self.checkForStatusIcon(self.enemy)
         self.enemy_turn = False
-        self.enableButtons()
+        if self.enemy.isAlive():
+            self.enableButtons()
 
     def enableButtons(self):
         for button in self.button_group:
@@ -284,12 +297,12 @@ class BattleSystem():
         self.play_player_animation = (pygame.math.Vector2(self.enemy_sprite.sprite.rect.center) - pygame.math.Vector2(self.player_sprite.sprite.rect.center)).normalize()
 
     def playerDealDamage(self):
-        self.player.attack(self.enemy, self.ability,
-                           self.damageToInflict(self.player, self.enemy, self.ability.getElement(), self.ability.getDamageMod()))
-        if self.ability.hasDebuff():
-            self.ability.inflictDebuff(self.enemy)
+        self.player.attack(self.enemy, self.player.ability,
+                           self.damageToInflict(self.player, self.enemy, self.player.ability.getElement(), self.player.ability.getDamageMod()))
+        if self.player.ability.hasDebuff():
+            self.player.ability.inflictDebuff(self.enemy)
 
-        self.player_ap -= self.ability.cost
+        self.player_ap -= self.player.ability.cost
 
         self.checkForStatusIcon(self.player)
         self.checkForStatusIcon(self.enemy)
@@ -332,8 +345,11 @@ class BattleSystem():
             self.player_end_turn = False
             self.player_end_turn_time = self.current_time
     def commenceBattle(self):
-
+        pos = pygame.mouse.get_pos()
         for button in self.button_group:
+            #button hover
+            if button.rect.collidepoint(pos) and not self.playing_player_animation:
+                self.player.ability = button.action_name
             #player turn
             if not self.playing_player_animation or not self.playing_enemy_animation:
                 if button.isClicked() and button.action_name.cost <= self.getPlayerAp():
@@ -350,7 +366,7 @@ class BattleSystem():
         self.update()
     def performAction(self, button):
         if button.action:
-            self.ability = button.action_name
+            self.player.ability = button.action_name
             self.playerAttacks()
         else:
             return
