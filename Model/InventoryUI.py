@@ -39,6 +39,7 @@ class InventoryUI():
         #inventory & equipment hud
         self.graphic_inventory = pygame.sprite.Group()
         self.graphic_equipment = pygame.sprite.Group()
+        self.graphic_coin = pygame.sprite.GroupSingle()
 
         #update inventory slots
         """reset values to account for player using items in battle
@@ -55,10 +56,12 @@ class InventoryUI():
         inventory_bar = Icon((1085, 422), image = pygame.image.load('../View/Graphics/inventory_bar.png').convert_alpha())
         inventory_icon = Icon((965, 419), image = pygame.image.load('../View/Graphics/backpack.png').convert_alpha())
         equipment_icon = Icon((1025, 419), image = pygame.image.load('../View/Graphics/armor.png').convert_alpha())
+        coin_icon = Icon((1175, 419), image = pygame.image.load('../View/Graphics/coin.png').convert_alpha())
         self.graphic_inventory.add(inventory_layout)
         self.graphic_inventory.add(inventory_bar)
         self.graphic_inventory.add(inventory_icon)
         self.graphic_inventory.add(equipment_icon)
+        self.graphic_coin.add(coin_icon)
 
     def updateInventory(self):
         """reset values to account for player equipping or using items not in the
@@ -161,6 +164,11 @@ class InventoryUI():
         ui_text_surface = pygame.Surface((375,75))
         ui_text_surface.fill('bisque4')
         self.screen.blit(ui_text_surface, ui_text_surface_pos)
+
+        #player gold
+        gold_amt = self.smallFont.render(str(player.getGoldValue()), True, 'black')
+        self.graphic_coin.draw(self.screen)
+        self.screen.blit(gold_amt, (self.graphic_coin.sprite.rect.x + 60, self.graphic_coin.sprite.rect.y + 23))
 
         # hover over items
         if self.items:

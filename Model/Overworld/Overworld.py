@@ -103,6 +103,7 @@ class Overworld():
         elif direction == 'left':
             return self.current_location - 2
     def checkForLevelUp(self):
+        print("defeated enemies: " + str(GameData.defeated_enemies))
         if GameData.defeated_enemies == 2 and player.player_level == 1:
             mixer.Channel(0).pause()
             level_up_sound = mixer.Sound('../Controller/Sounds/Jingle_Win_00.wav')
