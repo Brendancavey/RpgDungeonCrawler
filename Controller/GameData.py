@@ -51,7 +51,7 @@ def determineLevel():
         location_7 = {'node_pos': (600, 100), 'content': chad, 'unlock': [7, 9]}
         location_8 = {'node_pos': (820, 200), 'content': None, 'unlock': [6, 8, 9, 10]}
         location_9 = {'node_pos': (820, 100), 'content': enemy_list[5], 'unlock': [7, 8, 9]}
-        location_10 = {'node_pos': (1300, 100), 'content': None, 'unlock': [8, 10]}
+        location_10 = {'node_pos': (820, 730), 'content': None, 'unlock': [8, 10]}
     elif level == 2:
         location_00 = {'node_pos': (110, 300), 'content': potion_list[0], 'unlock': [-1, 0, 1]}
         location_0 = {'node_pos': (110, 100), 'content': None, 'unlock': [-1, 0, 2]}

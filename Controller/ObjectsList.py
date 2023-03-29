@@ -26,3 +26,8 @@ scroll0 = Accessory("Sharp Paper", 4, 10, 1)
 scroll1 = Accessory("Scroll of Tiny Power ", 4, 15, 2)
 scroll2 = Accessory("Scroll of Strength", 4, 20, 3)
 accessories_list = [scroll0, scroll1, scroll2]
+
+#randomized items list
+items_list0 = [potion_list[0], None, None]
+items_list1 = potion_list + weapons_list + armor_list + accessories_list
+

@@ -70,8 +70,17 @@ class Location:
                 self.coin = Icon(image_pos, image=pygame.image.load('../View/Graphics/coin.png').convert_alpha())
                 self.coin_quantity = self.smallFont.render("(" + str(loot) + ")", True, 'black')
                 self.loot.add(self.coin)
-            else:
+            elif isinstance(loot, Model.Items.Potion.Potion):
+                image = Icon(image_pos, image=pygame.image.load('../View/Graphics/potionRed.png').convert_alpha())
+                self.loot.add(image)
+            elif isinstance(loot, Model.Items.Armor.Armor):
                 image = Icon(image_pos, image=pygame.image.load('../View/Graphics/armor.png').convert_alpha())
+                self.loot.add(image)
+            elif isinstance(loot, Model.Items.Weapon.Weapon):
+                image = Icon(image_pos, image=pygame.image.load('../View/Graphics/sword.png').convert_alpha())
+                self.loot.add(image)
+            elif isinstance(loot, Model.Items.Accessory.Accessory):
+                image = Icon(image_pos, image=pygame.image.load('../View/Graphics/scroll.png').convert_alpha())
                 self.loot.add(image)
             image_height_offset += 50
     def showLoot(self):
@@ -134,7 +143,7 @@ class Location:
                     self.clicked = True
                     self.ui_inventory.showInventory()
     def timer(self):
-        wait_time = 500
+        wait_time = 100
         if self.clicked and pygame.mouse.get_pressed()[0] == 1:
             self.click_time = pygame.time.get_ticks()
         self.current_time = pygame.time.get_ticks()

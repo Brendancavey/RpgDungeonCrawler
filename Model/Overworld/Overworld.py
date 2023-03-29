@@ -230,6 +230,7 @@ class Overworld():
             pygame.draw.lines(self.display_surface, 'white', False, (self.current_point, point), line_width)
 
     def input(self):
+        pos = pygame.mouse.get_pos()
         keys = pygame.key.get_pressed()
         location_data = GameData.locations[self.current_location]
         new_available_locations = location_data['unlock']
@@ -261,6 +262,17 @@ class Overworld():
 
         #player_icon movement
         if not self.moving and not self.key_pressed:
+            if self.nodes:
+                for idx, node in enumerate(self.nodes.sprites()):
+                    if node.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1 and self.current_location != self.cur_adjacency_list[idx]:
+                        curr_node_idx = self.cur_adjacency_list.index(self.current_location)
+                        start_node = self.nodes.sprites()[curr_node_idx]
+                        end_node = self.nodes.sprites()[idx]
+                        start = pygame.math.Vector2(start_node.rect.center)
+                        end = pygame.math.Vector2(end_node.rect.center)
+                        self.move_direction = (end-start).normalize()
+                        self.moving = True
+                        self.current_location = self.cur_adjacency_list[idx]
             if keys[pygame.K_UP] and self.getNextNode('up') in self.cur_adjacency_list:
                 self.visited.append(self.current_location)
                 self.move_direction = self.getMovementData(self.getNextNode('up'))
