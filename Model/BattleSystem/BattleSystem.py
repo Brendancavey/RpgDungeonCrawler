@@ -199,7 +199,7 @@ class BattleSystem():
                     self.player_status_icon.add(icon)
     def hoverStatusIcon(self):
         def showStatus(entity):
-            if entity.isAlive():
+            if entity.isAlive() and entity.status:
                 status_description = list(entity.status)[idx].getDescription()
                 turn_counter = list(entity.status)[idx].getTurnCounter()
                 self.text_interface = self.bigFont.render(status_description, False, 'green')

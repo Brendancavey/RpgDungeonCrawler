@@ -3,7 +3,7 @@ import itertools
 
 class Button(pygame.sprite.Sprite):
     #_id_iter = itertools.count()
-    font = pygame.font.Font(None, 35)
+    font = pygame.font.Font(None, 25)
     def __init__(self, width, height, pos_x, pos_y, color, action_name, id):
         super().__init__()
         self.width = width
@@ -31,9 +31,9 @@ class Button(pygame.sprite.Sprite):
         self.image = pygame.Surface([self.width, self.height])
         self.image.fill(self.color)
         self.disabled = False
-    def renderButtonText(self, screen):
+    def renderButtonText(self, screen, width_offset = 0, height_offset = 0):
         text = self.font.render(self.action_name, False, 'black')
-        screen.blit(text, (self.pos_x - 35, self.pos_y - 10))
+        screen.blit(text, (self.pos_x - 35 + width_offset, self.pos_y - 10 + height_offset))
     def update(self):
         #check for mouse over button hover
         self.isHovered()

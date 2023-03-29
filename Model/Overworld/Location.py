@@ -62,8 +62,10 @@ class Location:
         image_height_offset = 0
         self.loot = pygame.sprite.Group()
         self.complete_button = Button(75, 30, screen_width/2, screen_height/2 + 20, 'green', action_name= 'Done', id= 0)
+        self.collect_button = Button(120, 30, screen_width/2 - 140, screen_height/2 + 20, 'green', action_name= 'Collect All', id= 1)
         self.button_group = pygame.sprite.Group()
         self.button_group.add(self.complete_button)
+        self.button_group.add(self.collect_button)
         for loot in self.location_content.loot:
             image_pos = (screen_width / 2 - self.width_offset + 50, screen_height / 2 - self.width_offset + 80 + image_height_offset)
             if isinstance(loot, int):
@@ -101,11 +103,36 @@ class Location:
         self.loot.draw(self.display_surface)
         self.button_group.draw(self.display_surface)
         self.button_group.update()
-        self.button_group.sprites()[0].renderButtonText(self.display_surface)
 
+        self.button_group.sprites()[0].renderButtonText(self.display_surface)
+        self.button_group.sprites()[1].renderButtonText(self.display_surface, width_offset= -25)
         if self.button_group.sprites()[0].isClicked():
             self.picked_up_loot = True
-
+        if self.button_group.sprites()[1].isClicked():
+            for idx, sprite in enumerate(self.loot.sprites().copy()):
+                if isinstance(self.location_content.loot[idx], int):
+                    sound = mixer.Sound('../Controller/Sounds/Pickup_Gold_00.wav')
+                    sound.play()
+                    player.modifyGold(self.location_content.loot[idx])
+                elif isinstance(self.location_content.loot[idx], Model.Items.Potion.Potion):
+                    sound = mixer.Sound('../Controller/Sounds/bubble2.wav')
+                    sound.play()
+                    player.itemObtain(self.location_content.loot[idx])
+                elif isinstance(self.location_content.loot[idx], Model.Items.Weapon.Weapon):
+                    sound = mixer.Sound('../Controller/Sounds/sword-unsheathe5.wav')
+                    sound.play()
+                    player.itemObtain(self.location_content.loot[idx])
+                elif isinstance(self.location_content.loot[idx], Model.Items.Armor.Armor):
+                    sound = mixer.Sound('../Controller/Sounds/chainmail1.wav')
+                    sound.play()
+                    player.itemObtain(self.location_content.loot[idx])
+                elif isinstance(self.location_content.loot[idx], Model.Items.Accessory.Accessory):
+                    sound = mixer.Sound('../Controller/Sounds/Inventory_Open_01.wav')
+                    sound.play()
+                    player.itemObtain(self.location_content.loot[idx])
+                self.ui_inventory.showInventory()
+                pygame.time.wait(75)
+            self.loot = pygame.sprite.Group()
         if self.loot:
             for sprite in self.loot.sprites():
                 if sprite.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:

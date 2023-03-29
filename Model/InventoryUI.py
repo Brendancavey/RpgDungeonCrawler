@@ -88,7 +88,7 @@ class InventoryUI():
                                 print("Same item")
                                 break
                         else:
-                            print("received")
+                            #print("received")
                             slot['content'] = item
                             qnty_sprite = Icon((slot['slot_pos'][0] + 25, slot['slot_pos'][1] + 15), image = quantity)
                             self.inv_quantity.add(qnty_sprite)

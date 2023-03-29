@@ -10,7 +10,7 @@ class Enemy(Entity):
         self.abilities = self.abilities + default_attack_pattern_list
         self.attack_pattern = EnemyAttackPattern(self.getAbilities())
         self.image = image
-        self.loot = [random.randint(1, 5), items_list0[random.randint(0, len(items_list0)-1)]]
+        self.loot = [random.randint(1, 5), armor_list[0], weapons_list[1], potion_list[2], items_list0[random.randint(0, len(items_list0)-1)]]
     def getAttack(self, index):
         return self.attack_pattern.getAttack(index)
     def getAttackPattern(self):
