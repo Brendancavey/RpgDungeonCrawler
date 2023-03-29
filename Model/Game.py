@@ -51,9 +51,12 @@ class Game():
                                                   'white')
         self.hud_text_playerPwr = self.font.render("Attack: " + str(player.getPower()), False, "white")
         self.hud_text_level = self.font.render("Stage: " + str(GameData.level), False, 'white')
+        self.hud_text_playerAp = self.font.render("Max AP: " + str(self.player.max_ap),
+                                                 False, 'white')
         self.screen.blit(self.hud_surface, (0, 0))
         self.screen.blit(self.hud_text_level, (50, 15))
-        self.screen.blit(self.hud_text_playerHp, (925, 15))
+        self.screen.blit(self.hud_text_playerHp, (750, 15))
+        self.screen.blit(self.hud_text_playerAp, (925, 15))
         self.screen.blit(self.hud_text_playerPwr, (1100, 15))
 
     def displayInventory(self):

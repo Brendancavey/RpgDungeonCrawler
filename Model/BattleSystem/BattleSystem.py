@@ -118,7 +118,7 @@ class BattleSystem():
             self.text_buttons.append(self.text_button)
         self.text_enemyHp = self.smallFont.render("HP: " + str(self.enemy.getHp()) + "/" + str(self.enemy.getMaxHp()), False, self.text_color)
         self.text_enemy_intent = self.mediumFont.render(str(self.enemy_next_move) + (": " + str(self.enemy_damage) if self.enemy_damage > 0 else ""), False, "red")
-        self.text_playerAp = self.bigFont.render("AP: " + str(self.getPlayerAp()), False, self.text_color)
+        self.text_playerAp = self.bigFont.render("AP: " + str(self.getPlayerAp()) + "/" + str(self.player.max_ap), False, self.text_color)
         self.text_playerHp = self.smallFont.render("HP: " + str(self.player.getHp()) + "/" + str(self.player.getMaxHp()), False,
                                                  self.text_color)
         #text interface
@@ -199,10 +199,11 @@ class BattleSystem():
                     self.player_status_icon.add(icon)
     def hoverStatusIcon(self):
         def showStatus(entity):
-            status_description = list(entity.status)[idx].getDescription()
-            turn_counter = list(entity.status)[idx].getTurnCounter()
-            self.text_interface = self.bigFont.render(status_description, False, 'green')
-            self.text_interface2 = self.mediumFont.render("Remaining turns: " + str(turn_counter), False, 'grey')
+            if entity.isAlive():
+                status_description = list(entity.status)[idx].getDescription()
+                turn_counter = list(entity.status)[idx].getTurnCounter()
+                self.text_interface = self.bigFont.render(status_description, False, 'green')
+                self.text_interface2 = self.mediumFont.render("Remaining turns: " + str(turn_counter), False, 'grey')
 
         pos = pygame.mouse.get_pos()
         for idx, icon in enumerate(self.enemy_status_icon.sprites()):

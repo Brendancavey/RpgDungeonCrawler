@@ -8,7 +8,7 @@ import Model.Entities.NPC
 
 
 #testing
-player = Player("Player", 100, 10)
+player = Player("Player", 25, 10)
 chad = NPC("Stranger", 15, 5, "Be careful of goblins!")
 
 #overworld layout
@@ -20,6 +20,7 @@ gap_width = 190
 gap_height = 200
 level = 0
 levels = 10
+defeated_enemies = 0
 
 #even locations are on the horizontal plane.
 #odd locations are on the vertical plane.
@@ -28,7 +29,7 @@ def determineLevel():
     if level == 0:
         location_00 = {'node_pos' : (110,400), 'content' : None, 'unlock' : [-1, 0]}
         location_0 = {'node_pos' : (110,250), 'content' : None, 'unlock' : [-1, 0, 2]}
-        location_1 = {'node_pos' : (110,100), 'content' : weapons_list[0], 'unlock' : [0, 1, 3]}
+        location_1 = {'node_pos' : (110,100), 'content' : potion_list[0], 'unlock' : [0, 1, 3]}
         location_2 = {'node_pos' : (300,400), 'content' : None, 'unlock' : [0, 2, 3, 4]}
         location_3 = {'node_pos' : (300,200), 'content' : None, 'unlock' : [1, 2, 3]}
         location_4 = {'node_pos' : (490,400), 'content' : chad, 'unlock' : [2, 4, 5, 6]}
@@ -39,17 +40,17 @@ def determineLevel():
         location_9 = {'node_pos' : (820,200), 'content' : enemy_list[1], 'unlock' : [7, 8, 9]}
         location_10 = {'node_pos' : (1030,700), 'content' : None, 'unlock' : [8, 10]}
     elif level == 1:
-        location_00 = {'node_pos': (200, 750), 'content': potion_list[0], 'unlock': [-1, 0]}
+        location_00 = {'node_pos': (200, 750), 'content': weapons_list[0], 'unlock': [-1, 0]}
         location_0 = {'node_pos': (110, 600), 'content': None, 'unlock': [-1, 0, 1]}
-        location_1 = {'node_pos': (110, 400), 'content': enemy_list[2], 'unlock': [0, 1, 3]}
-        location_2 = {'node_pos': (300, 500), 'content': armor_list[0], 'unlock': [0, 2, 3, 4]}
-        location_3 = {'node_pos': (300, 200), 'content': weapons_list[0], 'unlock': [1, 2, 3, 5]}
-        location_4 = {'node_pos': (450, 550), 'content': enemy_list[0], 'unlock': [2, 4, 5]}
-        location_5 = {'node_pos': (640, 400), 'content': accessories_list[0], 'unlock': [5, 6]}
-        location_6 = {'node_pos': (640, 200), 'content': enemy_list[1], 'unlock': [4, 5, 6, 8]}
+        location_1 = {'node_pos': (110, 400), 'content': enemy_list[1], 'unlock': [0, 1, 3]}
+        location_2 = {'node_pos': (300, 500), 'content': enemy_list[2], 'unlock': [0, 2, 3, 4]}
+        location_3 = {'node_pos': (300, 200), 'content': enemy_list[3], 'unlock': [1, 2, 3, 5]}
+        location_4 = {'node_pos': (450, 550), 'content': enemy_list[4], 'unlock': [2, 4, 5]}
+        location_5 = {'node_pos': (640, 400), 'content': enemy_list[2], 'unlock': [5, 6]}
+        location_6 = {'node_pos': (640, 200), 'content': potion_list[1], 'unlock': [4, 5, 6, 8]}
         location_7 = {'node_pos': (600, 100), 'content': chad, 'unlock': [7, 9]}
-        location_8 = {'node_pos': (820, 200), 'content': weapons_list[1], 'unlock': [6, 8, 9, 10]}
-        location_9 = {'node_pos': (820, 100), 'content': enemy_list[0], 'unlock': [7, 8, 9]}
+        location_8 = {'node_pos': (820, 200), 'content': None, 'unlock': [6, 8, 9, 10]}
+        location_9 = {'node_pos': (820, 100), 'content': enemy_list[5], 'unlock': [7, 8, 9]}
         location_10 = {'node_pos': (1300, 100), 'content': None, 'unlock': [8, 10]}
     elif level == 2:
         location_00 = {'node_pos': (110, 300), 'content': potion_list[0], 'unlock': [-1, 0, 1]}

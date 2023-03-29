@@ -20,9 +20,8 @@ class Entity():
         self.weaken_attackPwr = []
         self.take_more_damage = []
         #abilities
-        self.attk = Ability("Attack", "Normal", 1)
         self.abilities = []
-        self.addAbility(self.attk)
+
 
     def addDebuff(self, debuff):
         self.status.add(debuff)
@@ -55,6 +54,8 @@ class Entity():
         self._hp += value
         if self._hp > self._maxHp:
             self.setHp(self._maxHp)
+    def modifyMaxHp(self, newMaxHp):
+        self._maxHp = newMaxHp
     def modifyPower(self, value):
         self._power += value
     def modifyGold(self, value):

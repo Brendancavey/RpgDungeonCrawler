@@ -46,7 +46,6 @@ class Location:
                                   self.visited_locations, self.treasure_locations, self.npc_locations)
         if isinstance(self.location_content, Model.Entities.Enemy.Enemy.Enemy):
             self.battle.start()
-            print(GameData.chad.quest)
             if not self.location_content.isAlive():
                 if not self.win:
                     win_sound = mixer.Sound('../Controller/Sounds/Jingle_Achievement_00.wav')
@@ -55,12 +54,14 @@ class Location:
                     self.win = True
 
                 if current_time - self.win_time >= 1500 and self.win:
+                    GameData.defeated_enemies += 1
                     #go back to overworld
                     print("going back to overworld")
                     if self.current_location == 9 and GameData.level == 0:
                         GameData.locations[4]['content'] = None
                         GameData.chad.setDialogue("There has to be a way out of the dungeon!")
                         GameData.locations[8]['content'] = GameData.chad
+                        #GameData.player.max_ap += 1
                     if self.current_location == 9 and GameData.level == 1:
                         #GameData.locations[4]['content'] = None
                         GameData.chad.setDialogue("Thanks for saving me from the goblin! Now I must find a way out!")
