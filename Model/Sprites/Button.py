@@ -49,6 +49,12 @@ class Button(pygame.sprite.Sprite):
             else:
                 self.image.fill(self.color)
                 return False
+    def disableHovered(self):
+        pos = pygame.mouse.get_pos()
+        if self.rect.collidepoint(pos):
+            return True
+        else:
+            return False
     def isClicked(self):
         if self.disabled == False:
             pos = pygame.mouse.get_pos()

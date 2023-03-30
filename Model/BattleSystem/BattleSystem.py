@@ -111,6 +111,9 @@ class BattleSystem():
 
         #update buttons
         self.button_group.update()
+        for button in self.button_group:
+            if button.action_name.cost > self.player_ap:
+                button.disable()
 
         #update text info
         for button in self.button_group:
@@ -123,7 +126,7 @@ class BattleSystem():
                                                  self.text_color)
         #text interface
         for button in self.button_group:
-            if button.isHovered():
+            if button.disableHovered():
                 self.text_interface = self.bigFont.render(button.action_name.getDescription(
                     self.damageToInflict(self.player, self.enemy, button.action_name.getElement(),
                                          button.action_name.getDamageMod())), False,
@@ -255,25 +258,25 @@ class BattleSystem():
                 self.playing_enemy_animation = False
     def enemyDealDamage(self):
         # enemyAttacks
-        if self.enemy_attack_idx >= len(self.enemy.getAttackPattern()):
+        """if self.enemy_attack_idx >= len(self.enemy.getAttackPattern()):
             self.enemy_attack_idx = 0
 
-        enemy_next_move = self.enemy.getAttack(self.enemy_attack_idx)
-        enemy_attack_mods = self.enemy.getAttack(
-            self.enemy_attack_idx).getModifiers()
+        self.enemy_next_move = self.enemy.getAttack(self.enemy_attack_idx)
+        self.enemy_attack_mods = self.enemy.getAttack(
+            self.enemy_attack_idx).getModifiers()"""
 
-        self.enemy.attack(self.player, enemy_next_move,
-                          self.damageToInflict(self.enemy, self.player, enemy_attack_mods[0], enemy_attack_mods[1]))
-        enemy_next_move.inflictDebuff(self.player)
+        self.enemy.attack(self.player, self.enemy_next_move,
+                          self.damageToInflict(self.enemy, self.player, self.enemy_mods[0], self.enemy_mods[1]))
+        self.enemy_next_move.inflictDebuff(self.player)
 
+
+
+        #enemy turn end
+        self.enemy_attack_idx += 1
         if self.enemy_attack_idx >= len(self.enemy.getAttackPattern()):
             self.enemy_attack_idx = 0
         self.enemy_next_move = self.enemy.getAttack(self.enemy_attack_idx)
         self.enemy_mods = self.enemy_next_move.getModifiers()
-        self.enemy_damage = self.damageToInflict(self.enemy, self.player, self.enemy_mods[0], self.enemy_mods[1])
-
-        #enemy turn end
-        self.enemy_attack_idx += 1
         for dot in self.enemy.dot_damage:
             print(self.enemy.getName() + " suffers " + str(dot[1]) + " damage from " + str(dot[0]))
             self.enemy.takeDamage(dot[1])
@@ -282,6 +285,7 @@ class BattleSystem():
             debuff.checkForEffectRemoval(self.enemy)
         self.checkForStatusIcon(self.player)
         self.checkForStatusIcon(self.enemy)
+        self.enemy_damage = self.damageToInflict(self.enemy, self.player, self.enemy_mods[0], self.enemy_mods[1])
         self.enemy_turn = False
         if self.enemy.isAlive():
             self.enableButtons()
@@ -309,6 +313,9 @@ class BattleSystem():
         self.enableButtons()
         if not self.enemy.isAlive():
             self.disableButtons()
+        else:
+            self.enemy_damage = self.damageToInflict(self.enemy, self.player, self.enemy_mods[0], self.enemy_mods[1])
+
     def playerTurnEnd(self):
         #commence enemy turn
         if self.enemy_turn:
@@ -351,13 +358,13 @@ class BattleSystem():
             if button.rect.collidepoint(pos) and not self.playing_player_animation:
                 self.player.ability = button.action_name
             #player turn
-            if not self.playing_player_animation or not self.playing_enemy_animation:
-                if button.isClicked() and button.action_name.cost <= self.getPlayerAp():
-                    self.performAction(button)
-                    print(self.enemy.status)
-                    print(self.enemy.take_more_damage)
-                    print(self.enemy.weaken_attackPwr)
-                    print(self.enemy.dot_damage)
+            if not self.playing_player_animation and not self.playing_enemy_animation and button.isClicked() and \
+                    button.action_name.cost <= self.getPlayerAp():
+                        self.performAction(button)
+                        print(self.enemy.status)
+                        print(self.enemy.take_more_damage)
+                        print(self.enemy.weaken_attackPwr)
+                        print(self.enemy.dot_damage)
             #enemy turn
             if self.player_ap <= 0:
                 self.playerTurnEnd()

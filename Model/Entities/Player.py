@@ -6,7 +6,7 @@ class Player(Entity):
         super().__init__(name, hp, power)
         self.addAbility(ability_list[0])
         self.addAbility(ability_list[3])
-        self.addAbility(ability_list[5])
+        self.addAbility(ability_list[2])
         self.max_ap = 1
         self.player_level = 1
 
