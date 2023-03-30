@@ -2,6 +2,7 @@ import Model.Inventory.Item
 from Model.Inventory.Inventory import Inventory
 from Model.Inventory.Equipment import Equipment
 from Model.BattleSystem.Ability.Ability import Ability
+from Model.BattleSystem.Debuff.DebuffList import debuff_list
 
 
 class Entity():
@@ -22,6 +23,8 @@ class Entity():
         #abilities
         self.abilities = []
         self.ability = None #ability used in Battle System
+        #passives
+        self.passive_buffs = []
 
 
     def addDebuff(self, debuff):
@@ -90,12 +93,20 @@ class Entity():
             self._inventory.inventoryRemove(item)  # Use item from inventory to reflect removal from inventory
             self._equips.equip(item) #asking equipment to equip item
             self.modifyPower(item.getPowerMod())
+            print("equipping " + str(item))
+            if item.passive:
+                self.passive_buffs.append(item.passive)
+            print("passives: " + str(self.passive_buffs))
+
         else:
             print("Item not in inventory. Unable to equip " + item)
     def unequip(self, item):
         removed_item = self._equips.equipRemove(item)
         self._inventory.inventoryAdd(removed_item) #add item back into inventory
         self.modifyPower(-removed_item.getPowerMod())  # modifying power to reflect removed item
+        if removed_item.passive:
+            print("removing " + str(removed_item.passive))
+            self.passive_buffs.remove(removed_item.passive)
     def takeDamage(self, value):
         self.modifyHp(-value)
     def attack(self, entity, ability, damage):

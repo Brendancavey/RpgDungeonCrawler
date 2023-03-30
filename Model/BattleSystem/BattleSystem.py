@@ -269,8 +269,6 @@ class BattleSystem():
                           self.damageToInflict(self.enemy, self.player, self.enemy_mods[0], self.enemy_mods[1]))
         self.enemy_next_move.inflictDebuff(self.player)
 
-
-
         #enemy turn end
         self.enemy_attack_idx += 1
         if self.enemy_attack_idx >= len(self.enemy.getAttackPattern()):
@@ -305,6 +303,10 @@ class BattleSystem():
                            self.damageToInflict(self.player, self.enemy, self.player.ability.getElement(), self.player.ability.getDamageMod()))
         if self.player.ability.hasDebuff():
             self.player.ability.inflictDebuff(self.enemy)
+        for passive in self.player.passive_buffs:
+            print(str(passive))
+            passive.applyEffect(self.enemy)
+            self.enemy.addDebuff(passive)
 
         self.player_ap -= self.player.ability.cost
 

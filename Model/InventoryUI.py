@@ -10,7 +10,7 @@ from Model.Overworld.Overworld import Icon
 class InventoryUI():
     font = pygame.font.Font(None, 35)
     largeFont = pygame.font.Font(None, 65)
-    smallFont = pygame.font.Font(None, 29)
+    smallFont = pygame.font.Font(None, 25)
     smallBold = pygame.font.Font(None, 30)
     smallBold.set_bold
     def __init__(self, screen):
@@ -158,7 +158,8 @@ class InventoryUI():
 
     def run(self):
         pos = pygame.mouse.get_pos()
-        ui_text_pos = (900, 470)
+        ui_text_pos = (900, 495)
+        ui_text_pos1 = (900, 470)
         ui_text_pos2 = (1050, 520)
         ui_text_surface_pos = (900, 470)
         ui_text_surface = pygame.Surface((375,75))
@@ -191,8 +192,10 @@ class InventoryUI():
                     self.screen.blit(ui_text_surface, ui_text_surface_pos)
                     idx = self.weapons.sprites().index(sprite)
                     if isinstance(inventory_slots[sprite.idx]['content'], Model.Items.Weapon.Weapon):
-                        self.ui_text = self.font.render(list(player.getInventory()['Weapons'])[idx].getDescription(), False, "Green")
+                        self.ui_text = self.smallFont.render(list(player.getInventory()['Weapons'])[idx].getDescription(), False, "Green")
                         self.ui_text2 = self.smallFont.render("Click to equip", False, 'grey')
+                        self.ui_text1 = self.font.render(list(player.getInventory()['Weapons'])[idx].getName(), False, "green")
+                        self.screen.blit(self.ui_text1, ui_text_pos1)
                         self.screen.blit(self.ui_text, ui_text_pos)
                         self.screen.blit(self.ui_text2, ui_text_pos2)
                         break
@@ -202,8 +205,11 @@ class InventoryUI():
                     self.screen.blit(ui_text_surface, ui_text_surface_pos)
                     idx = self.armor.sprites().index(sprite)
                     if isinstance(inventory_slots[sprite.idx]['content'], Model.Items.Armor.Armor):
-                        self.ui_text = self.font.render(list(player.getInventory()['Armor'])[idx].getDescription(), False, "Green")
+                        self.ui_text = self.smallFont.render(list(player.getInventory()['Armor'])[idx].getDescription(), False, "Green")
                         self.ui_text2 = self.smallFont.render("Click to equip", False, 'grey')
+                        self.ui_text1 = self.font.render(list(player.getInventory()['Armor'])[idx].getName(), False,
+                                                         "green")
+                        self.screen.blit(self.ui_text1, ui_text_pos1)
                         self.screen.blit(self.ui_text, ui_text_pos)
                         self.screen.blit(self.ui_text2, ui_text_pos2)
                         break
@@ -213,8 +219,11 @@ class InventoryUI():
                     self.screen.blit(ui_text_surface, ui_text_surface_pos)
                     idx = self.accessories.sprites().index(sprite)
                     if isinstance(inventory_slots[sprite.idx]['content'], Model.Items.Accessory.Accessory):
-                        self.ui_text = self.font.render(list(player.getInventory()['Accessories'])[idx].getDescription(), False, "Green")
+                        self.ui_text = self.smallFont.render(list(player.getInventory()['Accessories'])[idx].getDescription(), False, "Green")
                         self.ui_text2 = self.smallFont.render("Click to equip", False, 'grey')
+                        self.ui_text1 = self.font.render(list(player.getInventory()['Accessories'])[idx].getName(), False,
+                                                         "green")
+                        self.screen.blit(self.ui_text1, ui_text_pos1)
                         self.screen.blit(self.ui_text, ui_text_pos)
                         self.screen.blit(self.ui_text2, ui_text_pos2)
                         break
@@ -223,35 +232,50 @@ class InventoryUI():
                 self.screen.blit(ui_text_surface, ui_text_surface_pos)
                 self.ui_text = self.font.render("Inventory", False, "Green")
                 self.ui_text2 = self.smallFont.render("Click to view", False, 'grey')
-                self.screen.blit(self.ui_text, ui_text_pos)
+                self.screen.blit(self.ui_text, ui_text_pos1)
                 self.screen.blit(self.ui_text2, ui_text_pos2)
             elif self.graphic_inventory.sprites()[3].rect.collidepoint(pos):
                 self.screen.blit(ui_text_surface, ui_text_surface_pos)
                 self.ui_text = self.font.render("Equipment", False, "Green")
                 self.ui_text2 = self.smallFont.render("Click to view", False, 'grey')
-                self.screen.blit(self.ui_text, ui_text_pos)
+                self.screen.blit(self.ui_text, ui_text_pos1)
                 self.screen.blit(self.ui_text2, ui_text_pos2)
         if self.graphic_equipment:
             eqp_weapon_text = "Weapon: None"
+            eqp_weapon_name = ""
             eqp_armor_text = "Armor: None"
+            eqp_armor_name = ""
             eqp_accessory_text = "Accessory: None"
+            eqp_accessory_name = ""
             if self.graphic_equipment.sprites()[0].rect.collidepoint(pos):
                 self.screen.blit(ui_text_surface, ui_text_surface_pos)
                 if player.getEquippedItems()['Weapon']:
                     eqp_weapon_text = player.getEquippedItems()['Weapon'].getDescription()
+                    eqp_weapon_name = player.getEquippedItems()['Weapon'].getName()
                 self.ui_text = self.smallFont.render(eqp_weapon_text,False, "Green")
+                self.ui_text1 = self.font.render(eqp_weapon_name, False,
+                                                 "green")
+                self.screen.blit(self.ui_text1, ui_text_pos1)
                 self.screen.blit(self.ui_text, ui_text_pos)
             elif self.graphic_equipment.sprites()[1].rect.collidepoint(pos):
                 self.screen.blit(ui_text_surface, ui_text_surface_pos)
                 if player.getEquippedItems()['Armor']:
                     eqp_armor_text = player.getEquippedItems()['Armor'].getDescription()
+                    eqp_armor_name = player.getEquippedItems()['Armor'].getName()
                 self.ui_text = self.smallFont.render(eqp_armor_text,False, "Green")
+                self.ui_text1 = self.font.render(eqp_armor_name, False,
+                                                 "green")
+                self.screen.blit(self.ui_text1, ui_text_pos1)
                 self.screen.blit(self.ui_text, ui_text_pos)
             elif self.graphic_equipment.sprites()[2].rect.collidepoint(pos):
                 self.screen.blit(ui_text_surface, ui_text_surface_pos)
                 if player.getEquippedItems()['Accessory']:
                     eqp_accessory_text = player.getEquippedItems()['Accessory'].getDescription()
+                    eqp_accessory_name = player.getEquippedItems()['Accessory'].getName()
+                self.ui_text1 = self.font.render(eqp_accessory_name, False,
+                                                 "green")
                 self.ui_text = self.smallFont.render(eqp_accessory_text,False, "Green")
+                self.screen.blit(self.ui_text1, ui_text_pos1)
                 self.screen.blit(self.ui_text, ui_text_pos)
 
         #click on items
