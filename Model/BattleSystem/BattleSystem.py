@@ -11,7 +11,7 @@ class BattleSystem():
     bigFont = pygame.font.Font(None, 50)
     mediumFont = pygame.font.Font(None, 35)
     smallFont = pygame.font.Font(None, 23)
-    small_font_bold = pygame.font.Font(None, 25)
+    small_font_bold = pygame.font.Font(None, 29)
     small_font_bold.set_bold(True)
     text_color = 'white'
     def __init__(self, player, enemy, screen_width, screen_height):
@@ -67,7 +67,7 @@ class BattleSystem():
         self.button_group = pygame.sprite.Group()
         for idx in range(len(self.player.abilities)):
             self.button = Button(200, 50, self.cur_button_gap, 600, 'green', self.player.abilities[idx], idx)
-            self.ability_cost = self.small_font_bold.render(str(self.player.abilities[idx].cost), False, 'purple')
+            self.ability_cost = self.small_font_bold.render(str(self.player.abilities[idx].cost) + "AP", False, 'purple')
             self.ability_costs.append(self.ability_cost)
             self.cur_button_gap += 300
             self.buttons.append(self.button)
@@ -112,7 +112,7 @@ class BattleSystem():
         #update buttons
         self.button_group.update()
         for button in self.button_group:
-            if button.action_name.cost > self.player_ap:
+            if button.action_name.cost > self.player_ap or self.playing_player_animation or self.playing_enemy_animation:
                 button.disable()
 
         #update text info
@@ -127,7 +127,7 @@ class BattleSystem():
         #text interface
         for button in self.button_group:
             if button.disableHovered():
-                self.text_interface = self.bigFont.render(button.action_name.getDescription(
+                self.text_interface = self.mediumFont.render(button.action_name.getDescription(
                     self.damageToInflict(self.player, self.enemy, button.action_name.getElement(),
                                          button.action_name.getDamageMod())), False,
                                                           "green")
@@ -135,7 +135,7 @@ class BattleSystem():
                     self.text_interface2 = self.mediumFont.render(
                         "Cost: " + str(button.action_name.cost) + "AP. Not enough AP.", False, 'grey')
                 elif button.action_name.cost <= self.player_ap:
-                    self.text_interface2 = self.mediumFont.render("Cost: " + str(button.action_name.cost) + "AP", False,
+                    self.text_interface2 = self.bigFont.render("Cost: " + str(button.action_name.cost) + "AP", False,
                                                                   'grey')
             self.screen.blit(self.text_interface, (100, 650))
             self.screen.blit(self.text_interface2, (100, 685))
@@ -155,8 +155,8 @@ class BattleSystem():
         for idx, text in enumerate(self.text_buttons):
             if len(self.button_group.sprites()) > idx:
                 pos_x = self.button_group.sprites()[idx].pos_x
-                self.screen.blit(text, (pos_x - 80, 585))
-                pos_x_cost = pos_x + 85
+                self.screen.blit(text, (pos_x - 100, 585))
+                pos_x_cost = pos_x + 55
                 self.screen.blit(self.ability_costs[idx], (pos_x_cost, 580))
 
     def damageToInflict(self, attacker, target, element = None, attack_mod = None):

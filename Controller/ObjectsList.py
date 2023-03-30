@@ -12,7 +12,7 @@ potion_list = [potion0, potion1, potion2]
 
 #weapons
 sword0 = Weapon("Dull Sword", 2, 10, 1)
-sword1 = Weapon("Pointy Sword", 2, 15, 2, special = "Inflict bleed on hit.", passive = debuff_list[2] )
+sword1 = Weapon("Pointy Sword", 2, 15, 2, ap_mod= 1, special = "Inflict bleed on hit.", passive = debuff_list[2] )
 sword2 = Weapon("Sharp Sword", 2, 20, 3)
 weapons_list = [sword0, sword1, sword2]
 

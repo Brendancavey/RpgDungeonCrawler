@@ -20,6 +20,11 @@ class InventoryUI():
         self.current_time = 0
         self.inventory_idx = 0
 
+        #sounds
+        self.weapon_sound = mixer.Sound('../Controller/Sounds/sword-unsheathe.wav')
+        self.armor_sound = mixer.Sound('../Controller/Sounds/chainmail1.wav')
+        self.acc_sound = mixer.Sound('../Controller/Sounds/Inventory_Open_01.wav')
+
         #call setup
         self.setupInventory()
         self.updateInventory()
@@ -39,6 +44,7 @@ class InventoryUI():
         #inventory & equipment hud
         self.graphic_inventory = pygame.sprite.Group()
         self.graphic_equipment = pygame.sprite.Group()
+        self.graphic_abilities = pygame.sprite.Group()
         self.graphic_coin = pygame.sprite.GroupSingle()
 
         #update inventory slots
@@ -56,11 +62,13 @@ class InventoryUI():
         inventory_bar = Icon((1085, 422), image = pygame.image.load('../View/Graphics/inventory_bar.png').convert_alpha())
         inventory_icon = Icon((965, 419), image = pygame.image.load('../View/Graphics/backpack.png').convert_alpha())
         equipment_icon = Icon((1025, 419), image = pygame.image.load('../View/Graphics/armor.png').convert_alpha())
+        ability_icon = Icon((1086, 419), image = pygame.image.load('../View/Graphics/tome.png').convert_alpha())
         coin_icon = Icon((1175, 419), image = pygame.image.load('../View/Graphics/coin.png').convert_alpha())
         self.graphic_inventory.add(inventory_layout)
         self.graphic_inventory.add(inventory_bar)
         self.graphic_inventory.add(inventory_icon)
         self.graphic_inventory.add(equipment_icon)
+        self.graphic_inventory.add(ability_icon)
         self.graphic_coin.add(coin_icon)
 
     def updateInventory(self):
@@ -138,6 +146,9 @@ class InventoryUI():
         self.accessories = pygame.sprite.Group()
         self.inv_quantity = pygame.sprite.Group()
 
+        #reset graphic equipment
+        self.graphic_equipment = pygame.sprite.Group()
+
         #reset inventory slot idx
         """have items appear in correct order when going back to inventory"""
         self.inventory_idx = 0
@@ -156,6 +167,20 @@ class InventoryUI():
         self.graphic_equipment.add(player_armor)
         self.graphic_equipment.add(player_accessory)
 
+    def showAbilities(self):
+        """prevent inventory/equipment items to appear in abilities panel"""
+        self.weapons = pygame.sprite.Group()
+        self.items = pygame.sprite.Group()
+        self.armor = pygame.sprite.Group()
+        self.accessories = pygame.sprite.Group()
+        self.inv_quantity = pygame.sprite.Group()
+        self.graphic_equipment = pygame.sprite.Group()
+
+        # reset inventory slot idx
+        """have items appear in correct order when going back to inventory"""
+        self.inventory_idx = 0
+        self.title_text = self.font.render("Abilities", None, 'cornsilk3')
+
     def run(self):
         pos = pygame.mouse.get_pos()
         ui_text_pos = (900, 495)
@@ -171,7 +196,7 @@ class InventoryUI():
         self.graphic_coin.draw(self.screen)
         self.screen.blit(gold_amt, (self.graphic_coin.sprite.rect.x + 60, self.graphic_coin.sprite.rect.y + 23))
 
-        # hover over items
+        #hover over icons
         if self.items:
             for sprite in self.items.sprites():
                 if sprite.rect.collidepoint(pos):
@@ -227,6 +252,12 @@ class InventoryUI():
                         self.screen.blit(self.ui_text, ui_text_pos)
                         self.screen.blit(self.ui_text2, ui_text_pos2)
                         break
+        if self.graphic_coin:
+            if self.graphic_coin.sprite.rect.collidepoint(pos):
+                self.ui_text = self.font.render("Gold: " + str(player.getGoldValue()), False, "Green")
+                self.ui_text2 = self.smallFont.render("Used to purchase items and abilities.", False, 'grey')
+                self.screen.blit(self.ui_text, ui_text_pos1)
+                self.screen.blit(self.ui_text2, (ui_text_pos2[0] - 150, ui_text_pos2[1]))
         if self.graphic_inventory:
             if self.graphic_inventory.sprites()[2].rect.collidepoint(pos):
                 self.screen.blit(ui_text_surface, ui_text_surface_pos)
@@ -237,6 +268,12 @@ class InventoryUI():
             elif self.graphic_inventory.sprites()[3].rect.collidepoint(pos):
                 self.screen.blit(ui_text_surface, ui_text_surface_pos)
                 self.ui_text = self.font.render("Equipment", False, "Green")
+                self.ui_text2 = self.smallFont.render("Click to view", False, 'grey')
+                self.screen.blit(self.ui_text, ui_text_pos1)
+                self.screen.blit(self.ui_text2, ui_text_pos2)
+            elif self.graphic_inventory.sprites()[4].rect.collidepoint(pos):
+                self.screen.blit(ui_text_surface, ui_text_surface_pos)
+                self.ui_text = self.font.render("Abilities", False, "Green")
                 self.ui_text2 = self.smallFont.render("Click to view", False, 'grey')
                 self.screen.blit(self.ui_text, ui_text_pos1)
                 self.screen.blit(self.ui_text2, ui_text_pos2)
@@ -252,6 +289,8 @@ class InventoryUI():
                 if player.getEquippedItems()['Weapon']:
                     eqp_weapon_text = player.getEquippedItems()['Weapon'].getDescription()
                     eqp_weapon_name = player.getEquippedItems()['Weapon'].getName()
+                    self.ui_text2 = self.smallFont.render("Click to unequip", False, 'grey')
+                    self.screen.blit(self.ui_text2, ui_text_pos2)
                 self.ui_text = self.smallFont.render(eqp_weapon_text,False, "Green")
                 self.ui_text1 = self.font.render(eqp_weapon_name, False,
                                                  "green")
@@ -262,6 +301,8 @@ class InventoryUI():
                 if player.getEquippedItems()['Armor']:
                     eqp_armor_text = player.getEquippedItems()['Armor'].getDescription()
                     eqp_armor_name = player.getEquippedItems()['Armor'].getName()
+                    self.ui_text2 = self.smallFont.render("Click to unequip", False, 'grey')
+                    self.screen.blit(self.ui_text2, ui_text_pos2)
                 self.ui_text = self.smallFont.render(eqp_armor_text,False, "Green")
                 self.ui_text1 = self.font.render(eqp_armor_name, False,
                                                  "green")
@@ -272,19 +313,22 @@ class InventoryUI():
                 if player.getEquippedItems()['Accessory']:
                     eqp_accessory_text = player.getEquippedItems()['Accessory'].getDescription()
                     eqp_accessory_name = player.getEquippedItems()['Accessory'].getName()
+                    self.ui_text2 = self.smallFont.render("Click to unequip", False, 'grey')
+                    self.screen.blit(self.ui_text2, ui_text_pos2)
                 self.ui_text1 = self.font.render(eqp_accessory_name, False,
                                                  "green")
                 self.ui_text = self.smallFont.render(eqp_accessory_text,False, "Green")
                 self.screen.blit(self.ui_text1, ui_text_pos1)
                 self.screen.blit(self.ui_text, ui_text_pos)
 
-        #click on items
+        #click on icons
+        #inventory
         if self.weapons:
             for sprite in self.weapons.sprites():
                 if sprite.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
                     if isinstance(inventory_slots[sprite.idx]['content'], Model.Items.Weapon.Weapon):
-                        weapon_sound = mixer.Sound('../Controller/Sounds/sword-unsheathe.wav')
-                        weapon_sound.play()
+                        #weapon_sound = mixer.Sound('../Controller/Sounds/sword-unsheathe.wav')
+                        self.weapon_sound.play()
                         self.clicked = True
                         player.equip(inventory_slots[sprite.idx]['content'])
                         inventory_slots[sprite.idx]['content'] = None
@@ -296,7 +340,7 @@ class InventoryUI():
                 if sprite.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
                     if isinstance(inventory_slots[sprite.idx]['content'], Model.Items.Armor.Armor):
                         armor_sound = mixer.Sound('../Controller/Sounds/chainmail1.wav')
-                        armor_sound.play()
+                        self.armor_sound.play()
                         self.clicked = True
                         player.equip(inventory_slots[sprite.idx]['content'])
                         inventory_slots[sprite.idx]['content'] = None
@@ -307,8 +351,8 @@ class InventoryUI():
             for sprite in self.accessories.sprites():
                 if sprite.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
                     if isinstance(inventory_slots[sprite.idx]['content'], Model.Items.Accessory.Accessory):
-                        acc_sound = mixer.Sound('../Controller/Sounds/Inventory_Open_01.wav')
-                        acc_sound.play()
+                        #acc_sound = mixer.Sound('../Controller/Sounds/Inventory_Open_01.wav')
+                        self.acc_sound.play()
                         self.clicked = True
                         player.equip(inventory_slots[sprite.idx]['content'])
                         inventory_slots[sprite.idx]['content'] = None
@@ -331,7 +375,33 @@ class InventoryUI():
                         else:
                             potion_sound = mixer.Sound('../Controller/Sounds/interface6.wav')
                             potion_sound.play()
+        #equipment
+        if self.graphic_equipment:
+            if player.getEquippedItems()['Weapon'] and self.graphic_equipment.sprites()[0].rect.collidepoint(pos) \
+                    and pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
+                self.weapon_sound.play()
+                self.clicked = True
+                equipped_item = player.getEquippedItems()['Weapon']
+                player.unequip(equipped_item)
+                self.showEquipment()
 
+            elif player.getEquippedItems()['Armor'] and self.graphic_equipment.sprites()[1].rect.collidepoint(pos) and \
+                    pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
+                self.armor_sound.play()
+                self.clicked = True
+                equipped_item = player.getEquippedItems()['Armor']
+                player.unequip(equipped_item)
+                self.showEquipment()
+
+            elif player.getEquippedItems()['Accessory'] and self.graphic_equipment.sprites()[2].rect.collidepoint(pos) \
+                    and pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
+                self.acc_sound.play()
+                self.clicked = True
+                equipped_item = player.getEquippedItems()['Accessory']
+                player.unequip(equipped_item)
+                self.showEquipment()
+
+        #ui icons
         if pygame.mouse.get_pressed()[0] == 0:
             self.play_sound = False
         if self.graphic_inventory:
@@ -347,3 +417,15 @@ class InventoryUI():
                     equipment_sound.play()
                     self.play_sound = True
                 self.showEquipment()
+            elif self.graphic_inventory.sprites()[4].rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1:
+                if not self.play_sound:
+                    abilities_sound = mixer.Sound('../Controller/Sounds/cloth-heavy.wav')
+                    abilities_sound.play()
+                    self.play_sound = True
+                self.showAbilities()
+        if self.graphic_coin:
+            if self.graphic_coin.sprite.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1:
+                if not self.play_sound:
+                    coin_sound = mixer.Sound('../Controller/Sounds/Pickup_Gold_00.wav')
+                    coin_sound.play()
+                    self.play_sound = True

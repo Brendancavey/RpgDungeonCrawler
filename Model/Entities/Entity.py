@@ -23,6 +23,7 @@ class Entity():
         #abilities
         self.abilities = []
         self.ability = None #ability used in Battle System
+        self.max_ap = 2
         #passives
         self.passive_buffs = []
 
@@ -96,7 +97,8 @@ class Entity():
             print("equipping " + str(item))
             if item.passive:
                 self.passive_buffs.append(item.passive)
-            print("passives: " + str(self.passive_buffs))
+            if item.ap_mod:
+                self.max_ap += item.ap_mod
 
         else:
             print("Item not in inventory. Unable to equip " + item)
@@ -105,8 +107,9 @@ class Entity():
         self._inventory.inventoryAdd(removed_item) #add item back into inventory
         self.modifyPower(-removed_item.getPowerMod())  # modifying power to reflect removed item
         if removed_item.passive:
-            print("removing " + str(removed_item.passive))
             self.passive_buffs.remove(removed_item.passive)
+        if removed_item.ap_mod:
+            self.max_ap -= removed_item.ap_mod
     def takeDamage(self, value):
         self.modifyHp(-value)
     def attack(self, entity, ability, damage):

@@ -17,7 +17,11 @@ class Debuff():
     def __repr__(self):
         return self.name + ": " + str(self.turn_counter)
     def getName(self):
-        return self.name + ": " + str(self.default_turn_counter)
+        if self.name == 'Poison':
+            return self.name + " for " + str(self.default_turn_counter) + " turns. Effects stackable."
+        else:
+            return self.name + " for " + str(self.default_turn_counter) + " turns."
+
     def getTurnCounter(self):
         return self.turn_counter
     def getDescription(self):

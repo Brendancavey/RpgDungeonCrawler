@@ -6,10 +6,12 @@ ability2 = Ability ("Shove", "Normal", int(0), debuff_list[1], cost = 1) #cause 
 ability3 = Ability("Slice", "Normal", 0.75, debuff_list[2], cost = 1) #cause bleed
 ability4 = Ability("Poison Dart", "Normal", 0.5, debuff_list[3], cost = 1) #causes poison
 ability5 = Ability("Open Wound", "Normal", 0.9, special_message = "If enemy bleeds, deal double damage.", cost = 1)
+ability6 = Ability("Hemorrhage", "Normal", 1.2, special_message = "If enemy bleeds, inflict Hemorrhage", cost = 2 )
 
 ability_list = [ability0,
                 ability1,
                 ability2,
                 ability3,
                 ability4,
-                ability5]
+                ability5,
+                ability6]
