@@ -1,12 +1,16 @@
 from Model.BattleSystem.Effect import Effect
 from Model.BattleSystem.EffectTypes import _effect_types_map
+from math import floor
 class Debuff():
     def __init__(self, name, turn_counter, type_key, modifier, description, image = None):
         self.name = name
         self.default_turn_counter = turn_counter
         self.turn_counter = turn_counter
         self.effect = Effect(type_key, modifier)
-        self.status_mod = (self.name, self.effect.getModifier())
+        self.mod = modifier
+        self.default_mod = modifier
+        self.status_mod = [self.name, self.effect.getModifier()]
+        self.default_description = description
         self.description = description
         self.image = image
 
@@ -23,8 +27,16 @@ class Debuff():
     def counterIncrement(self, value = 1):
         self.turn_counter += value
     def applyEffect(self, enemy):
-        if self not in enemy.status:
+        if self in enemy.status and self.name == 'Poison':
+            idx = enemy.dot_damage.index(self.status_mod)
+            print(enemy.dot_damage[idx])
+            print(self.status_mod[1])
+            enemy.dot_damage[idx][1] += self.mod
+            self.description = f"Receive {floor(self.status_mod[1] * 100)}% damage to hp per turn."
+        elif self not in enemy.status:
+            self.description = self.default_description
             self.turn_counter = self.default_turn_counter
+            self.status_mod[1]= self.default_mod
             effect_type = self.effect.getType()
             if effect_type == _effect_types_map[0]:
                 enemy.dot_damage.append(self.status_mod)

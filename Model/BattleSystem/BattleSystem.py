@@ -160,6 +160,7 @@ class BattleSystem():
                 self.screen.blit(self.ability_costs[idx], (pos_x_cost, 580))
 
     def damageToInflict(self, attacker, target, element = None, attack_mod = None):
+        #attack modifiers
         if attack_mod:
             damage = attacker.getPower() * attack_mod
         elif attack_mod == 0:
@@ -168,18 +169,30 @@ class BattleSystem():
             damage = attacker.getPower()
         #if target.isWeak(element):
             #damage = damage * 2
+
+        #special bleed conditions
         bleed = debuff_list[2]
-        if bleed in target.status and attacker.ability == ability_list[5]:
+        bleed_hemorrhage = debuff_list[5]
+        if (bleed in target.status or bleed_hemorrhage in target.status) and attacker.ability == ability_list[5]:
             damage *= 2
             self.player.ability.special_message = None
             self.player.ability.debuff = debuff_list[4]
         elif self.player.ability == ability_list[5]:
             self.player.ability.special_message = self.player.ability.default_special_message
             self.player.ability.debuff = None
+        if bleed in target.status and attacker.ability == ability_list[6]:
+            self.player.ability.special_message = None
+            self.player.ability.debuff = debuff_list[5]
+        elif self.player.ability == ability_list[6]:
+            self.player.ability.special_message = self.player.ability.default_special_message
+            self.player.ability.debuff = None
+
+        #debuff modifiers
         for mod in target.take_more_damage:
             damage *= mod[1]
         for mod in attacker.weaken_attackPwr:
             damage -= round(damage * mod[1])
+
         return int(round(damage))
     def getPlayerAp(self):
         return self.player_ap
@@ -270,8 +283,8 @@ class BattleSystem():
         self.enemy_next_move = self.enemy.getAttack(self.enemy_attack_idx)
         self.enemy_mods = self.enemy_next_move.getModifiers()
         for dot in self.enemy.dot_damage:
-            print(self.enemy.getName() + " suffers " + str(dot[1]) + " damage from " + str(dot[0]))
-            self.enemy.takeDamage(dot[1])
+            print(self.enemy.getName() + " suffers " + str(dot[1] * self.enemy.getMaxHp()) + " damage from " + str(dot[0]))
+            self.enemy.takeDamage((dot[1] * self.enemy.getMaxHp()))
         for debuff in self.enemy.status.copy():
             debuff.counterDecrement()
             debuff.checkForEffectRemoval(self.enemy)
