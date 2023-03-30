@@ -221,7 +221,9 @@ class Location:
                         self.location_content.__init__(self.location_content.getName(), self.location_content.getMaxHp(),
                                                        self.location_content.getPower(),
                                                        self.location_content.getAttackPattern(),
-                                                       self.location_content.image)
+                                                       image = self.location_content.image,
+                                                       attack_sound= self.location_content.attack_sound,
+                                                       encounter_sound= self.location_content.encounter_sound)
             if not player.isAlive():
                 lose_sound = mixer.Sound('../Controller/Sounds/lose sound 1_0.wav')
                 lose_sound.play()

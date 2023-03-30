@@ -177,8 +177,8 @@ class Overworld():
         for idx, location in enumerate(self.cur_adjacency_list):
             if isinstance(GameData.locations[location]['content'], Model.Entities.Enemy.Enemy.Enemy):
                 icon = Icon(self.nodes.sprites()[idx].rect.center,
-                            image = pygame.image.load('../View/Graphics/goblin.png').convert_alpha(),
-                            icon_type = 'enemy')
+                            image=GameData.locations[location]['content'].image,
+                            icon_type='enemy')
                 icon_sprites.append(icon)
             elif isinstance(GameData.locations[location]['content'], Model.Inventory.Item.Item):
                 icon = Icon(self.nodes.sprites()[idx].rect.center,
@@ -226,7 +226,7 @@ class Overworld():
 
         #collide with enemy
         if pygame.sprite.spritecollide(self.player_icon.sprite, self.enemy_icons, True):
-            enemy_sound = mixer.Sound('../Controller/Sounds/ogre2.wav')
+            enemy_sound = location_data['content'].encounter_sound
             enemy_sound.play()
             self.enemy_locations.remove(self.current_location)
             self.create_location(self.current_location, self.enemy_icons, self.enemy_locations, self.treasure_locations,
@@ -251,6 +251,7 @@ class Overworld():
 
         #player_icon movement
         if not self.moving and not self.key_pressed:
+            #mouse movement
             if self.nodes:
                 for idx, node in enumerate(self.nodes.sprites()):
                     if node.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1 and self.current_location != self.cur_adjacency_list[idx]:
@@ -262,6 +263,8 @@ class Overworld():
                         self.move_direction = (end-start).normalize()
                         self.moving = True
                         self.current_location = self.cur_adjacency_list[idx]
+                        self.level_up = False
+            #keyboard movement
             if keys[pygame.K_UP] and self.getNextNode('up') in self.cur_adjacency_list:
                 self.visited.append(self.current_location)
                 self.move_direction = self.getMovementData(self.getNextNode('up'))

@@ -245,7 +245,7 @@ class BattleSystem():
                 movement_sound.play()
             self.enemy_sprite.sprite.pos += self.play_enemy_animation * 16
             if self.player_sprite.sprite.detection_zone.collidepoint(self.enemy_sprite.sprite.pos):
-                attack_sound = mixer.Sound('../Controller/Sounds/sword-unsheathe5.wav')
+                attack_sound = self.enemy.attack_sound
                 attack_sound.play()
                 self.enemyDealDamage()
                 self.enemy_sprite.sprite.pos = self.enemy_origin_point
