@@ -65,6 +65,8 @@ class Game():
         self.background.blit(self.ui_inventory.title_text, (940, 145))
         self.ui_inventory.graphic_inventory.draw(self.background)
         self.ui_inventory.graphic_equipment.draw(self.background)
+        self.ui_inventory.graphic_ability_icons.draw(self.background)
+        self.ui_inventory.graphic_ability_checkmarks.draw(self.background)
         self.ui_inventory.items.draw(self.background)
         self.ui_inventory.weapons.draw(self.background)
         self.ui_inventory.armor.draw(self.background)

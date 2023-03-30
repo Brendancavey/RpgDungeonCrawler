@@ -65,9 +65,9 @@ class BattleSystem():
         self.ability_costs = []
         self.display_text_interface = False
         self.button_group = pygame.sprite.Group()
-        for idx in range(len(self.player.abilities)):
-            self.button = Button(200, 50, self.cur_button_gap, 600, 'green', self.player.abilities[idx], idx)
-            self.ability_cost = self.small_font_bold.render(str(self.player.abilities[idx].cost) + "AP", False, 'purple')
+        for idx in range(len(self.player.ability_loadout)):
+            self.button = Button(200, 50, self.cur_button_gap, 600, 'green', self.player.ability_loadout[idx], idx)
+            self.ability_cost = self.small_font_bold.render(str(self.player.ability_loadout[idx].cost) + "AP", False, 'purple')
             self.ability_costs.append(self.ability_cost)
             self.cur_button_gap += 300
             self.buttons.append(self.button)

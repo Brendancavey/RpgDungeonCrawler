@@ -21,7 +21,8 @@ class Entity():
         self.weaken_attackPwr = []
         self.take_more_damage = []
         #abilities
-        self.abilities = []
+        self.all_abilities = []
+        self.ability_loadout = []
         self.ability = None #ability used in Battle System
         self.max_ap = 2
         #passives
@@ -36,7 +37,15 @@ class Entity():
         self.weaken_attackPwr = []
         self.take_more_damage = []
     def addAbility(self, ability):
-        self.abilities.append(ability)
+        self.ability_loadout.append(ability)
+    def removeAbility(self, ability):
+        self.ability_loadout.remove(ability)
+    def learnAbility(self, ability):
+        if ability not in self.all_abilities:
+            self.all_abilities.append(ability)
+    def unlearnAbility(self, ability):
+        if ability in self.all_abilities:
+            self.all_abilities.remove(ability)
     def getName(self):
         return self._name
     def getHp(self):
@@ -46,7 +55,7 @@ class Entity():
     def getPower(self):
         return self._power
     def getAbilities(self):
-        return self.abilities
+        return self.ability_loadout
     def getGoldValue(self):
         return self._inventory.getGoldValue()
     def getInventory(self):

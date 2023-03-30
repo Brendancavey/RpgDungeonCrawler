@@ -111,7 +111,7 @@ class Overworld():
             player.modifyMaxHp(player.getMaxHp() + 1)
             player.max_ap += 1
             player.player_level += 1
-            player.addAbility(ability_list[1])
+            player.learnAbility(ability_list[1])
             self.level_up = True
         elif GameData.defeated_enemies == 5 and player.player_level == 2:
             pass
@@ -123,7 +123,7 @@ class Overworld():
             level_up_lvl = self.smallFont.render("Lvl: " + str(player.player_level), False, 'black')
             level_up_hp = self.smallFont.render("HP: +1", False, 'black')
             level_up_ap = self.smallFont.render("AP: +1", False, 'black')
-            new_ability = self.smallFont.render("New ability unlocked: " + str(player.abilities[1]), False, 'black')
+            new_ability = self.smallFont.render("New ability unlocked: " + str(ability_list[1]), False, 'black')
             self.screen.blit(level_up_text, (300, 100))
             self.screen.blit(textbox, (0, 550))
             self.screen.blit(level_up_lvl, (25, 565))

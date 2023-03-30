@@ -8,8 +8,7 @@ class Enemy(Entity):
     def __init__(self, name, hp, power, default_attack_pattern_list, encounter_sound,
                  attack_sound, image = None):
         super().__init__(name, hp, power)
-        self.abilities = self.abilities + default_attack_pattern_list
-        self.attack_pattern = EnemyAttackPattern(self.getAbilities())
+        self.attack_pattern = EnemyAttackPattern(default_attack_pattern_list)
         self.image = image
         self.encounter_sound = encounter_sound
         self.attack_sound = attack_sound
