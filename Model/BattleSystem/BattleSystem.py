@@ -172,8 +172,10 @@ class BattleSystem():
         if bleed in target.status and attacker.ability == ability_list[5]:
             damage *= 2
             self.player.ability.special_message = None
+            self.player.ability.debuff = debuff_list[4]
         elif self.player.ability == ability_list[5]:
             self.player.ability.special_message = self.player.ability.default_special_message
+            self.player.ability.debuff = None
         for mod in target.take_more_damage:
             damage *= mod[1]
         for mod in attacker.weaken_attackPwr:
@@ -192,15 +194,7 @@ class BattleSystem():
         if entity.status:
             self.cur_width_gap = 5
             for status in entity.status:
-                if status == debuff_list[0]:
-                    image = pygame.image.load('../View/Graphics/debuff_vulnerable.png').convert_alpha()
-                elif status == debuff_list[1]:
-                    image = pygame.image.load('../View/Graphics/debuff_weaken.png').convert_alpha()
-                elif status == debuff_list[2]:
-                    image = pygame.image.load('../View/Graphics/debuff_bleed.png').convert_alpha()
-                elif status == debuff_list[3]:
-                    image = pygame.image.load('../View/Graphics/debuff_poison.png').convert_alpha()
-                icon = Icon((self.width/4 + distance + self.cur_width_gap, self.height/2 + 85), image = image)
+                icon = Icon((self.width/4 + distance + self.cur_width_gap, self.height/2 + 85), image = status.image)
                 self.cur_width_gap += 25
                 if isinstance(entity, Model.Entities.Enemy.Enemy.Enemy):
                     self.enemy_status_icon.add(icon)
