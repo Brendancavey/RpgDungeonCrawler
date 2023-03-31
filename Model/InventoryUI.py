@@ -370,11 +370,16 @@ class InventoryUI():
                 if sprite.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
                     self.clicked = True
                     if player.all_abilities[idx] in player.ability_loadout:
-                        ability_sound = mixer.Sound('../Controller/Sounds/Inventory_Open_00.wav')
-                        ability_sound.play()
-                        player.removeAbility((player.all_abilities[idx]))
-                        self.showAbilities()
-                        break
+                        if len(player.ability_loadout) > 1:
+                            ability_sound = mixer.Sound('../Controller/Sounds/Inventory_Open_00.wav')
+                            ability_sound.play()
+                            player.removeAbility((player.all_abilities[idx]))
+                            self.showAbilities()
+                            break
+                        else:
+                            ability_sound = mixer.Sound('../Controller/Sounds/interface6.wav')
+                            ability_sound.play()
+                            break
                     elif len(player.ability_loadout) >= 4:
                         ability_sound = mixer.Sound('../Controller/Sounds/interface6.wav')
                         ability_sound.play()

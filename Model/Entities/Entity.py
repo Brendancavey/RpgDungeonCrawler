@@ -129,6 +129,9 @@ class Entity():
                 print(entity.getName() + " has " + str(entity.getHp()) + " HP left.")
             else:
                 entity._checkForDeath()
+
+    def isWeakAgainst(self, element):
+        return False #testing
     def guard(self, entity, damage):
         print(self.getName() + " defends")
     def isAlive(self):

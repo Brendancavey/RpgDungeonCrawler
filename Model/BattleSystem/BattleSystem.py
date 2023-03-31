@@ -160,6 +160,8 @@ class BattleSystem():
                 self.screen.blit(self.ability_costs[idx], (pos_x_cost, 580))
 
     def damageToInflict(self, attacker, target, element = None, attack_mod = None):
+        if attacker.ability:
+            element = attacker.ability.getElement()
         #attack modifiers
         if attack_mod:
             damage = attacker.getPower() * attack_mod
@@ -167,8 +169,9 @@ class BattleSystem():
             damage = 0
         else:
             damage = attacker.getPower()
-        #if target.isWeak(element):
-            #damage = damage * 2
+        if target.isWeakAgainst(element) and attacker.ability:
+            damage = damage * 2
+            print("target is weak against " + str(element) + " attacks")
 
         #special bleed conditions
         bleed = debuff_list[2]
@@ -235,16 +238,19 @@ class BattleSystem():
             self.play_player_sound = False
             self.player_origin_point = self.player_sprite.sprite.pos
         if self.playing_player_animation and self.play_player_animation:
-            if not self.play_player_sound:
-                self.play_player_sound = True
-                movement_sound = mixer.Sound('../Controller/Sounds/melee sound.wav')
-                movement_sound.play()
-            self.player_sprite.sprite.pos += self.play_player_animation * 16
-            if self.enemy_sprite.sprite.detection_zone.collidepoint(self.player_sprite.sprite.pos):
-                attack_sound = mixer.Sound('../Controller/Sounds/Trap_00.wav')
-                attack_sound.play()
-                self.playerDealDamage()
-                self.player_sprite.sprite.pos = self.player_origin_point
+            if self.attack_times > 0 and self.enemy.isAlive():
+                if not self.play_player_sound:
+                    self.play_player_sound = True
+                    movement_sound = mixer.Sound('../Controller/Sounds/melee sound.wav')
+                    movement_sound.play()
+                self.player_sprite.sprite.pos += self.play_player_animation * 16
+                if self.enemy_sprite.sprite.detection_zone.collidepoint(self.player_sprite.sprite.pos):
+                    attack_sound = mixer.Sound('../Controller/Sounds/Trap_00.wav')
+                    attack_sound.play()
+                    self.playerDealDamage()
+                    self.player_sprite.sprite.pos = self.player_origin_point
+                    self.attack_times -= 1
+            if self.attack_times <= 0:
                 self.playing_player_animation = False
 
     def animateEnemy(self):
@@ -302,8 +308,10 @@ class BattleSystem():
         for button in self.button_group:
             button.disable()
     def playerAttacks(self):
+        self.attack_times = self.player.ability.attack_times
         self.playing_player_animation = True
         self.play_player_animation = (pygame.math.Vector2(self.enemy_sprite.sprite.rect.center) - pygame.math.Vector2(self.player_sprite.sprite.rect.center)).normalize()
+
 
     def playerDealDamage(self):
         self.player.attack(self.enemy, self.player.ability,
@@ -315,7 +323,8 @@ class BattleSystem():
             passive.applyEffect(self.enemy)
             self.enemy.addDebuff(passive)
 
-        self.player_ap -= self.player.ability.cost
+        if self.player_ap >= self.player.ability.cost:
+            self.player_ap -= self.player.ability.cost
 
         self.checkForStatusIcon(self.player)
         self.checkForStatusIcon(self.enemy)

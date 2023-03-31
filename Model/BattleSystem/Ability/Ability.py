@@ -1,6 +1,7 @@
 from math import ceil
 class Ability():
-    def __init__(self, name, element, damage_mod, debuff = None, description = None, cost = None, special_message = None, sound_effect = None):
+    def __init__(self, name, element, damage_mod, debuff = None, description = None, cost = None, special_message = None,
+                 sound_effect = None, attack_times = 1):
         self.name = name
         self.element = element
         self.damage_mod = damage_mod
@@ -10,6 +11,7 @@ class Ability():
         self.special_message = special_message
         self.default_special_message = special_message
         self.sound_effect = sound_effect
+        self.attack_times = attack_times
 
     def __repr__(self):
         return self.name
