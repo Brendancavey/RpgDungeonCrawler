@@ -3,7 +3,7 @@ from Model.Entities.Enemy.AttackPatterns import attack_patterns
 from Model.Entities.Enemy.Enemy import Enemy
 from pygame import mixer
 
-goblin0 = Enemy("Goblin0", 100, 3, attack_patterns[0], image= pygame.image.load('../View/Graphics/goblin0.png'),
+goblin0 = Enemy("Goblin0", 100, 3, attack_patterns[0], image= pygame.image.load('../View/Graphics/goblin0.png'), #slice | open wound | deep stab | tri attack = 156
                 encounter_sound=mixer.Sound('../Controller/Sounds/ogre2.wav'),
                 attack_sound=mixer.Sound('../Controller/Sounds/sword-unsheathe5.wav'))
 goblin1 = Enemy("Goblin1", 20, 5, attack_patterns[1], image= pygame.image.load('../View/Graphics/goblin1.png'),

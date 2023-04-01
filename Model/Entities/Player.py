@@ -11,6 +11,8 @@ class Player(Entity):
         self.learnAbility(ability_list[5])
         self.learnAbility(ability_list[6])
         self.learnAbility(ability_list[7])
+        self.learnAbility(ability_list[1])
+
         self.player_level = 1
 
     def _checkForDeath(self):

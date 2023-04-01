@@ -24,7 +24,8 @@ class Ability():
     def getModifiers(self):
         return [self.getElement(), self.getDamageMod()]
     def getDescription(self, power):
-        self.description = "Deal " + str(int(power)) + " damage"
+        #self.description = "Deal " + str(int(power)) + " damage"
+        self.description = ""
         if self.special_message:
             self.description += ". " + self.special_message
         if self.debuff:

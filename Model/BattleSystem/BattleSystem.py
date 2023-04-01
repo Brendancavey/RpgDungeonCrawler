@@ -5,6 +5,7 @@ from Model.BattleSystem.Ability.AbilityList import ability_list
 from pygame import mixer
 import Model.Entities.Enemy.Enemy
 import pygame
+import random
 class BattleSystem():
     pygame.init()
     blue = (50, 153, 213)
@@ -36,12 +37,17 @@ class BattleSystem():
         self.player_hp_bar_surface = pygame.Surface((100, 20))
         self.player_status_icon = pygame.sprite.Group()
         self.player_end_turn = False
+        self.attack_sound = mixer.Sound('../Controller/Sounds/Trap_00.wav')
+        self.default_attack_sound = mixer.Sound('../Controller/Sounds/Trap_00.wav')
 
         #animation
         self.playing_player_animation = False
         self.play_player_animation = pygame.math.Vector2(0, 0)
         self.playing_enemy_animation = False
         self.play_enemy_animation = pygame.math.Vector2(0,0)
+
+        #screenshake
+        self.screenshake = 0
 
         #enemy
         self.enemy = enemy
@@ -83,9 +89,25 @@ class BattleSystem():
         self.text_playerHp = self.smallFont.render(str(self.player.getName()) + " HP: " + str(self.player.getHp()), False, self.text_color)
         self.text_interface = self.bigFont.render("", False, "green")
         self.text_interface2 = self.mediumFont.render("", False, 'grey')
+        self.text_interface_dmg = self.mediumFont.render("", False, 'green')
+        self.text_interface_2 = self.mediumFont.render("", False, 'green')
 
     def update(self):
         self.timer()
+        #screenshake
+        if self.screenshake > 0:
+            self.screenshake -= 1
+        screenshake_offset = [0, 0]
+        if self.screenshake:
+            if self.damage_dealt >= self.player.getPower() * 3:
+                screenshake_offset[0] = random.randint(0, 50) - 4
+                screenshake_offset[1] = random.randint(0, 50) - 4
+
+            else:
+                screenshake_offset[0] = random.randint(0, 5) - 4
+                screenshake_offset[1] = random.randint(0, 5) - 4
+                #self.attack_sound = self.default_attack_sound
+        self.screen.blit(self.screen, screenshake_offset)
         #update enemy info
         if self.enemy.isAlive():
 
@@ -125,22 +147,46 @@ class BattleSystem():
         self.text_playerHp = self.smallFont.render("HP: " + str(self.player.getHp()) + "/" + str(self.player.getMaxHp()), False,
                                                  self.text_color)
         #text interface
+        text_shaking = 0
+        if self.player.ability:
+            if self.damageToInflict(self.player, self.enemy, self.player.ability.getElement(),
+                                             self.player.ability.getDamageMod()) >= self.player.getPower() * 3:
+
+                text_shaking = 30
+
+        if text_shaking > 0:
+            text_shaking -= 1
+        text_shake_offset = [162, 650]
+        if text_shaking:
+            text_shake_offset[0] = random.randint(162, 170) - 4
+            text_shake_offset[1] = random.randint(650, 658) - 4
+
         for button in self.button_group:
             if button.disableHovered():
-                self.text_interface = self.mediumFont.render(button.action_name.getDescription(
+                """self.text_interface = self.mediumFont.render(button.action_name.getDescription(
                     self.damageToInflict(self.player, self.enemy, button.action_name.getElement(),
                                          button.action_name.getDamageMod())), False,
-                                                          "green")
+                                                          "green")"""
+                self.text_interface = self.mediumFont.render("Deal ", False, "green")
+                self.text_interface_dmg = self.mediumFont.render(str(int(self.damageToInflict(self.player, self.enemy, button.action_name.getElement(),
+                                         button.action_name.getDamageMod()))), False, "green")
+                self.text_interface_2 = self.mediumFont.render("Damage" + self.player.ability.getDescription(self.player.getPower()), False, 'green')
+
                 if button.action_name.cost > self.player_ap:
                     self.text_interface2 = self.mediumFont.render(
                         "Cost: " + str(button.action_name.cost) + "AP. Not enough AP.", False, 'grey')
                 elif button.action_name.cost <= self.player_ap:
                     self.text_interface2 = self.bigFont.render("Cost: " + str(button.action_name.cost) + "AP", False,
                                                                   'grey')
+            #self.screen.blit(self.text_interface, (100, 650))
             self.screen.blit(self.text_interface, (100, 650))
+            self.screen.blit(self.text_interface_dmg, text_shake_offset)
+            self.screen.blit(self.text_interface_2, (200, 650))
             self.screen.blit(self.text_interface2, (100, 685))
         self.text_interface = self.bigFont.render("", False, 'green')
         self.text_interface2 = self.mediumFont.render("", False, 'grey')
+        self.text_interface_dmg = self.mediumFont.render("", False, 'green')
+        self.text_interface_2 = self.mediumFont.render("", False, 'green')
 
         #blit to screen
         self.hoverStatusIcon()
@@ -245,10 +291,17 @@ class BattleSystem():
                     movement_sound.play()
                 self.player_sprite.sprite.pos += self.play_player_animation * 16
                 if self.enemy_sprite.sprite.detection_zone.collidepoint(self.player_sprite.sprite.pos):
-                    attack_sound = mixer.Sound('../Controller/Sounds/Trap_00.wav')
-                    attack_sound.play()
-                    self.playerDealDamage()
+                    self.damage_dealt = self.playerDealDamage()
                     self.player_sprite.sprite.pos = self.player_origin_point
+                    if self.damage_dealt >= self.player.getPower() * 3:
+                        print(self.damage_dealt)
+                        print("BIG DAMAGE")
+                        self.screenshake = 30
+                        self.attack_sound = mixer.Sound('../Controller/Sounds/Trap_01.wav')
+                    else:
+                        self.screenshake = 15
+                        self.attack_sound = self.default_attack_sound
+                    self.attack_sound.play()
                     self.attack_times -= 1
             if self.attack_times <= 0:
                 self.playing_player_animation = False
@@ -267,6 +320,7 @@ class BattleSystem():
                 attack_sound = self.enemy.attack_sound
                 attack_sound.play()
                 self.enemyDealDamage()
+                self.screenshake = 15
                 self.enemy_sprite.sprite.pos = self.enemy_origin_point
                 self.playing_enemy_animation = False
     def enemyDealDamage(self):
@@ -316,6 +370,7 @@ class BattleSystem():
     def playerDealDamage(self):
         self.player.attack(self.enemy, self.player.ability,
                            self.damageToInflict(self.player, self.enemy, self.player.ability.getElement(), self.player.ability.getDamageMod()))
+        damage_dealt = self.damageToInflict(self.player, self.enemy, self.player.ability.getElement(), self.player.ability.getDamageMod())
         if self.player.ability.hasDebuff():
             self.player.ability.inflictDebuff(self.enemy)
         for passive in self.player.passive_buffs:
@@ -333,7 +388,7 @@ class BattleSystem():
             self.disableButtons()
         else:
             self.enemy_damage = self.damageToInflict(self.enemy, self.player, self.enemy_mods[0], self.enemy_mods[1])
-
+        return damage_dealt
     def playerTurnEnd(self):
         #commence enemy turn
         if self.enemy_turn:
