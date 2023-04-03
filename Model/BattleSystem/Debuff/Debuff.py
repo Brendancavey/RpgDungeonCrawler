@@ -33,10 +33,18 @@ class Debuff():
     def applyEffect(self, enemy):
         if self in enemy.status and self.name == 'Poison':
             idx = enemy.dot_damage.index(self.status_mod)
-            print(enemy.dot_damage[idx])
-            print(self.status_mod[1])
             enemy.dot_damage[idx][1] += self.mod
-            self.description = f"Receive {floor(self.status_mod[1] * 100)}% damage to hp per turn."
+            self.description = f"Receive {floor(self.status_mod[1])} damage to hp at start of turn. Stacks effectiveness."
+        elif self in enemy.status and self.name == 'Bleed':
+            idx = enemy.dot_damage.index(self.status_mod)
+            enemy.dot_damage[idx][1] += self.mod
+            self.description = f"Receive {floor(self.status_mod[1])} damage to hp at start of turn. Stacks effectiveness."
+        elif self in enemy.status and self.name == "Bleed-Hemorrhage":
+            idx = enemy.dot_damage.index(self.status_mod)
+            enemy.dot_damage[idx][1] += self.mod
+            self.description = f"Receive {floor(self.status_mod[1])} damage to hp at start of turn. Stacks effectiveness."
+        elif self in enemy.status:
+            self.turn_counter += self.default_turn_counter
         elif self not in enemy.status:
             self.description = self.default_description
             self.turn_counter = self.default_turn_counter

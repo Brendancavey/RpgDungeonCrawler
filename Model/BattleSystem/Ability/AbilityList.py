@@ -8,6 +8,7 @@ ability4 = Ability("Poison Dart", "Normal", 0.5, debuff_list[3], cost = 1) #caus
 ability5 = Ability("Open Wound", "Normal", .7, special_message = "If enemy bleeds, inflict Open Wound.", cost = 1)
 ability6 = Ability("Hemorrhage", "Normal", 1.2, special_message = "If enemy bleeds, inflict Hemorrhage", cost = 2 )
 ability7 = Ability("Tri Attack", "Normal", 1, attack_times=3, special_message = "Attack the enemy 3 times", cost = 2)
+ability8 = Ability("Reap", "Normal", 1, special_message = "Bleed damage * 2 added to damage", cost = 2)
 
 ability_list = [ability0,
                 ability1,
@@ -16,4 +17,5 @@ ability_list = [ability0,
                 ability4,
                 ability5,
                 ability6,
-                ability7]
+                ability7,
+                ability8]

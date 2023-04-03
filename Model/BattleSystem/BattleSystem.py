@@ -219,20 +219,32 @@ class BattleSystem():
             print("target is weak against " + str(element) + " attacks")
 
         #special bleed conditions
+        poison = debuff_list[3]
         bleed = debuff_list[2]
+        open_wound_debuff = debuff_list[4]
         bleed_hemorrhage = debuff_list[5]
-        if (bleed in target.status or bleed_hemorrhage in target.status) and attacker.ability == ability_list[5]:
+        open_wound = ability_list[5]
+        hemorrhage = ability_list[6]
+        reap = ability_list[8]
+
+        if (bleed in target.status or bleed_hemorrhage in target.status) and attacker.ability == open_wound:
             self.player.ability.special_message = None
-            self.player.ability.debuff = debuff_list[4]
-        elif self.player.ability == ability_list[5]:
+            self.player.ability.debuff = open_wound_debuff
+        elif self.player.ability == open_wound:
             self.player.ability.special_message = self.player.ability.default_special_message
             self.player.ability.debuff = None
-        if bleed in target.status and attacker.ability == ability_list[6]:
+        if bleed in target.status and attacker.ability == hemorrhage:
             self.player.ability.special_message = None
-            self.player.ability.debuff = debuff_list[5]
-        elif self.player.ability == ability_list[6]:
+            self.player.ability.debuff = bleed_hemorrhage
+        elif self.player.ability == hemorrhage:
             self.player.ability.special_message = self.player.ability.default_special_message
             self.player.ability.debuff = None
+        if (bleed in target.status) and self.player.ability == reap:
+            idx = target.dot_damage.index(bleed.status_mod)
+            damage += target.dot_damage[idx][1] * 2
+        if (bleed_hemorrhage in target.status) and self.player.ability == reap:
+            idx = target.dot_damage.index(bleed_hemorrhage.status_mod)
+            damage += target.dot_damage[idx][1] * 2
 
         #debuff modifiers
         for mod in target.take_more_damage:
@@ -265,7 +277,7 @@ class BattleSystem():
             if entity.isAlive() and entity.status:
                 status_description = list(entity.status)[idx].getDescription()
                 turn_counter = list(entity.status)[idx].getTurnCounter()
-                self.text_interface = self.bigFont.render(status_description, False, 'green')
+                self.text_interface = self.mediumFont.render(status_description, False, 'green')
                 self.text_interface2 = self.mediumFont.render("Remaining turns: " + str(turn_counter), False, 'grey')
 
         pos = pygame.mouse.get_pos()
@@ -342,7 +354,9 @@ class BattleSystem():
         self.enemy_mods = self.enemy_next_move.getModifiers()
         for dot in self.enemy.dot_damage:
             print(self.enemy.getName() + " suffers " + str(dot[1] * self.enemy.getMaxHp()) + " damage from " + str(dot[0]))
-            self.enemy.takeDamage((dot[1] * self.enemy.getMaxHp()))
+            #self.enemy.takeDamage((dot[1] * self.enemy.getMaxHp()))
+            self.enemy.takeDamage((dot[1]))
+
         for debuff in self.enemy.status.copy():
             debuff.counterDecrement()
             debuff.checkForEffectRemoval(self.enemy)
@@ -399,8 +413,9 @@ class BattleSystem():
                 debuff.checkForEffectRemoval(self.player)
             if self.enemy.isAlive():
                 self.enemyTurn()
-            # reset player ap
+            # reset player ap and damage
             self.player_ap = self.default_player_ap
+            self.damage_dealt = 0
 
     def enemyTurn(self):
         self.playing_enemy_animation = True
