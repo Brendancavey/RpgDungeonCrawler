@@ -87,6 +87,7 @@ class BattleSystem():
             False, "red")
         self.text_playerAp = self.bigFont.render("AP: " + str(self.getPlayerAp()), False, "black")
         self.text_playerHp = self.smallFont.render(str(self.player.getName()) + " HP: " + str(self.player.getHp()), False, self.text_color)
+        self.text_tooltip = self.smallFont.render("", False, 'green')
         self.text_interface = self.bigFont.render("", False, "green")
         self.text_interface2 = self.mediumFont.render("", False, 'grey')
         self.text_interface_dmg = self.mediumFont.render("", False, 'green')
@@ -163,10 +164,6 @@ class BattleSystem():
 
         for button in self.button_group:
             if button.disableHovered():
-                """self.text_interface = self.mediumFont.render(button.action_name.getDescription(
-                    self.damageToInflict(self.player, self.enemy, button.action_name.getElement(),
-                                         button.action_name.getDamageMod())), False,
-                                                          "green")"""
                 self.text_interface = self.mediumFont.render("Deal ", False, "green")
                 self.text_interface_dmg = self.mediumFont.render(str(int(self.damageToInflict(self.player, self.enemy, button.action_name.getElement(),
                                          button.action_name.getDamageMod()))), False, "green")
@@ -177,12 +174,14 @@ class BattleSystem():
                         "Cost: " + str(button.action_name.cost) + "AP. Not enough AP.", False, 'grey')
                 elif button.action_name.cost <= self.player_ap:
                     self.text_interface2 = self.bigFont.render("Cost: " + str(button.action_name.cost) + "AP", False,
-                                                                  'grey')
-            #self.screen.blit(self.text_interface, (100, 650))
+                                                                'grey')
+                self.text_tooltip = self.smallFont.render(self.player.ability.getDebuffTooltip(), False, 'grey')
             self.screen.blit(self.text_interface, (100, 650))
             self.screen.blit(self.text_interface_dmg, text_shake_offset)
             self.screen.blit(self.text_interface_2, (200, 650))
             self.screen.blit(self.text_interface2, (100, 685))
+            self.screen.blit(self.text_tooltip, (420, 700))
+        self.text_tooltip = self.smallFont.render("", False, 'green')
         self.text_interface = self.bigFont.render("", False, 'green')
         self.text_interface2 = self.mediumFont.render("", False, 'grey')
         self.text_interface_dmg = self.mediumFont.render("", False, 'green')
@@ -223,7 +222,6 @@ class BattleSystem():
         bleed = debuff_list[2]
         bleed_hemorrhage = debuff_list[5]
         if (bleed in target.status or bleed_hemorrhage in target.status) and attacker.ability == ability_list[5]:
-            damage *= 2
             self.player.ability.special_message = None
             self.player.ability.debuff = debuff_list[4]
         elif self.player.ability == ability_list[5]:

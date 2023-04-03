@@ -48,6 +48,7 @@ class InventoryUI():
         self.graphic_ability_icons = pygame.sprite.Group()
         self.graphic_ability_checkmarks = pygame.sprite.Group()
         self.graphic_coin = pygame.sprite.GroupSingle()
+        self.ability_qnty = pygame.sprite.GroupSingle()
 
         #update inventory slots
         """reset values to account for player using items in battle
@@ -135,6 +136,7 @@ class InventoryUI():
         self.graphic_equipment = pygame.sprite.Group()
         self.graphic_ability_icons = pygame.sprite.Group()
         self.graphic_ability_checkmarks = pygame.sprite.Group()
+        self.ability_qnty = pygame.sprite.GroupSingle()
 
 
         self.title_text = self.title_text = self.font.render("Inventory", None, 'cornsilk3')
@@ -152,6 +154,7 @@ class InventoryUI():
         self.inv_quantity = pygame.sprite.Group()
         self.graphic_ability_icons = pygame.sprite.Group()
         self.graphic_ability_checkmarks = pygame.sprite.Group()
+        self.ability_qnty = pygame.sprite.GroupSingle()
 
         #reset graphic equipment
         self.graphic_equipment = pygame.sprite.Group()
@@ -184,11 +187,14 @@ class InventoryUI():
         self.graphic_equipment = pygame.sprite.Group()
         self.graphic_ability_icons = pygame.sprite.Group()
         self.graphic_ability_checkmarks = pygame.sprite.Group()
+        self.ability_qnty = pygame.sprite.GroupSingle()
 
         # reset inventory slot idx
         """have items appear in correct order when going back to inventory"""
         self.inventory_idx = 0
         self.title_text = self.font.render("Abilities", None, 'cornsilk3')
+        self.ability_qnty_text = Icon((1225, 350), image = self.font.render(str(len(player.ability_loadout)) + "/4", False, "black"))
+        self.ability_qnty.add(self.ability_qnty_text)
 
         height_gap = 215
         for ability in player.all_abilities:

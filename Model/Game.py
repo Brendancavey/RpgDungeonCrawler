@@ -67,6 +67,7 @@ class Game():
         self.ui_inventory.graphic_equipment.draw(self.background)
         self.ui_inventory.graphic_ability_icons.draw(self.background)
         self.ui_inventory.graphic_ability_checkmarks.draw(self.background)
+        self.ui_inventory.ability_qnty.draw(self.background)
         self.ui_inventory.items.draw(self.background)
         self.ui_inventory.weapons.draw(self.background)
         self.ui_inventory.armor.draw(self.background)

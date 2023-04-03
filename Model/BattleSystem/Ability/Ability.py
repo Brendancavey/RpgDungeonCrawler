@@ -39,6 +39,9 @@ class Ability():
     def getDebuffDescription(self):
         if self.debuff:
             return "Inflict " + self.debuff.getName()
+    def getDebuffTooltip(self):
+        if self.debuff:
+            return self.debuff.getDescription()
     def inflictDebuff(self, enemy):
         if self.debuff:
             self.debuff.applyEffect(enemy)
