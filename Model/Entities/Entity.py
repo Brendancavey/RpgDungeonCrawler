@@ -2,6 +2,7 @@ import Model.Inventory.Item
 from Model.Inventory.Inventory import Inventory
 from Model.Inventory.Equipment import Equipment
 from Model.BattleSystem.Ability.Ability import Ability
+from Model.BattleSystem.Debuff.DebuffList import debuff_list
 
 
 class Entity():
@@ -20,9 +21,13 @@ class Entity():
         self.weaken_attackPwr = []
         self.take_more_damage = []
         #abilities
-        self.attk = Ability("Attack", "Normal", 1)
-        self.abilities = []
-        self.addAbility(self.attk)
+        self.all_abilities = []
+        self.ability_loadout = []
+        self.ability = None #ability used in Battle System
+        self.max_ap = 2
+        #passives
+        self.passive_buffs = []
+
 
     def addDebuff(self, debuff):
         self.status.add(debuff)
@@ -32,7 +37,15 @@ class Entity():
         self.weaken_attackPwr = []
         self.take_more_damage = []
     def addAbility(self, ability):
-        self.abilities.append(ability)
+        self.ability_loadout.append(ability)
+    def removeAbility(self, ability):
+        self.ability_loadout.remove(ability)
+    def learnAbility(self, ability):
+        if ability not in self.all_abilities:
+            self.all_abilities.append(ability)
+    def unlearnAbility(self, ability):
+        if ability in self.all_abilities:
+            self.all_abilities.remove(ability)
     def getName(self):
         return self._name
     def getHp(self):
@@ -42,7 +55,7 @@ class Entity():
     def getPower(self):
         return self._power
     def getAbilities(self):
-        return self.abilities
+        return self.ability_loadout
     def getGoldValue(self):
         return self._inventory.getGoldValue()
     def getInventory(self):
@@ -55,6 +68,8 @@ class Entity():
         self._hp += value
         if self._hp > self._maxHp:
             self.setHp(self._maxHp)
+    def modifyMaxHp(self, newMaxHp):
+        self._maxHp = newMaxHp
     def modifyPower(self, value):
         self._power += value
     def modifyGold(self, value):
@@ -88,12 +103,22 @@ class Entity():
             self._inventory.inventoryRemove(item)  # Use item from inventory to reflect removal from inventory
             self._equips.equip(item) #asking equipment to equip item
             self.modifyPower(item.getPowerMod())
+            print("equipping " + str(item))
+            if item.passive:
+                self.passive_buffs.append(item.passive)
+            if item.ap_mod:
+                self.max_ap += item.ap_mod
+
         else:
             print("Item not in inventory. Unable to equip " + item)
     def unequip(self, item):
         removed_item = self._equips.equipRemove(item)
         self._inventory.inventoryAdd(removed_item) #add item back into inventory
         self.modifyPower(-removed_item.getPowerMod())  # modifying power to reflect removed item
+        if removed_item.passive:
+            self.passive_buffs.remove(removed_item.passive)
+        if removed_item.ap_mod:
+            self.max_ap -= removed_item.ap_mod
     def takeDamage(self, value):
         self.modifyHp(-value)
     def attack(self, entity, ability, damage):
@@ -104,6 +129,9 @@ class Entity():
                 print(entity.getName() + " has " + str(entity.getHp()) + " HP left.")
             else:
                 entity._checkForDeath()
+
+    def isWeakAgainst(self, element):
+        return False #testing
     def guard(self, entity, damage):
         print(self.getName() + " defends")
     def isAlive(self):

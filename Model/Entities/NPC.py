@@ -3,11 +3,13 @@ import pygame
 pygame.init()
 class NPC(Entity):
     font = pygame.font.Font(None, 35)
-    def __init__(self, name, hp, power):
+    def __init__(self, name, hp, power, dialogue):
         super().__init__(name, hp, power)
         #self._done_chatting = False
+        self.dialogue = dialogue
+        self.quest = 0
 
-    def chat(self, display_surface, dialogue = "Be careful of goblins!"):
+    def chat(self, display_surface):
         #setup
         self._done_chatting = False
         keys = pygame.key.get_pressed()
@@ -21,9 +23,6 @@ class NPC(Entity):
         self.textbox = pygame.Surface((1280, 200))
         self.textbox.fill('bisque')
 
-        #text info
-        self.dialogue = dialogue
-
         # update screen
             #text info
         self.text_npcName = self.font.render(self.getName() + ": ", False, 'black')
@@ -33,6 +32,8 @@ class NPC(Entity):
         self.screen.blit(self.textbox, (0, 550))
         self.screen.blit(self.text_npcName, (60, 560))
         self.screen.blit(self.text_dialogue, (90, 595))
+    def setDialogue(self, new_dialogue):
+        self.dialogue = new_dialogue
 
     def doneChatting(self):
         return self._done_chatting
