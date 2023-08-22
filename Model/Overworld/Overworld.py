@@ -57,6 +57,7 @@ class Overworld():
         self.win_level = False
         self.level_up = False
         self.checkForLevelUp()
+        self.can_move = True
 
         #timer
         self.key_press_time = pygame.time.get_ticks()
@@ -135,7 +136,7 @@ class Overworld():
         else:
             mixer.Channel(0).unpause()
     def checkForWinCondition(self):
-        if self.current_location == 10:
+        if self.current_location == 10: #10 is the location index on the map that transport the player to the next map
             self.win_level = True
     def displayWinMessage(self):
         if self.win_level == True:
@@ -155,6 +156,10 @@ class Overworld():
                 next_stage_sound.play()
                 self.__init__(0, [-1, 0], self.display_surface, self.background, self.create_location,
                               self.enemy_icons, GameData.enemy_locations, [], GameData.treasure_locations, GameData.npc_locations, self.ui_inventory )
+        if not player.isAlive():
+            self.can_move = False
+            win_text = self.largeFont.render("Game Over! Please Exit the Game.", False, "green")
+            self.screen.blit(win_text, (300, 100))
     def findNextNode(self, current_location, direction):
         if direction == 'up':
             return current_location + 1
@@ -250,7 +255,7 @@ class Overworld():
             player.interact(location_content, self.display_surface)
 
         #player_icon movement
-        if not self.moving and not self.key_pressed:
+        if not self.moving and not self.key_pressed and self.can_move:
             #mouse movement
             if self.nodes:
                 for idx, node in enumerate(self.nodes.sprites()):

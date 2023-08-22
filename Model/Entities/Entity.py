@@ -24,7 +24,7 @@ class Entity():
         self.all_abilities = []
         self.ability_loadout = []
         self.ability = None #ability used in Battle System
-        self.max_ap = 2
+        self.max_ap = 1
         #passives
         self.passive_buffs = []
 
