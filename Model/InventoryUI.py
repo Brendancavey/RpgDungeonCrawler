@@ -196,9 +196,15 @@ class InventoryUI():
         self.ability_qnty_text = Icon((1225, 350), image = self.font.render(str(len(player.ability_loadout)) + "/4", False, "black"))
         self.ability_qnty.add(self.ability_qnty_text)
 
-        height_gap = 215
+        #displaying all player learned abilities in skill book
+        height_gap = 200
+        distance_from_left = 1005
         for ability in player.all_abilities:
-            ability_icon = Icon((1005,height_gap), image = self.smallFont.render(ability.getName(), False, 'black'))
+            #to stay within bounds of interface
+            if height_gap >= 375:
+                distance_from_left += 130
+                height_gap = 200
+            ability_icon = Icon((distance_from_left,height_gap), image = self.smallFont.render(ability.getName(), False, 'black'))
             self.graphic_ability_icons.add(ability_icon)
             if ability in player.ability_loadout:
                 checkmark = Icon((ability_icon.rect.right + 10, height_gap - 4), image = pygame.image.load("../View/Graphics/Check13.png"))
